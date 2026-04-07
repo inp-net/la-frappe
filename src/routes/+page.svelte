@@ -31,6 +31,9 @@
 		funWord = funWords[Math.floor(Math.random() * funWords.length)];
 	}
 
+    // Api
+    let { data }: PageProps = $props();
+
 </script>
 
 <Flex direction="column" gap="xxl" margin="lg">
