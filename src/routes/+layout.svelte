@@ -7,7 +7,7 @@
     let c = $state(0.246);
     let h = $state(360);
     let isDarkTheme = $state(true);
-    let cornerRadius = $state(2);
+    let cornerRadius = $state(1.5);
     
     $effect(() => {
             document.documentElement.style.setProperty('--base-color', `oklch(${l} ${c} ${h})`);

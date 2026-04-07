@@ -6,21 +6,24 @@
         Stack,
         Badge,
         Flex,
-        Frame
+        Frame,
+        Box
     } from "azucar-ui"
+
+    import File from "./File.svelte";
     
     let folderNames = [ "ENSEEIHT", "SN" ]
 
 </script>
 
-<Frame>
-<Flex direction="column" gap="md">
+<Box>
+<Flex direction="column" gap="md" padding="md">
 
     <ListNavigation
         {folderNames}
     />
 
-    <Flex>
+    <Flex gap="xs">
         <Badge>Tout</Badge>
         <Badge variant="outline">Partielles</Badge>
         <Badge variant="outline">TD</Badge>
@@ -28,5 +31,12 @@
         <Badge variant="outline">Projets</Badge>
     </Flex>
 
+    <Box padding="xs"></Box>
+    
+    <File name="TOB"/>
+    <File name="Calcul Scientifique"/>
+    <File name="Programmation impérative"/>
+    <File name="Réseaux"/>
+
 </Flex>
-</Frame>
+</Box>
