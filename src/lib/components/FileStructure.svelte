@@ -12,7 +12,7 @@
 
     import File from "./File.svelte";
     
-    let folderNames = [ "ENSEEIHT", "SN" ]
+    let folderNames = [ "ENSEEIHT", "SN", "1A" ]
 
 </script>
 
@@ -24,11 +24,11 @@
     />
 
     <Flex gap="xs">
-        <Badge>Tout</Badge>
-        <Badge variant="outline">Partielles</Badge>
-        <Badge variant="outline">TD</Badge>
-        <Badge variant="outline">TP</Badge>
-        <Badge variant="outline">Projets</Badge>
+        <Badge>tout</Badge>
+        <Badge variant="outline">td</Badge>
+        <Badge variant="outline">tp</Badge>
+        <Badge variant="outline">projets</Badge>
+        <Badge variant="outline">partielles</Badge>
     </Flex>
 
     <Box padding="xs"></Box>

@@ -25,10 +25,14 @@
 </script>
 
 <Flex gap="lg" align="center">
-   <Flex gap="xs">
+    <Frame>
+    <Flex gap="md">
         <ChevronLeft/>
+        <div id="bar"></div>
         <ChevronRight/>
     </Flex>
+    </Frame>
+        <div id="full">
     <Frame>
         <Flex gap="xs" align="center">
             {#each folderNames as folder : string, index}
@@ -44,9 +48,19 @@
             {/each}
         </Flex>
     </Frame>
+</div>
 </Flex>
 
 <style>
+
+    #bar {
+        width: 1px;
+        background-color: var(--color-fg-solid);
+    }
+
+    #full {
+        flex: auto;
+    }
 
     #folder-button {
         font-weight: bold;
