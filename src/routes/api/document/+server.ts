@@ -36,7 +36,9 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const title = data.get('title');
     const type = data.get('type'); // "PARTIEL", "TD", etc.
-    const subjectId = data.get('subjectId');
+    const school = data.get('school');
+    const major = data.get('major');
+    const subject = data.get('subject');
   
     // Validation du type selon les critères
     const validTypes = ['partiel', 'fiche', 'td', 'autre', 'notes de cours', 'dm', 'tp', 'be', 'diapositives de cours'];
@@ -56,7 +58,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     // --- Définir le chemin de stockage ---
     // On va créer un dossier 'storage' à la racine du projet pour ne pas mélanger avec le code
-    const storageDir = join(process.cwd(), 'static', 'uploads', subjectId, type);
+    const storageDir = join(process.cwd(), 'static', 'uploads', school, major, subject, type);
 
     // Créer les dossiers récursivement s'ils n'existent pas
     if (!existsSync(storageDir)) {
@@ -76,7 +78,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
         return json({
             success: true,
-            path: `/uploads/${subjectId}/${type}/${fileName}`, // URL Accessible
+            path: `/uploads/${school}/${major}/${subject}/${type}/${fileName}`, // URL Accessible
             message: "Fichier sauvegardé avec succès"
         });
     } catch (err) {
