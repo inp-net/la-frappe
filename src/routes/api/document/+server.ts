@@ -77,7 +77,17 @@ export const POST: RequestHandler = async ({ request }) => {
         correction = "_corrige";
     }
 
+<<<<<<< HEAD
     const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo en octets, 10 * 2^10 * 2^10
+=======
+    // TODO vérifier que l'extension du fichier est valide (pdf)
+
+    if (!file) {
+        return json({ error: 'Aucun fichier reçu '}, { status : 400 });
+    }
+
+    const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo en octets
+>>>>>>> d3c7a87 (refactor: ajout TODO vérifier l'extension fichier)
 
     if (file.size > MAX_SIZE) {
         error(400, "Fichier trop lourd (max 10 Mo).");
