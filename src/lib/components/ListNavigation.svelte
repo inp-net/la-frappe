@@ -11,7 +11,8 @@
     import {
         Folder,
         ChevronRight,
-        ChevronLeft 
+        ChevronLeft,
+        Plus
     } from '@lucide/svelte';
 
     import {
@@ -26,29 +27,34 @@
 
 <Flex gap="lg" align="center">
     <Frame>
-    <Flex gap="md">
-        <ChevronLeft/>
-        <div id="bar"></div>
-        <ChevronRight/>
-    </Flex>
-    </Frame>
-        <div id="full">
-    <Frame>
-        <Flex gap="xs" align="center">
-            {#each folderNames as folder : string, index}
-                <a id="folder-button">
-                    <h4>{folder}</h4>
-                </a>
-                {#if index < (folderNames.length-1)}
-                    <!-- Sorry -->
-                    <Box padding="xxs"></Box>
-                    <ChevronRight/>
-                    <Box padding="xxs"></Box>
-                {/if}
-            {/each}
+        <Flex gap="md">
+            <ChevronLeft/>
+            <div id="bar"></div>
+            <ChevronRight/>
         </Flex>
     </Frame>
-</div>
+    <div id="full">
+        <Frame>
+            <Flex gap="xs" align="center">
+                {#each folderNames as folder : string, index}
+                    <Button variant="ghost">
+                        <h4>{folder}</h4>
+                    </Button>
+                    {#if index < (folderNames.length-1)}
+                        <!-- Sorry -->
+                        <Box padding="xxs"></Box>
+                        <ChevronRight/>
+                        <Box padding="xxs"></Box>
+                    {/if}
+                {/each}
+            </Flex>
+        </Frame>
+    </div>
+    <Frame>
+        <Flex>
+            <Plus/>
+        </Flex>
+    </Frame>
 </Flex>
 
 <style>
@@ -59,7 +65,7 @@
     }
 
     #full {
-        flex: auto;
+        flex-grow: 3;
     }
 
     #folder-button {

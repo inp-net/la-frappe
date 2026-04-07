@@ -10,6 +10,7 @@
 
     import {
         Folder,
+        File
     } from '@lucide/svelte';
 
     type Props = HTMLAttributes<HTMLElement> & {
@@ -17,19 +18,30 @@
         isFile?: boolean;
     };
 
-
     let {
         name = "salut",
         isFile = false
     } : Props = $props()
 
+    let isHovered = $state(false);
+
 </script>
 
-<Frame transparent={true} border={true} shadow={true}>
+<div 
+    onmouseenter={() => isHovered = true} 
+    onmouseleave={() => isHovered = false}
+    role="none"
+>
+<Frame transparent={false} border={isHovered} shadow={isHovered}>
     <Flex align="center">
         <Box padding="xs">
-            <Folder/>
+            {#if isFile}
+                <File/>
+            {:else}
+                <Folder/>
+            {/if}
         </Box>
         <h3>{name}</h3>
     </Flex>
 </Frame>
+</div>
