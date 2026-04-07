@@ -46,6 +46,12 @@ export const POST: RequestHandler = async ({ request }) => {
         return json({ error: 'Aucun fichier reçu '}, { status : 400 });
     }
 
+    const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo en octets
+
+    if (file.size > MAX_SIZE) {
+        return json({ error: "Fichier trop lourd (max 10 Mo)" }, { status: 400 });
+    }
+
     console.log('Enregistrement du fichier ${file.name} pour la matière ${subjectId}');
 
     return json({
