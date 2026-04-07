@@ -1,85 +1,119 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { error, json, type RequestHandler } from '@sveltejs/kit';
+import { writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 export const POST: RequestHandler = async ({ request }) => {
+
     const data = await request.formData();
+
+    // -- Verification du fichier --
     const file = data.get('file') as File;
-
-    // --- VERIFICATION 1 : Header de la requête ---
-    // Le navigateur/client annonce que c'est un PDF
+    if (!file) {
+        error(400, "Fichier manquant.");
+    }
+    // header
     if (file.type !== 'application/pdf') {
-        return json({ error: "Le header indique que ce n'est pas un PDF" }, { status : 400 });
+        error(400, "Le header indique que ce n'est pas un PDF");
     }
-
-    // --- VERIFICATION 2 : Extension du fichier ---
-    if (!file.name.toLowerCase().endsWith('.pdf')) {
-        return json({ error: "L'extension doit être .pdf" }, { status:400 });
+    // extension
+    const fileData: string[] = file.name.toLowerCase().split('.');
+    const ext = fileData.pop();
+    if (ext !== 'pdf' && fileData.length !== 1) {
+        error(400, "L'extension doit être .pdf");
     }
-
-    // --- VERIFICATION 3 : Signature du Fichier ---
+    // signature
     // On convertit le fichier en buffer pour lire les premiers octets
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
-
     // Un PDF commence par %PDF (25 50 44 46 en ASCII/Hex)
     const signature = Array.from(uint8Array.slice(0, 4))
         .map(byte => byte.toString(16))
         .join('');
-    
-    if (signature !== '25504446') {
-        return json({ error: "Signature de fichier invalide : ce n'est pas un vrai PDF" }, { status: 400 });
-    }
 
+    if (signature !== '25504446') {
+        error(400, "Signature de fichier invalide : ce n'est pas un vrai PDF");
+    }
     // Si on arrive ici, le fichier est validé
     console.log(`Fichier validé : ${file.name} (${file.size} octets)`);
 
-    const title = data.get('title');
-    const type = data.get('type'); // "PARTIEL", "TD", etc.
+    // -- Verification des autres parametres --
+    const category = data.get('category') as string;
+    if (!category) {
+        error(400, "Catégorie du document manquante.");
+    }
+    const categoriesAccepted = ['partiel', 'fiche', 'td', 'autre', 'notes_de_cours', 'dm', 'tp', 'be', 'diapositives_de_cours'];
+    if (!categoriesAccepted.includes(category)) {
+        error(400, "Catégorie inconnue.");
+    }
     const school = data.get('school');
+    if (!school) {
+        error(400, "Ecole liée au document manquante.");
+    }
     const major = data.get('major');
-    const subject = data.get('subject');
-  
-    // Validation du type selon les critères
-    const validTypes = ['partiel', 'fiche', 'td', 'autre', 'notes de cours', 'dm', 'tp', 'be', 'diapositives de cours'];
-    if (!validTypes.includes(type as string)) {
-        return json({ error: 'Type de document invalide' }, { status: 400 });
+    if (!major) {
+        error(400, "Majeure liée au document manquante.");
+    }
+    const subject = data.get('subject') as string;
+    if (!subject) {
+        error(400, "Sujet lié au document manquant.");
+    }
+    const year = data.get('year') as string;
+    const regexYear = /^[1-9][0-9]{3}$/;  // vérif année de 1800 à 9999, évite les prbls de convertions
+    if (!year) {
+        error(400, "Année manquante.");
+    } else if (!regexYear.test(year)) {
+        error(400, "Mauvais format d'année (1800-9999).");
+    }
+    const fileNumber = data.get('number') as string;
+    const regexNumber = /^(100|[1-9]?[0-9])$/;  // vérif numéro de td/partiel/etc... de 0 à 100
+    if (!fileNumber) {
+        error(400, "Numéro manquant.");
+    } else if (!regexNumber.test(fileNumber)) {
+        error(400, "Mauvais format de numéro (0-100).");
+    }
+    const isCorrected = !!data.get('isCorrected') as Boolean;
+    let correction = '';
+    if (isCorrected) {
+        correction = "_corrige";
     }
 
-    if (!file) {
-        return json({ error: 'Aucun fichier reçu '}, { status : 400 });
-    }
-
-    const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo en octets
+    const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo en octets, 10 * 2^10 * 2^10
 
     if (file.size > MAX_SIZE) {
-        return json({ error: "Fichier trop lourd (max 10 Mo)" }, { status: 400 });
+        error(400, "Fichier trop lourd (max 10 Mo).");
     }
 
     // --- Définir le chemin de stockage ---
-    // On va créer un dossier 'storage' à la racine du projet pour ne pas mélanger avec le code
-    const storageDir = join(process.cwd(), 'static', 'uploads', school, major, subject, type);
+    const storageDir = join(process.cwd(), 'static/uploads', subject);
 
-    // Créer les dossiers récursivement s'ils n'existent pas
     if (!existsSync(storageDir)) {
-        mkdirSync(storageDir, { recursive : true })
+        error(400, "Chemin non existant.");
     }
 
-    // Nettoyer le nom du fichier pour éviter les problèmes d'espaces/d'accents
-    const fileName = `${file.name.replaceAll(' ', '_')}`;
-    const filePath = join(storageDir, fileName);
+    let fileName = `${category}_${fileNumber}_${year}${correction}.pdf`;
+
+    let filePath = join(storageDir, fileName);
+    let count = 1;
+    while (count < 100 && existsSync(filePath)) {
+        fileName = `${category}_${fileNumber}_${year}${correction}_${count}.pdf`;
+        filePath = join(storageDir, fileName);
+        count++;
+    }
+
+    if (count >= 100) {
+        error(400, "Trop de fichiers de la même catégorie et matière existants.")
+    }
 
     // --- ECRITURE DU FICHIER ---
     try {
         const buffer = Buffer.from(uint8Array);
+
         writeFileSync(filePath, buffer);
 
         console.log(`Fichier sauvegardé sous : ${filePath}`);
 
         return json({
-            success: true,
-            path: `/uploads/${school}/${major}/${subject}/${type}/${fileName}`, // URL Accessible
-            message: "Fichier sauvegardé avec succès"
+            success: true, message: "Fichier sauvegardé avec succès"
         });
     } catch (err) {
         console.error("Erreur d'écriture : ", err);
