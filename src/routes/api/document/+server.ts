@@ -91,7 +91,6 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 
     let fileName = `${category}_${fileNumber}_${year}${correction}.pdf`;
-
     let filePath = join(storageDir, fileName);
     let count = 1;
     while (count < 100 && existsSync(filePath)) {
