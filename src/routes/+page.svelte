@@ -4,8 +4,14 @@
         Button,
         Flex,
         Stack
-    } from "azucar-ui"
+    } from 'azucar-ui';
 
+    import {
+        House
+    } from '@lucide/svelte';
+
+
+    import FileStructure from '$lib/components/FileStructure.svelte'
 
 </script>
 
@@ -17,10 +23,7 @@
     </Stack>
 
     <Stack>
-        <h3>ENSEEIHT</h3>
-        <h4>SN</h4>
-        <h4>MFEE</h4>
-        <h4>E3A</h4>
+        <FileStructure/>
     </Stack>
 
 <div class="footer-container center">

@@ -22,4 +22,14 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-{@render children()}
+<div class="container">
+    {@render children()}
+</div>
+
+<style>
+    /* center container */
+    .container {
+        max-width: min(1000px, 100%);
+        margin: 0 auto;
+    }
+</style>
