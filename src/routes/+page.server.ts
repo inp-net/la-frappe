@@ -9,6 +9,6 @@ export const load: PageLoad = ({ params }) => {
 	};
 };
 
-export function get_child: string[] = ({ current : string }) => {
-
+export function get_child(current : string) {
+    return ""
 }
