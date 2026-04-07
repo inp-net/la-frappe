@@ -1,4 +1,6 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { join } from 'path';
 
 export const POST: RequestHandler = async ({ request }) => {
     const data = await request.formData();
@@ -52,10 +54,33 @@ export const POST: RequestHandler = async ({ request }) => {
         return json({ error: "Fichier trop lourd (max 10 Mo)" }, { status: 400 });
     }
 
-    console.log('Enregistrement du fichier ${file.name} pour la matière ${subjectId}');
+    // --- Définir le chemin de stockage ---
+    // On va créer un dossier 'storage' à la racine du projet pour ne pas mélanger avec le code
+    const storageDir = join(process.cwd(), 'static', 'uploads', subjectId, type);
 
-    return json({
-        message: 'Document ajouté !',
-        details: { title, type, fileName: file.name }
-    }, { status: 201 })
+    // Créer les dossiers récursivement s'ils n'existent pas
+    if (!existsSync(storageDir)) {
+        mkdirSync(storageDir, { recursive : true })
+    }
+
+    // Nettoyer le nom du fichier pour éviter les problèmes d'espaces/d'accents
+    const fileName = `${file.name.replaceAll(' ', '_')}`;
+    const filePath = join(storageDir, fileName);
+
+    // --- ECRITURE DU FICHIER ---
+    try {
+        const buffer = Buffer.from(uint8Array);
+        writeFileSync(filePath, buffer);
+
+        console.log(`Fichier sauvegardé sous : ${filePath}`);
+
+        return json({
+            success: true,
+            path: `/uploads/${subjectId}/${type}/${fileName}`, // URL Accessible
+            message: "Fichier sauvegardé avec succès"
+        });
+    } catch (err) {
+        console.error("Erreur d'écriture : ", err);
+        return json({ error: "Erreur lors de la sauvegarde sur le disque" }, { status: 500 });
+    }
 }
