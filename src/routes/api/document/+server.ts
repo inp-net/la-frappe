@@ -15,13 +15,13 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 	// header
 	if (file.type !== 'application/pdf') {
-		error(400, "Le header indique que ce n'est pas un PDF");
+		error(400, "Le fichier n'est pas un pdf.");
 	}
 	// extension
 	const fileData: string[] = file.name.toLowerCase().split('.');
 	const ext = fileData.pop();
 	if (ext !== 'pdf' && fileData.length !== 1) {
-		error(400, "L'extension doit être .pdf");
+		error(400, "Le fichier n'est pas un pdf");
 	}
 	// signature
 	// On convertit le fichier en buffer pour lire les premiers octets
@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		.join('');
 
 	if (signature !== '25504446') {
-		error(400, "Signature de fichier invalide : ce n'est pas un vrai PDF");
+		error(400, "Le fichier n'est pas un pdf.");
 	}
 	// Si on arrive ici, le fichier est validé
 	console.log(`Fichier validé : ${file.name} (${file.size} octets)`);
@@ -80,31 +80,32 @@ export const POST: RequestHandler = async ({ request }) => {
 	// --- Définir le chemin de stockage ---
 	const subjectDir = join(process.cwd(), 'static/uploads', subject);
 	if (!existsSync(subjectDir)) {
-		error(400, 'Chemin de la matiere non existant.');
+		error(400, 'Chemin de la matiere non existant. Verifier les informations ou demander à un admin (net7) de créer la matière.');
 	}
 
 	const metaPath = join(subjectDir, 'metadata.json');
 	// vérifier qu'il y a un fichier de metadata sinon le dossier du fichier n'apparaitra jamais dans la frappe
 	if (!existsSync(metaPath)) {
 		console.error(`Absence du fichier de metadata : ${metaPath}`);
-		error(400, 'Fichier de metadata non existant, contacte net7.');
+		error(500, "Fichier de metadata non existant, c'est pas normal contacte net7.");
 	}
 
 	let fileName = `${category}_${fileNumber}_${year}${correction}.pdf`;
 	const storageDir = join(subjectDir, category);
 	if (!existsSync(storageDir)) {
-		error(400, 'Chemin de la categorie non existant.');
+		error(400, 'Chemin de la categorie non existant. Verifier les informations ou demander à un admin (net7) de créer la catégorie.');
 	}
 	let filePath = join(storageDir, fileName);
 
 	let count = 1;
+	const maximum = 30
 	while (count < 100 && existsSync(filePath)) {
 		fileName = `${category}_${fileNumber}_${year}${correction}_${count}.pdf`;
 		filePath = join(storageDir, fileName);
 		count++;
 	}
 
-	if (count >= 100) {
+	if (count >= maximum) {
 		error(400, 'Trop de fichiers de la même catégorie et matière existants.');
 	}
 
@@ -115,11 +116,11 @@ export const POST: RequestHandler = async ({ request }) => {
 		console.log(`Fichier sauvegardé sous : ${filePath}`);
 	} catch (err) {
 		console.error(`Erreur d'écriture du fichier : ${filePath}\n`, err);
-		error(500, 'Erreur lors de la sauvegarde sur le disque');
+		error(500, 'Erreur lors de la sauvegarde sur le disque du serveur.');
 	}
 
 	return json({
 		success: true,
-		message: 'Fichier sauvegardé avec succès'
+		message: 'Fichier ajouté avec succès'
 	});
 };
