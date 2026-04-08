@@ -77,21 +77,8 @@ export const POST: RequestHandler = async ({ request }) => {
         correction = "_corrige";
     }
 
-<<<<<<< HEAD
     const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo en octets, 10 * 2^10 * 2^10
-=======
-    // TODO vérifier que l'extension du fichier est valide (pdf)
 
-    // TODO vérifier que l'extension du fichier est valide (pdf)
-
-    if (!file) {
-        return json({ error: 'Aucun fichier reçu '}, { status : 400 });
-    }
-
-    const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo en octets
->>>>>>> d3c7a87 (refactor: ajout TODO vérifier l'extension fichier)
-
-<<<<<<< HEAD
     if (file.size > MAX_SIZE) {
         error(400, "Fichier trop lourd (max 10 Mo).");
     }
@@ -131,13 +118,4 @@ export const POST: RequestHandler = async ({ request }) => {
         console.error("Erreur d'écriture : ", err);
         return json({ error: "Erreur lors de la sauvegarde sur le disque" }, { status: 500 });
     }
-=======
-    return json({
-        message: 'Document ajouté !',
-        details: { title, type, fileName: file.name }
-    }, { status: 201 })
-<<<<<<< HEAD
->>>>>>> 411d30c (refactor: ajout TODO vérifier l'extension fichier)
-=======
->>>>>>> dev_elena
 }
