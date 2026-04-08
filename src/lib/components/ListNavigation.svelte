@@ -18,6 +18,17 @@
         return '/' + segments.slice(0, -1).join('/');
     });
 
+    function getPathTo(index : number) {
+        const segments = (FOLDER.DEFAULT_PAGE_LOCATION + page.params.path || '').split('/').filter(Boolean);
+        // + 2 car on ajoute /browse/ en tant que source
+        const path = segments.slice(0, index + 2).join('/');
+        return `/${path}`;
+    }
+
+    function navigateRoot() {
+        return `/${FOLDER.DEFAULT_PAGE_LOCATION}`;
+    }
+
 </script>
 
 <Flex gap="lg" align="stretch"> <Frame style="display: flex; align-items: center;">
@@ -33,7 +44,9 @@
     <div id="full">
         <Frame style="height: 100%; display: flex; flex-grow: 3; align-items: center;">
             <Flex gap="xs" align="center">
-                <Button variant="ghost">
+                <Button variant="ghost"
+                    href={navigateRoot()}    
+                >
                     <h4>{SEPARATOR}</h4>
                 </Button>
 
@@ -42,7 +55,9 @@
                     <Box padding="xxs">
                     <ChevronRight size={16} style="align-content: center; display: flex; justify-content: center;"/>
                     </Box>
-                    <Button variant="ghost">
+                    <Button variant="ghost"
+                        href={getPathTo(index)}
+                    >
                         <h4>{folder}</h4>
                     </Button>
                 {/each}
