@@ -1,9 +1,4 @@
 <script lang="ts">
-    interface CurrentFile {
-        current?: string[];
-    }
-
-    // let { current = [] }: CurrentFile = $props();
 
     import { ChevronRight, ChevronLeft, Plus } from '@lucide/svelte';
     import { Button, Flex, Frame, Box } from 'azucar-ui';
@@ -32,7 +27,10 @@
                 </Button>
 
                 {#each current as folder, index}
-                    <Box padding="xxs"><ChevronRight size={16} /></Box>
+                    <!-- Pour l'espacement à droite à gauche -->
+                    <Box padding="xxs">
+                    <ChevronRight size={16} style="align-content: center; display: flex; justify-content: center;"/>
+                    </Box>
                     <Button variant="ghost">
                         <h4>{folder}</h4>
                     </Button>
