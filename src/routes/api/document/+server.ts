@@ -148,7 +148,6 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 	// Ajouter le nouveau chemin au fichier de metadata
 	metaData.paths.push(join(school, major, subject, fileName));
-    console.log(metaData);
 
 	try {
 		writeFileSync(metaPath, JSON.stringify(metaData, null, 4));
