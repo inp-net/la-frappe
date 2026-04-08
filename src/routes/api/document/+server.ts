@@ -82,6 +82,8 @@ export const POST: RequestHandler = async ({ request }) => {
 =======
     // TODO vérifier que l'extension du fichier est valide (pdf)
 
+    // TODO vérifier que l'extension du fichier est valide (pdf)
+
     if (!file) {
         return json({ error: 'Aucun fichier reçu '}, { status : 400 });
     }
@@ -134,5 +136,8 @@ export const POST: RequestHandler = async ({ request }) => {
         message: 'Document ajouté !',
         details: { title, type, fileName: file.name }
     }, { status: 201 })
+<<<<<<< HEAD
 >>>>>>> 411d30c (refactor: ajout TODO vérifier l'extension fichier)
+=======
+>>>>>>> dev_elena
 }
