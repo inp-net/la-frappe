@@ -60,7 +60,7 @@
             role="presentation"
         >La Frappe</h1>
         {#key funWord}
-            <h1 in:fly={{ y: 20, duration: 400 }}>
+            <h1 in:fly={{ y: 20, duration: 400 }} id="italic">
                 {funWord}
             </h1>
         {/key}
@@ -86,6 +86,10 @@
 </Flex>
 
 <style>
+
+    #italic {
+        font-style: italic;
+    }
 
     .footer-container {
         padding-bottom: 1rem;
