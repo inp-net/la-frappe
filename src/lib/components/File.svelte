@@ -30,8 +30,10 @@
     import { page } from '$app/state';
 
     let href = $derived(() => {
-        const currentPath = FOLDER.DEFAULT_PAGE_LOCATION + page.params.path || '';
-        return `/${currentPath}/${fileItem.name}`.replace(/\/+/g, '/'); 
+        if (fileItem.isDirectory) {
+            const currentPath = FOLDER.DEFAULT_PAGE_LOCATION + page.params.path || '';
+            return `/${currentPath}/${fileItem.name}`.replace(/\/+/g, '/'); 
+        }
     });
 
 </script>
@@ -47,9 +49,9 @@
     <Flex align="center">
         <Box padding="xs">
             {#if fileItem.isDirectory}
-                <File/>
-            {:else}
                 <Folder/>
+            {:else}
+                <File/>
             {/if}
         </Box>
         <h3>{fileItem.name}</h3>
