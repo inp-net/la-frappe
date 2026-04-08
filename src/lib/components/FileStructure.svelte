@@ -26,13 +26,13 @@
 
     <ListNavigation/>
     
-    <Flex direction="column" padding="md">
-    {#key current.join('/')}
-        {#each fileItems as file}
-            <File
-                fileItem={file}
-            />
-        {/each}
+    <Flex direction="column" padding="md" gap="xxs">
+        {#key current.join('/')}
+            {#each fileItems as file}
+                <File
+                    fileItem={file}
+                />
+            {/each}
         {/key}
     </Flex>
 
