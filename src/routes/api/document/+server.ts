@@ -80,7 +80,10 @@ export const POST: RequestHandler = async ({ request }) => {
 	// --- Définir le chemin de stockage ---
 	const subjectDir = join(process.cwd(), 'static/uploads', subject);
 	if (!existsSync(subjectDir)) {
-		error(400, 'Chemin de la matiere non existant. Verifier les informations ou demander à un admin (net7) de créer la matière.');
+		error(
+			400,
+			'Chemin de la matiere non existant. Verifier les informations ou demander à un admin (net7) de créer la matière.'
+		);
 	}
 
 	const metaPath = join(subjectDir, 'metadata.json');
@@ -93,12 +96,15 @@ export const POST: RequestHandler = async ({ request }) => {
 	let fileName = `${category}_${fileNumber}_${year}${correction}.pdf`;
 	const storageDir = join(subjectDir, category);
 	if (!existsSync(storageDir)) {
-		error(400, 'Chemin de la categorie non existant. Verifier les informations ou demander à un admin (net7) de créer la catégorie.');
+		error(
+			400,
+			'Chemin de la categorie non existant. Verifier les informations ou demander à un admin (net7) de créer la catégorie.'
+		);
 	}
 	let filePath = join(storageDir, fileName);
 
 	let count = 1;
-	const maximum = 30
+	const maximum = 30;
 	while (count < 100 && existsSync(filePath)) {
 		fileName = `${category}_${fileNumber}_${year}${correction}_${count}.pdf`;
 		filePath = join(storageDir, fileName);
@@ -119,8 +125,5 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(500, 'Erreur lors de la sauvegarde sur le disque du serveur.');
 	}
 
-	return json({
-		success: true,
-		message: 'Fichier ajouté avec succès'
-	});
+	return json({ message: 'Fichier ajouté avec succès' }, { status: 201 });
 };

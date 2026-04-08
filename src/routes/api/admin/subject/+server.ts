@@ -13,7 +13,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const storageDir = join(process.cwd(), 'static/uploads', subject);
 	if (existsSync(storageDir)) {
-		error(400, "La matière existe déjà.");
+		error(400, 'La matière existe déjà.');
 	}
 
 	try {
@@ -46,44 +46,42 @@ export const POST: RequestHandler = async ({ request }) => {
 	return json({ message: 'Matière créée avec succès ' }, { status: 201 });
 };
 
-
 // Permet de mettre à jour un matiere, crée le json s'il n'existe pas et les catégories s'il en manque
 export const PUT: RequestHandler = async ({ request }) => {
-    const data = await request.formData();
-    const subject = data.get('subject') as string;
-    if (!subject) {
-        error(400, 'Matiere manquante.');
-    }
+	const data = await request.formData();
+	const subject = data.get('subject') as string;
+	if (!subject) {
+		error(400, 'Matiere manquante.');
+	}
 
-    const storageDir = join(process.cwd(), 'static/uploads', subject);
-    if (!existsSync(storageDir)) {
-        error(400, "La matière n'existe pas.")
-    }
+	const storageDir = join(process.cwd(), 'static/uploads', subject);
+	if (!existsSync(storageDir)) {
+		error(400, "La matière n'existe pas.");
+	}
 
-    const filePath = join(storageDir, 'metadata.json');
-    if (!existsSync(filePath)) {
-        try {
-            const metaData = { paths: [] };
-            writeFileSync(filePath, JSON.stringify(metaData, null, 4));
-        } catch (err) {
-            console.error("Erreur d'écriture du fichier de metadata : ", err);
-            error(500, "Erreur lors de l'écriture du fichier metadata.");
-        }
-    }
+	const filePath = join(storageDir, 'metadata.json');
+	if (!existsSync(filePath)) {
+		try {
+			const metaData = { paths: [] };
+			writeFileSync(filePath, JSON.stringify(metaData, null, 4));
+		} catch (err) {
+			console.error("Erreur d'écriture du fichier de metadata : ", err);
+			error(500, "Erreur lors de l'écriture du fichier metadata.");
+		}
+	}
 
-    categoriesAccepted.forEach((category) => {
-        const categoryPath = join(storageDir, category);
-        if (!existsSync(categoryPath)) {
-            try {
-                mkdirSync(categoryPath);
-            } catch (err) {
-                console.error(`Erreur d'écriture de dossier de la categorie : ${categoryPath}\n`, err);
-                error(500, 'Erreur lors de la création de dossier de categorie.');
-            }
-        }
-    });
+	categoriesAccepted.forEach((category) => {
+		const categoryPath = join(storageDir, category);
+		if (!existsSync(categoryPath)) {
+			try {
+				mkdirSync(categoryPath);
+			} catch (err) {
+				console.error(`Erreur d'écriture de dossier de la categorie : ${categoryPath}\n`, err);
+				error(500, 'Erreur lors de la création de dossier de categorie.');
+			}
+		}
+	});
 
-    console.log(`Mise à jour de la matière ${subject}.`);
-    return json({ message: 'Matière mise à jour avec succès.'}, { status: 201 });
+	console.log(`Mise à jour de la matière ${subject}.`);
+	return json({ message: 'Matière mise à jour avec succès. Ne concerne pas les liens symboliques.' }, { status: 201 });
 };
-
