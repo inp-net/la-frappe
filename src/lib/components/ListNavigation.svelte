@@ -1,12 +1,13 @@
 <script lang="ts">
 
-    interface ListString {
-        folderNames: string[];
-    }
+    import type { HTMLAttributes } from 'svelte/elements';
 
-    let {
-        folderNames
-    } : ListString = $props();
+    interface CurrentFile {
+        current?: string[];
+    };
+
+    let { current = [] } : CurrentFile = $props();
+
 
     import {
         Folder,
@@ -36,11 +37,11 @@
     <div id="full">
         <Frame>
             <Flex gap="xs" align="center">
-                {#each folderNames as folder : string, index}
+                {#each current as folder : string, index}
                     <Button variant="ghost">
                         <h4>{folder}</h4>
                     </Button>
-                    {#if index < (folderNames.length-1)}
+                    {#if index < (current.length-1)}
                         <!-- Sorry -->
                         <Box padding="xxs"></Box>
                         <ChevronRight/>

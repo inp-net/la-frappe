@@ -14,7 +14,12 @@
 
     import File from "./File.svelte";
     
-    let folderNames = [ "ENSEEIHT", "SN", "1A" ]
+    interface Props {
+        folderNames?: string[];
+        current?:string[];
+    };
+
+    let { folderNames, current } : Props = $props();
 
 </script>
 
@@ -22,7 +27,7 @@
 <Flex direction="column" gap="md" padding="xs">
 
     <ListNavigation
-        {folderNames}
+        current={current}
     />
 
     <!-- <ButtonGroup>
@@ -42,11 +47,9 @@
 
     
     <Flex direction="column" padding="md">
-        <File name="TOB"/>
-        <!-- <File name="Partiel 1" isFile={true}/> -->
-        <File name="Calcul Scientifique"/>
-        <File name="Programmation impérative"/>
-        <File name="Réseaux"/>
+        {#each folderNames as folder}
+            <File name={folder}/>
+        {/each}
     </Flex>
 
 </Flex>
