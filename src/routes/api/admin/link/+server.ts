@@ -19,12 +19,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(400, 'Sujet lié au document manquant.');
 	}
 
-    const subjectDir = join(process.cwd(), 'static/uploads', subject);
-    if (!existsSync(subjectDir)) {
-        error(400, 'Chemin de la matiere non existant.');
-    }
-    const metaPath = join(subjectDir, 'metadata.json');
-    if (!existsSync(metaPath)) {
+	const subjectDir = join(process.cwd(), 'static/uploads', subject);
+	if (!existsSync(subjectDir)) {
+		error(400, 'Chemin de la matiere non existant.');
+	}
+	const metaPath = join(subjectDir, 'metadata.json');
+	if (!existsSync(metaPath)) {
 		console.error(`Absence du fichier de metadata : ${metaPath}`);
 		error(400, 'Fichier de metadata non existant.');
 	}
@@ -38,18 +38,21 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(500, 'Erreur lors de la lecture sur le disque.');
 	}
 
-	// Actualiser le fichier de metadata
+	// Verifier que le json de metadata ne contient pas deja ce chemin
+	const newPath = join(school, major);
+	if (metaData.paths.includes(newPath)) {
+		error(400, 'Le lien symbolique existe déjà.');
+	}
 
 	// Ajouter le nouveau chemin au fichier de metadata
-    // TODO : PERMETTRE DE METTRE PLEINS D'AUTRES CHOSES QUE JUSTE MATIERE ET ECOLE
-	metaData.paths.push(join(school, major));
+	// TODO : PERMETTRE DE METTRE PLEINS D'AUTRES CHOSES QUE JUSTE MATIERE ET ECOLE
+	metaData.paths.push(newPath);
 
 	// vérif inutile ?
 	if (!metaData) {
 		error(500, 'Metadonnee absente ou vide.');
 	}
 
-    // TODO : EMPECHER D'ECRIRE UNE DEUXIEME FOIS LE CHEMIN S'IL EXISTE DEJA
 	try {
 		writeFileSync(metaPath, JSON.stringify(metaData, null, 4));
 	} catch (err) {
@@ -57,8 +60,5 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(500, 'Erreur lors de la sauvegarde sur le disque.');
 	}
 
-	return json({
-		success: true,
-		message: 'Fichier actualisé avec succès'
-	});
+	return json({ message: 'Fichier actualisé avec succès' }, { status: 201 });
 };
