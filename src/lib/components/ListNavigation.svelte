@@ -1,5 +1,6 @@
 <script lang="ts">
 
+    import { FOLDER } from '$lib/constants/index';
     import { ChevronRight, ChevronLeft, Plus } from '@lucide/svelte';
     import { Button, Flex, Frame, Box } from 'azucar-ui';
     
@@ -9,13 +10,23 @@
 
     let current = $derived(page.params.path?.split('/').filter(Boolean) ?? []);
 
+    let navigateBack = $derived(() => {
+        const segments = (FOLDER.DEFAULT_PAGE_LOCATION + page.params.path || '').split('/').filter(Boolean);
+        
+        if (segments.length <= 1) return FOLDER.DEFAULT_PAGE_LOCATION;
+        
+        return '/' + segments.slice(0, -1).join('/');
+    });
+
 </script>
 
 <Flex gap="lg" align="stretch"> <Frame style="display: flex; align-items: center;">
         <Flex gap="md" align="center">
-            <Button icon={ChevronLeft} variant="ghost" name="Back" />
-            <div id="bar"></div>
-            <Button icon={ChevronRight} variant="ghost" name="Forward" />
+            <Button icon={ChevronLeft} variant="ghost"
+                href={navigateBack()}
+            />
+            <!-- <div id="bar"></div> -->
+            <!-- <Button icon={ChevronRight} variant="ghost" name="Forward" /> -->
         </Flex>
     </Frame>
 

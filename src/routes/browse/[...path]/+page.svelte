@@ -14,7 +14,6 @@
     import FileStructure from '$lib/components/FileStructure.svelte'
     import { fly } from 'svelte/transition'
     import type { PageData } from './$types';
-    import type { FileItem } from '$lib/store/types';
 
     let funWords = [
         "atomique 🤯",
