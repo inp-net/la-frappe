@@ -1,11 +1,13 @@
 <script lang="ts">
 
+    import { FOLDER } from '$lib/constants/index';
     import type { HTMLAttributes } from 'svelte/elements';
 
     import {
         Flex,
         Frame,
-        Box
+        Box,
+        Button
     } from "azucar-ui"
 
     import {
@@ -13,35 +15,44 @@
         File
     } from '@lucide/svelte';
 
-    type Props = HTMLAttributes<HTMLElement> & {
-        name?: string;
-        isFile?: boolean;
-    };
-
-    let {
-        name = "salut",
-        isFile = false
-    } : Props = $props()
+    import type { FileItem } from '$lib/store/types';
 
     let isHovered = $state(false);
 
+    type Props = HTMLAttributes<HTMLElement> & {
+        fileItem: FileItem;
+    };
+
+    let {
+        fileItem
+    } : Props = $props();
+
+    import { page } from '$app/state';
+
+    let href = $derived(() => {
+        const currentPath = FOLDER.DEFAULT_PAGE_LOCATION + page.params.path || '';
+        return `/${currentPath}/${fileItem.name}`.replace(/\/+/g, '/'); 
+    });
+
 </script>
 
-<div 
+
+<Button
+    href={href()}
+    variant="ghost"
     onmouseenter={() => isHovered = true} 
     onmouseleave={() => isHovered = false}
-    role="none"
 >
-<Frame transparent={false} border={isHovered} shadow={isHovered}>
+<Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1">
     <Flex align="center">
         <Box padding="xs">
-            {#if isFile}
+            {#if fileItem.isDirectory}
                 <File/>
             {:else}
                 <Folder/>
             {/if}
         </Box>
-        <h3>{name}</h3>
+        <h3>{fileItem.name}</h3>
     </Flex>
 </Frame>
-</div>
+</Button>

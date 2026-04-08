@@ -7,13 +7,14 @@
     } from 'azucar-ui';
 
     import {
-	Folders,
+        Folders,
         Heart
     } from '@lucide/svelte';
 
     import FileStructure from '$lib/components/FileStructure.svelte'
     import { fly } from 'svelte/transition'
     import type { PageData } from './$types';
+    import type { FileItem } from '$lib/store/types';
 
     let funWords = [
         "atomique 🤯",
@@ -46,9 +47,7 @@
     }
 
     let items = $derived(data.items as FileItem[]);
-    const names = $derived<string[]>(items.map(item => item.name));
     const currentPath = data.currentPath.split("/");
-    console.log(names);
 
 </script>
 
@@ -70,33 +69,37 @@
 
     <Stack>
         <FileStructure
-            folderNames={names}
+            fileItems={data.items}
             current={currentPath}
         />
     </Stack>
 
-<div class="footer-container center">
-    <Flex align="center">
+<footer class="footer-container">
+    <Flex align="center" justify="center" gap="md">
         <p>Made with Svelte</p>
-        <Button icon={Heart} class="danger" name="Delete"/>
+        <Button icon={Heart} class="danger-text" name="Delete" />
         <p>Azucar-UI</p>
     </Flex>
-</div>
+</footer>
 
 </Flex>
 
 <style>
 
-    #italic {
-        font-style: italic;
+    .footer-container {
+        position: fixed;
+        bottom: 10px;
+        left: 0;
+        width: 100%;
+        z-index: 10;
     }
 
-    .footer-container {
-        padding-bottom: 1rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        align-content: center;
+    :global(.danger-text) {
+        color: var(--color-error);
+    }
+
+    #italic {
+        font-style: italic;
     }
 
 </style>

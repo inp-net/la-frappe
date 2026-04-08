@@ -8,27 +8,32 @@
     } from "azucar-ui"
 
     import File from "./File.svelte";
-    
+
+    import type { FileItem } from '$lib/store/types';
+
     interface Props {
-        folderNames?: string[];
-        current?:string[];
+        fileItems?: FileItem[];
+        isFolders?: boolean[];
+        current?: string[]; 
     };
 
-    let { folderNames, current } : Props = $props();
+    let { fileItems, current = $bindable([]) }: Props = $props();
 
 </script>
 
 <Box>
 <Flex direction="column" gap="md" padding="xs">
 
-    <ListNavigation
-        current={current}
-    />
+    <ListNavigation/>
     
     <Flex direction="column" padding="md">
-        {#each folderNames as folder}
-            <File name={folder}/>
+    {#key current.join('/')}
+        {#each fileItems as file}
+            <File
+                fileItem={file}
+            />
         {/each}
+        {/key}
     </Flex>
 
 </Flex>
