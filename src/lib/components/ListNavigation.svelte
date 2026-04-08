@@ -1,7 +1,5 @@
 <script lang="ts">
 
-    import type { HTMLAttributes } from 'svelte/elements';
-
     interface CurrentFile {
         current?: string[];
     };
@@ -10,7 +8,6 @@
 
 
     import {
-        Folder,
         ChevronRight,
         ChevronLeft,
         Plus
@@ -19,7 +16,6 @@
     import {
         Button,
         Flex,
-        Stack,
         Frame,
         Box
     } from 'azucar-ui';
@@ -29,14 +25,15 @@
 <Flex gap="lg" align="center">
     <Frame>
         <Flex gap="md">
-            <ChevronLeft/>
+            <Button icon={ChevronLeft} variant="ghost" name="Move" />
             <div id="bar"></div>
-            <ChevronRight/>
+            <Button icon={ChevronRight} variant="ghost" name="Move" />
         </Flex>
     </Frame>
     <div id="full">
         <Frame>
             <Flex gap="xs" align="center">
+                <h4>/</h4>
                 {#each current as folder : string, index}
                     <Button variant="ghost">
                         <h4>{folder}</h4>
@@ -53,7 +50,7 @@
     </div>
     <Frame>
         <Flex>
-            <Plus/>
+            <Button icon={Plus} variant="ghost" name="Move" />
         </Flex>
     </Frame>
 </Flex>
