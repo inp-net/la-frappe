@@ -22,8 +22,8 @@
 
 </script>
 
-<Flex gap="lg" align="center">
-    <Frame>
+<Flex gap="lg">
+    <Frame style="align-content: center;">
         <Flex gap="md">
             <Button icon={ChevronLeft} variant="ghost" name="Move" />
             <div id="bar"></div>
@@ -33,7 +33,6 @@
     <div id="full">
         <Frame>
             <Flex gap="xs" align="center">
-                <h4>/</h4>
                 {#each current as folder : string, index}
                     <Button variant="ghost">
                         <h4>{folder}</h4>
@@ -48,14 +47,22 @@
             </Flex>
         </Frame>
     </div>
-    <Frame>
-        <Flex>
+    <Frame style="align-content: center;">
+        <Flex align="center">
             <Button icon={Plus} variant="ghost" name="Move" />
         </Flex>
     </Frame>
 </Flex>
 
 <style>
+
+    h4 {
+        min-height: var(--size-lg);
+    }
+    
+    .height-fix {
+        height: var(--size-lg);
+    }
 
     #bar {
         width: 1px;
@@ -64,10 +71,6 @@
 
     #full {
         flex-grow: 3;
-    }
-
-    #folder-button {
-        font-weight: bold;
     }
     
 </style>
