@@ -1,5 +1,6 @@
+import { categoriesAccepted } from '$lib/store/filtre';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
-import { writeFileSync, existsSync, readFileSync } from 'fs';
+import { writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 // ça fait peur mais c'est assez simple, me demander si besoin alexandre à net7
@@ -41,27 +42,9 @@ export const POST: RequestHandler = async ({ request }) => {
 	if (!category) {
 		error(400, 'Catégorie du document manquante.');
 	}
-	const categoriesAccepted = [
-		'partiel',
-		'fiche',
-		'td',
-		'autre',
-		'notes_de_cours',
-		'dm',
-		'tp',
-		'be',
-		'diapositives_de_cours'
-	];
+
 	if (!categoriesAccepted.includes(category)) {
 		error(400, 'Catégorie inconnue.');
-	}
-	const school = data.get('school') as string;
-	if (!school) {
-		error(400, 'Ecole liée au document manquante.');
-	}
-	const major = data.get('major') as string;
-	if (!major) {
-		error(400, 'Majeure liée au document manquante.');
 	}
 	const subject = data.get('subject') as string;
 	if (!subject) {
@@ -94,19 +77,25 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	// --- Définir le chemin de stockage ---
-	const storageDir = join(process.cwd(), 'static/uploads', subject);
-
-	if (!existsSync(storageDir)) {
-		error(400, 'Chemin non existant.');
+	const subjectDir = join(process.cwd(), 'static/uploads', subject);
+	if (!existsSync(subjectDir)) {
+		error(400, 'Chemin de la matiere non existant.');
 	}
 
-	const metaPath = join(storageDir, 'metadata.json');
+	const metaPath = join(subjectDir, 'metadata.json');
+	// vérifier qu'il y a un fichier de metadata sinon le dossier du fichier n'apparaitra jamais dans la frappe
 	if (!existsSync(metaPath)) {
-		error(400, 'Fichier de metadata non existant.');
+		console.error(`Absence du fichier de metadata : ${metaPath}`);
+		error(400, 'Fichier de metadata non existant, contacte net7.');
 	}
 
 	let fileName = `${category}_${fileNumber}_${year}${correction}.pdf`;
+	const storageDir = join(subjectDir, category);
+	if (!existsSync(storageDir)) {
+		error(400, 'Chemin de la categorie non existant.');
+	}
 	let filePath = join(storageDir, fileName);
+
 	let count = 1;
 	while (count < 100 && existsSync(filePath)) {
 		fileName = `${category}_${fileNumber}_${year}${correction}_${count}.pdf`;
@@ -118,42 +107,14 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(400, 'Trop de fichiers de la même catégorie et matière existants.');
 	}
 
-
-	// Lire le fichier json de metadata
-	let metaData;
-	try {
-		metaData = JSON.parse(readFileSync(metaPath, 'utf-8'));
-	} catch (err) {
-		console.error(`Erreur de lecture d'un fichier de metadata : ${metaPath}\n`, err);
-		error(500, 'Erreur lors de la lecture sur le disque.');
-	}
-
-    // Ecriture du pdf
+	// Ecriture du pdf
 	try {
 		const buffer = Buffer.from(uint8Array);
-
 		writeFileSync(filePath, buffer);
-
 		console.log(`Fichier sauvegardé sous : ${filePath}`);
 	} catch (err) {
 		console.error(`Erreur d'écriture du fichier : ${filePath}\n`, err);
 		error(500, 'Erreur lors de la sauvegarde sur le disque');
-	}
-
-    // Actualiser le fichier de metadata
-
-    // vérif inutile ?
-	if (!metaData) {
-		error(500, 'Metadonnees absente ou vide.');
-	}
-	// Ajouter le nouveau chemin au fichier de metadata
-	metaData.paths.push(join(school, major, subject, fileName));
-
-	try {
-		writeFileSync(metaPath, JSON.stringify(metaData, null, 4));
-	} catch (err) {
-		console.error(`Erreur d'écriture d'un fichier de metadata : ${metaPath}\n`, err);
-		error(500, 'Erreur lors de la sauvegarde sur le disque.');
 	}
 
 	return json({
