@@ -2,7 +2,7 @@ import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-// ça fait peur mais c'est assez simple, me demander si besoin alexandre à net7
+// permet d'ajouter dans les paths les ecole/filiere etc... qui utilisent cette matiere
 export const POST: RequestHandler = async ({ request }) => {
 	const data = await request.formData();
 

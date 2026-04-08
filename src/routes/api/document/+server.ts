@@ -3,6 +3,7 @@ import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
+// permet d'upload un pdf dans une categorie d'une matiere deja existente
 // ça fait peur mais c'est assez simple, me demander si besoin alexandre à net7
 export const POST: RequestHandler = async ({ request }) => {
 	const data = await request.formData();
