@@ -28,7 +28,24 @@
         "caféinée ☕",
         "au clavier ⌨️",
         "éclair ⚡",
-        "monétaire 🤑"
+        "monétaire 🤑",
+        "à Mohamed Ali 🥊",
+        "critique 💥",
+        "en 4K 📺",
+        "cheatée 🎮",
+        "pimentée 🌶️",
+        "pur beurre 🥐",
+        "du chef 👨‍🍳",
+        "en pièce jointe 📎",
+        "urgentissime 🚨",
+        "existentielle 🧠",
+        "préhistorique 🦴",
+        "historique 📔",
+        "de la babouche 🩴💥",
+        "open-source 🔓",
+        "chirurgicale 🩺",
+        "balistique 🚀",
+        "assourdissante 🔊",
     ];
 
     let funWord = $state("");
