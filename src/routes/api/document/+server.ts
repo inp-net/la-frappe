@@ -43,13 +43,15 @@ export const POST: RequestHandler = async ({ request }) => {
 	if (!category) {
 		error(400, 'Catégorie du document manquante.');
 	}
-
 	if (!categoriesAccepted.includes(category)) {
 		error(400, 'Catégorie inconnue.');
 	}
 	const subject = data.get('subject') as string;
 	if (!subject) {
 		error(400, 'Sujet lié au document manquant.');
+	}
+	if (subject.length > 100) {
+		error(400, 'Le nom de la matière ne doit pas dépasser 100 caractères.');
 	}
 	const year = data.get('year') as string;
 	const regexYear = /^[1-9][0-9]{3}$/; // vérif année de 1800 à 9999, évite les prbls de convertions

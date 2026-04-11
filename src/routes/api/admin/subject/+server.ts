@@ -11,6 +11,10 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(400, 'Matiere manquante.');
 	}
 
+	if (subject.length > 100) {
+		error(400, 'Le nom de la matière ne doit pas dépasser 100 caractères.');
+	}
+
 	const storageDir = join(process.cwd(), 'static/uploads', subject);
 	if (existsSync(storageDir)) {
 		error(400, 'La matière existe déjà.');

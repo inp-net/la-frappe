@@ -1,10 +1,12 @@
-import { readFileSync, mkdirSync, existsSync, symlinkSync, readdirSync, lstatSync, rmSync, read } from 'fs';
+// peut se lancer avec node <nomdufichier>
+
+import { readFileSync, mkdirSync, existsSync, symlinkSync, readdirSync, lstatSync, rmSync } from 'fs';
 import { join, resolve } from 'path';
 
 const UPLOADS_ROOT = resolve('static/uploads');
-const DIST_ROOT = resolve('/static/frappe_tree'); // Le dossier de sortie
+const DIST_ROOT = resolve('static/frappe_tree'); // Le dossier de sortie
 
-async function generateHierarchy() {
+function generateHierarchy() {
     console.log("Début de la génération de l'arborescence...");
 
     // Nettoyage du dossier de sortie pour repartir à neuf
@@ -14,6 +16,7 @@ async function generateHierarchy() {
     mkdirSync(DIST_ROOT, { recursive: true });
 
     // Parcourir chaque dossier de matière dans static/uploads
+    // Est-ce qu'on peut faire un ls ???
     const subjects = readdirSync(UPLOADS_ROOT).filter(f =>
         lstatSync(join(UPLOADS_ROOT, f)).isDirectory()
     );
@@ -37,9 +40,7 @@ async function generateHierarchy() {
 
                 // Créer un lien symbolique vers le dossier de la matière
                 const linkName = join(targetDir, subject);
-
                 if (!existsSync(linkName)) {
-                    // On crée un lien symbolique : le dossier virtuel pointe vers le dossier réel
                     symlinkSync(subjectPath, linkName, 'dir');
                     console.log(` Link créé : ${virtualPath} -> ${subject}`);
                 }

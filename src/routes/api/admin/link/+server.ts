@@ -19,6 +19,10 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(400, 'Sujet lié au document manquant.');
 	}
 
+	if (subject.length > 100 || major.length > 100 || school.length > 100) {
+		error(400, 'Les informations ne doivent pas dépasser 100 caractères chacune.');
+	}
+
 	const subjectDir = join(process.cwd(), 'static/uploads', subject);
 	if (!existsSync(subjectDir)) {
 		error(400, 'Chemin de la matiere non existant.');
