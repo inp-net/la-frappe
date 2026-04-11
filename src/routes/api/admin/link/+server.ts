@@ -1,6 +1,6 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync, readFileSync } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
 // permet d'ajouter dans les paths les ecole/filiere etc... qui utilisent cette matiere
 export const POST: RequestHandler = async ({ request }) => {
@@ -23,7 +23,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(400, 'Les informations ne doivent pas dépasser 100 caractères chacune.');
 	}
 
-	const subjectDir = join(process.cwd(), 'static/uploads', subject);
+	const subjectDir = join(resolve('static/uploads'), subject);
 	if (!existsSync(subjectDir)) {
 		error(400, 'Chemin de la matiere non existant.');
 	}

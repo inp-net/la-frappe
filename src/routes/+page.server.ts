@@ -1,9 +1,9 @@
 import { readdirSync, statSync, existsSync } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import type { PageServerLoad } from "./$types";
 
 export function get_child(relativePath: string) {
-    const baseDir = join(process.cwd(), 'static/uploads', relativePath);
+    const baseDir = join(resolve('static/frappe_tree'), relativePath);
 
     if (!existsSync(baseDir)) {
         return { folders: [], files: [] };
@@ -28,7 +28,7 @@ export function get_child(relativePath: string) {
 
 export const load: PageServerLoad = async ({ params }) => {
     const currentPath = params.path || ""; 
-    const baseDir = join(process.cwd(), 'static/uploads', currentPath);
+    const baseDir = join(resolve('static/frappe_tree'), currentPath);
 
     if (!existsSync(baseDir)) {
         return { folders: [], files: [], currentPath };

@@ -1,7 +1,7 @@
 import { categoriesAccepted } from '$lib/store/filtre';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 // Permet de créer un dossier avec un json de metadata et les categories pour une matiere dans le dossier flat d'upload
 export const POST: RequestHandler = async ({ request }) => {
@@ -15,7 +15,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(400, 'Le nom de la matière ne doit pas dépasser 100 caractères.');
 	}
 
-	const storageDir = join(process.cwd(), 'static/uploads', subject);
+	const storageDir = join(resolve('static/uploads'), subject);
 	if (existsSync(storageDir)) {
 		error(400, 'La matière existe déjà.');
 	}
@@ -58,7 +58,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 		error(400, 'Matiere manquante.');
 	}
 
-	const storageDir = join(process.cwd(), 'static/uploads', subject);
+	const storageDir = join(resolve('static/uploads'), subject);
 	if (!existsSync(storageDir)) {
 		error(400, "La matière n'existe pas.");
 	}

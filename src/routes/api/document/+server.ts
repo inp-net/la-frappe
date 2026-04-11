@@ -1,7 +1,7 @@
 import { categoriesAccepted } from '$lib/store/filtre';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
 // permet d'upload un pdf dans une categorie d'une matiere deja existente
 // ça fait peur mais c'est assez simple, me demander si besoin alexandre à net7
@@ -80,7 +80,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	// --- Définir le chemin de stockage ---
-	const subjectDir = join(process.cwd(), 'static/uploads', subject);
+	const subjectDir = join(resolve('static/uploads'), subject);
 	if (!existsSync(subjectDir)) {
 		error(
 			400,
