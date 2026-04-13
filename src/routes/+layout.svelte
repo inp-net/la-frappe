@@ -13,7 +13,7 @@
     } from 'azucar-ui'
 
     const dark_l = 0.62;
-    const dark_c = 0.256;
+    const dark_c = 0.556;
     const dark_h = 360;
 
     const white_l = 0.62;
