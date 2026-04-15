@@ -60,7 +60,7 @@
             </Flex>
             <Flex gap="xs" style="flex-grow: 1" justify='right'>
                 <Button variant="outline" href={FOLDER.DEFAULT_PAGE_LOCATION}>Quitter</Button>
-                <Button class="success" name="Success">Valider</Button>
+                <Button class="success" name="Success">Ajouter</Button>
             </Flex>
         </Flex>
         </Frame>
