@@ -17,7 +17,11 @@
         current?: string[]; 
     };
 
-    let { fileItems, current = $bindable([]) }: Props = $props();
+    let { fileItems = [], current = $bindable([]) }: Props = $props();
+
+    let filteredFiles = $derived(
+        fileItems.filter(file => file.name !== 'metadata.json')
+    );
 
 </script>
 
@@ -28,7 +32,7 @@
     
     <Flex direction="column" padding="md" gap="xxs">
         {#key current.join('/')}
-            {#each fileItems as file}
+            {#each filteredFiles as file}
                 <File
                     fileItem={file}
                 />
