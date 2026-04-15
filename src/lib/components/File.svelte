@@ -29,18 +29,27 @@
 
     import { page } from '$app/state';
 
-    let href = $derived(() => {
-        if (fileItem.isDirectory) {
-            const currentPath = FOLDER.DEFAULT_PAGE_LOCATION + page.params.path || '';
-            return `/${currentPath}/${fileItem.name}`.replace(/\/+/g, '/'); 
-        }
-    });
+    /** Position relative du fichier dans la navigation. */
+    let realPath = $derived(
+        `/${page.params.path || ''}/${fileItem.name}`.replace(/\/+/g, '/')
+    );
+
+    /** Position réel du fichier dans le server. */
+    let filePath = $derived(
+        `/${FOLDER.DEFAULT_DB_LOCATION}${realPath}`.replace(/\/+/g, '/')
+    );
+
+    /** Position de la page pour naviger dans la DB. */
+    let href = $derived(
+        `/${FOLDER.DEFAULT_PAGE_LOCATION}${realPath}`.replace(/\/+/g, '/')
+    );
 
 </script>
 
 
 <Button
-    href={href()}
+    href={fileItem.isDirectory ? href : filePath}
+    target={fileItem.isDirectory ? '' : '_blank'}
     variant="ghost"
     onmouseenter={() => isHovered = true} 
     onmouseleave={() => isHovered = false}
