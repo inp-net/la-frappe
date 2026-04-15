@@ -5,11 +5,13 @@
 
     import {
         Sun,
-        Moon
+        Moon,
+        Heart
     } from '@lucide/svelte';
 
     import {
-        Button
+        Button,
+        Flex
     } from 'azucar-ui'
 
     const dark_l = 0.62;
@@ -54,6 +56,13 @@
         />
     </div>
     {@render children()}
+    <footer class="footer-container">
+        <Flex align="center" justify="center" gap="md">
+            <p>Made with Svelte</p>
+            <Button icon={Heart} class="danger-text" name="Delete" />
+            <p>Azucar-UI</p>
+        </Flex>
+    </footer>
 </div>
 
 <style>
@@ -68,6 +77,14 @@
         top: 20px;
         display: flex;
         justify-content: right;
+    }
+
+    .footer-container {
+        position: fixed;
+        bottom: 10px;
+        left: 0;
+        width: 100%;
+        z-index: 10;
     }
 
 </style>
