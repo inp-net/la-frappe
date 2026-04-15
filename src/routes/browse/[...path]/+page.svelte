@@ -5,11 +5,6 @@
         Stack
     } from 'azucar-ui';
 
-    import {
-        Folders,
-        Heart
-    } from '@lucide/svelte';
-
     import FileStructure from '$lib/components/FileStructure.svelte'
     import { fly } from 'svelte/transition'
     import type { PageData } from './$types';

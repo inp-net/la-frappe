@@ -32,7 +32,7 @@
         <Frame>
         <Flex gap="md" direction="column">
             <Flex gap="md" align="center">
-                <span>Ajouter le fichier :</span>
+                <span>Ajouter un fichier :</span>
                 <Flex gap="xs" align="center">
                     <Button variant="outline" icon={Paperclip}>Ouvrir</Button>
                     <span>Nom_Fichier.pdf</span>
