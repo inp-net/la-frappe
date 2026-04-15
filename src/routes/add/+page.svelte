@@ -13,7 +13,8 @@
 
     import {
         SearchIcon,
-        Paperclip
+        Paperclip,
+        Check
     } from '@lucide/svelte';
 
 </script>
@@ -33,7 +34,7 @@
             <Flex gap="md" align="center">
                 <span>Ajouter le fichier :</span>
                 <Flex gap="xs" align="center">
-                    <Button variant="outline" icon={Paperclip}>Ajouter</Button>
+                    <Button variant="outline" icon={Paperclip}>Ouvrir</Button>
                     <span>Nom_Fichier.pdf</span>
                 </Flex>
             </Flex>
@@ -44,7 +45,7 @@
                 <Flex gap="md" wrap={true} style="flex-grow: 1">
                     <TextInput type="search" icon={SearchIcon} placeholder="ENSEEIHT, ...">École</TextInput>
                     <TextInput type="search" icon={SearchIcon} placeholder="SN, ...">Filiaire</TextInput>
-                    <Flex direction="column" gap="xs">
+                    <Flex direction="column" gap="xxs">
                         <span>Année</span>
                         <ButtonGroup>
                             <Button>1A</Button>
@@ -59,8 +60,8 @@
                 </Flex>
             </Flex>
             <Flex gap="xs" style="flex-grow: 1" justify='right'>
-                <Button variant="outline" href={FOLDER.DEFAULT_PAGE_LOCATION}>Quitter</Button>
-                <Button class="success" name="Success">Ajouter</Button>
+                <Button variant="outline" href={FOLDER.DEFAULT_PAGE_LOCATION}>Annuler</Button>
+                <Button icon={Check} class="success" name="Success">Ajouter</Button>
             </Flex>
         </Flex>
         </Frame>
