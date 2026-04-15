@@ -1,7 +1,6 @@
 <script lang="ts">
 
     import {
-        Button,
         Flex,
         Stack
     } from 'azucar-ui';
@@ -80,7 +79,7 @@
             </h1>
         {/key}
         </Flex>
-        <p>Sauve tes partielles.</p>
+        <p>Sauve tes partiels.</p>
     </Stack>
 
     <Stack>
@@ -89,26 +88,9 @@
             current={currentPath}
         />
     </Stack>
-
-<footer class="footer-container">
-    <Flex align="center" justify="center" gap="md">
-        <p>Made with Svelte</p>
-        <Button icon={Heart} class="danger-text" name="Delete" />
-        <p>Azucar-UI</p>
-    </Flex>
-</footer>
-
 </Flex>
 
 <style>
-
-    .footer-container {
-        position: fixed;
-        bottom: 10px;
-        left: 0;
-        width: 100%;
-        z-index: 10;
-    }
 
     :global(.danger-text) {
         color: var(--color-error);
