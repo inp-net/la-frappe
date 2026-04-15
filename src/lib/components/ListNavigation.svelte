@@ -71,7 +71,11 @@
 
     <Frame style="display: flex; align-items: center;">
         <Flex align="center">
-            <Button icon={Plus} variant="ghost" name="Add" />
+            <Button 
+                icon={Plus} 
+                variant="ghost" 
+                href='/add'
+            />
         </Flex>
     </Frame>
 </Flex>
