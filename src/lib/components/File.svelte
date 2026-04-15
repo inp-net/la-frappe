@@ -68,3 +68,11 @@
     </Flex>
 </Frame>
 </Button>
+
+<style>
+
+    h3 {
+        text-transform: capitalize;
+    }
+
+</style>

@@ -82,6 +82,7 @@
         line-height: var(--size-lg);
         display: flex;
         align-items: center;
+        text-transform: capitalize;
     }
 
     .ghost-spacer {
