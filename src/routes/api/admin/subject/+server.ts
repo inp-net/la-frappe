@@ -3,25 +3,34 @@ import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
+// Utilitaire pour normaliser le nom de la matière
+const normalize = (s: string) => s.trim().toLowerCase().replace(/\s+/g, '_');
+
 // Permet de créer un dossier avec un json de metadata et les categories pour une matiere dans le dossier flat d'upload
 export const POST: RequestHandler = async ({ request }) => {
 	const data = await request.formData();
-	const subject = data.get('subject') as string;
-	if (!subject) {
+	const rawSubject = data.get('subject') as string;
+
+	if (!rawSubject) {
 		error(400, 'Matiere manquante.');
 	}
+
+	const subject = normalize(rawSubject); // Normalisation du nom
 
 	if (subject.length > 100) {
 		error(400, 'Le nom de la matière ne doit pas dépasser 100 caractères.');
 	}
 
 	const storageDir = join(resolve('static/uploads'), subject);
+
+	// vérification d'unicité stricte
 	if (existsSync(storageDir)) {
-		error(400, 'La matière existe déjà.');
+		error(409, `La matière "${subject}" existe déjà`);
 	}
 
 	try {
 		mkdirSync(storageDir, { recursive: true });
+		
 	} catch (err) {
 		console.error(`Erreur d'écriture de dossier de la matière : ${storageDir}\n`, err);
 		error(500, 'Erreur lors de la création de dossier.');
@@ -53,11 +62,12 @@ export const POST: RequestHandler = async ({ request }) => {
 // Permet de mettre à jour un matiere, crée le json s'il n'existe pas et les catégories s'il en manque
 export const PUT: RequestHandler = async ({ request }) => {
 	const data = await request.formData();
-	const subject = data.get('subject') as string;
-	if (!subject) {
+	const rawSubject = data.get('subject') as string;
+	if (!rawSubject) {
 		error(400, 'Matiere manquante.');
 	}
 
+	const subject = normalize(rawSubject);
 	const storageDir = join(resolve('static/uploads'), subject);
 	if (!existsSync(storageDir)) {
 		error(400, "La matière n'existe pas.");
