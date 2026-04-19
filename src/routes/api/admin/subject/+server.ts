@@ -1,4 +1,4 @@
-import { categoriesAccepted } from '$lib/store/filtre';
+import { categoriesAccepted, normalize } from '$lib/tools/filtre';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -6,18 +6,23 @@ import { join, resolve } from 'node:path';
 // Permet de créer un dossier avec un json de metadata et les categories pour une matiere dans le dossier flat d'upload
 export const POST: RequestHandler = async ({ request }) => {
 	const data = await request.formData();
-	const subject = data.get('subject') as string;
-	if (!subject) {
+	const rawSubject = data.get('subject') as string;
+
+	if (!rawSubject) {
 		error(400, 'Matiere manquante.');
 	}
+
+	const subject = normalize(rawSubject); // Normalisation du nom
 
 	if (subject.length > 100) {
 		error(400, 'Le nom de la matière ne doit pas dépasser 100 caractères.');
 	}
 
 	const storageDir = join(resolve('static/uploads'), subject);
+
+	// vérification d'unicité stricte
 	if (existsSync(storageDir)) {
-		error(400, 'La matière existe déjà.');
+		error(409, `La matière "${subject}" existe déjà`);
 	}
 
 	try {
@@ -29,7 +34,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const filePath = join(storageDir, 'metadata.json');
 	try {
-		const metaData = { paths: [] };
+		const metaData = { title: rawSubject, paths: [] };
 		writeFileSync(filePath, JSON.stringify(metaData, null, 4));
 	} catch (err) {
 		console.error("Erreur d'écriture du fichier de metadata : ", err);
@@ -53,11 +58,12 @@ export const POST: RequestHandler = async ({ request }) => {
 // Permet de mettre à jour un matiere, crée le json s'il n'existe pas et les catégories s'il en manque
 export const PUT: RequestHandler = async ({ request }) => {
 	const data = await request.formData();
-	const subject = data.get('subject') as string;
-	if (!subject) {
+	const rawSubject = data.get('subject') as string;
+	if (!rawSubject) {
 		error(400, 'Matiere manquante.');
 	}
 
+	const subject = normalize(rawSubject);
 	const storageDir = join(resolve('static/uploads'), subject);
 	if (!existsSync(storageDir)) {
 		error(400, "La matière n'existe pas.");
@@ -87,5 +93,8 @@ export const PUT: RequestHandler = async ({ request }) => {
 	});
 
 	console.log(`Mise à jour de la matière ${subject}.`);
-	return json({ message: 'Matière mise à jour avec succès. Ne concerne pas les liens symboliques.' }, { status: 201 });
+	return json(
+		{ message: 'Matière mise à jour avec succès. Ne concerne pas les liens symboliques.' },
+		{ status: 201 }
+	);
 };

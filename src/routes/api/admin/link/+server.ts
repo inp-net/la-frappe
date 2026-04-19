@@ -1,3 +1,4 @@
+import { normalize } from '$lib/tools/filtre';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync, readFileSync } from 'fs';
 import { join, resolve } from 'path';
@@ -23,7 +24,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(400, 'Les informations ne doivent pas dépasser 100 caractères chacune.');
 	}
 
-	const subjectDir = join(resolve('static/uploads'), subject);
+	const normalizedSubject = normalize(subject);
+	const subjectDir = join(resolve('static/uploads'), normalizedSubject);
 	if (!existsSync(subjectDir)) {
 		error(400, 'Chemin de la matiere non existant.');
 	}
@@ -43,9 +45,10 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	// Verifier que le json de metadata ne contient pas deja ce chemin
-	const newPath = join(school, major);
-	if (metaData.paths.includes(newPath)) {
-		error(400, 'Le lien symbolique existe déjà.');
+	const newPath = normalize(join(school, major));
+	const exists = metaData.paths.includes(newPath);
+	if (exists) {
+		error(409, 'Le lien symbolique existe déjà (conflit de chemin).');
 	}
 
 	// Ajouter le nouveau chemin au fichier de metadata
