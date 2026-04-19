@@ -1,9 +1,7 @@
+import { normalize } from '$lib/tools/filtre';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync, readFileSync } from 'fs';
 import { join, resolve } from 'path';
-
-// Fonction utilitaire pour normaliser les chemins (minuscules, pas d'espaces)
-const normalize = (s: string) => s.trim().toLowerCase().replace(/\s+/g, '');
 
 // permet d'ajouter dans les paths les ecole/filiere etc... qui utilisent cette matiere
 export const POST: RequestHandler = async ({ request }) => {
@@ -48,7 +46,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	// Verifier que le json de metadata ne contient pas deja ce chemin
 	const newPath = normalize(join(school, major));
-	const exists = metaData.paths.some((p: string) => normalize(p) === newPath);
+	const exists = metaData.paths.includes(newPath);
 	if (exists) {
 		error(409, 'Le lien symbolique existe déjà (conflit de chemin).');
 	}

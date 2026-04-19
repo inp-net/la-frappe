@@ -1,4 +1,4 @@
-import { categoriesAccepted } from '$lib/store/filtre';
+import { categoriesAccepted } from '$lib/tools/filtre';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
@@ -50,11 +50,11 @@ export const POST: RequestHandler = async ({ request }) => {
 	if (!subject) {
 		error(400, 'Sujet lié au document manquant.');
 	}
-	if (subject.length > 100) {
-		error(400, 'Le nom de la matière ne doit pas dépasser 100 caractères.');
+	if (subject.length > 50) {
+		error(400, 'Le nom de la matière ne doit pas dépasser 50 caractères.');
 	}
 	const year = data.get('year') as string;
-	const regexYear = /^[1-9][0-9]{3}$/; // vérif année de 1800 à 9999, évite les prbls de convertions
+	const regexYear = /^[1-9][0-9]{3}$/; // vérif année de 1800 à 9999, évite les prbls de convertions string et int
 	if (!year) {
 		error(400, 'Année manquante.');
 	} else if (!regexYear.test(year)) {
@@ -106,7 +106,8 @@ export const POST: RequestHandler = async ({ request }) => {
 	let filePath = join(storageDir, fileName);
 
 	let count = 1;
-	const maximum = 30;
+	const maximum = 5; // fichier du meme td de la meme annee etc...
+	// le 100 évite de boucler trop longtemps dans le cas où on serait flood de pdf (cas possible que par un admin)
 	while (count < 100 && existsSync(filePath)) {
 		fileName = `${category}_${fileNumber}_${year}${correction}_${count}.pdf`;
 		filePath = join(storageDir, fileName);

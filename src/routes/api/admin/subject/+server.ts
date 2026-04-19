@@ -1,10 +1,7 @@
-import { categoriesAccepted } from '$lib/store/filtre';
+import { categoriesAccepted, normalize } from '$lib/tools/filtre';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-
-// Utilitaire pour normaliser le nom de la matière
-const normalize = (s: string) => s.trim().toLowerCase().replace(/\s+/g, '_');
 
 // Permet de créer un dossier avec un json de metadata et les categories pour une matiere dans le dossier flat d'upload
 export const POST: RequestHandler = async ({ request }) => {
@@ -30,7 +27,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	try {
 		mkdirSync(storageDir, { recursive: true });
-		
 	} catch (err) {
 		console.error(`Erreur d'écriture de dossier de la matière : ${storageDir}\n`, err);
 		error(500, 'Erreur lors de la création de dossier.');
@@ -38,7 +34,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const filePath = join(storageDir, 'metadata.json');
 	try {
-		const metaData = { paths: [] };
+		const metaData = { title: rawSubject, paths: [] };
 		writeFileSync(filePath, JSON.stringify(metaData, null, 4));
 	} catch (err) {
 		console.error("Erreur d'écriture du fichier de metadata : ", err);
@@ -97,5 +93,8 @@ export const PUT: RequestHandler = async ({ request }) => {
 	});
 
 	console.log(`Mise à jour de la matière ${subject}.`);
-	return json({ message: 'Matière mise à jour avec succès. Ne concerne pas les liens symboliques.' }, { status: 201 });
+	return json(
+		{ message: 'Matière mise à jour avec succès. Ne concerne pas les liens symboliques.' },
+		{ status: 201 }
+	);
 };
