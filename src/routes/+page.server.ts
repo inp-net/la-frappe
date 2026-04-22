@@ -1,9 +1,10 @@
 import { readdirSync, statSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
+import { FOLDER } from "$lib/constants/index";
 import type { PageServerLoad } from "./$types";
 
 export function get_child(relativePath: string) {
-    const baseDir = join(resolve('static/frappe_tree'), relativePath);
+    const baseDir = join(resolve(FOLDER.DEFAULT_DB_LOCATION), relativePath);
 
     if (!existsSync(baseDir)) {
         return { folders: [], files: [] };
