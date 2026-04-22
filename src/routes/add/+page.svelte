@@ -35,8 +35,9 @@
             <Flex gap="md" align="center">
                 <span>Ajouter un fichier :</span>
                 <Flex gap="xs" align="center">
-                    <Button variant="outline" icon={Paperclip}>Ouvrir</Button>
-                    <span>Nom_Fichier.pdf</span>
+                    <input type="file" id="document" name="document" accept="image/*,.pdf" />
+                    <!-- <Button variant="outline" icon={Paperclip}>Ouvrir</Button> -->
+                    <!-- <span>Nom_Fichier.pdf</span> -->
                 </Flex>
             </Flex>
             <!-- inputs -->
@@ -69,5 +70,7 @@
 </Flex>
 
 <style>
+
+    /* TODO : change style of input file */
 
 </style>
