@@ -73,7 +73,6 @@
     }
 
     @media (min-width: 768px) {
-
         .text-input {
             width: 25% 
         }
@@ -143,8 +142,6 @@
         cursor: not-allowed;
         color: var(--color-border-subtle);
     }
-
-    .input-wrapper[data-disabled="true"] .text-input-icon,
 
     .required-star {
         color: var(--color-danger);
