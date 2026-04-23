@@ -1,13 +1,15 @@
 <script lang='ts'>
 
     import { FOLDER } from '$lib/constants/index';
+    import { categoriesAccepted } from '$lib/tools/filtre';
+    import Select from '$lib/components/Select.svelte';
+    import type { PageData } from './$types';
 
     import {
         Button,
             Flex,
             Stack,
             ButtonGroup,
-            TextInput,
             Frame
     } from 'azucar-ui';
 
@@ -16,6 +18,49 @@
         Paperclip,
         Check
     } from '@lucide/svelte';
+
+    let { data }: { data: PageData } = $props();
+
+    let selectedSchool = $state("");
+    let selectedFiliaire = $state("");
+    let selectedYear = $state("1A");
+    let selectedCourse = $state("");
+    let selectedDocument = $state("");
+
+    let schoolList = $derived(data.schoolNames);
+    let filiaireList = $state<string[]>([]);
+    let courseList = $state<string[]>([]);
+    let documentTypes: string[] = $derived([...categoriesAccepted]);
+
+    async function getNextSelection(selected : string) {
+        if (!selected) {
+            return [];
+        }
+        try {
+            const pathParam = `${FOLDER.DEFAULT_DB_LOCATION}/${selected}`;
+            const response = await fetch(`/api/dirs?path=${encodeURIComponent(pathParam)}`);
+            if (!response.ok) throw new Error('Impossible de récupérer la séléction suivante');
+            const data: { name: string; isDirectory: boolean }[] = await response.json();
+            const listName = data.map(item => item.name);
+            return listName;
+        } catch (error) {
+            return [];
+        }
+    }
+
+    $effect(() => {
+        if (selectedSchool && selectedFiliaire) {
+            getNextSelection(`${selectedSchool}/${selectedFiliaire}`).then(list => {
+                courseList = list;
+            });
+        } else if (selectedSchool) {
+            getNextSelection(selectedSchool).then(list => {
+                filiaireList = list;
+            });
+        } else {
+            filiaireList = [];
+        }
+    });
 
 </script>
 
@@ -42,9 +87,21 @@
             </Flex>
             <!-- inputs -->
             <Flex gap="md">
-                <TextInput type="text" placeholder="Nom...">Nom du fichier</TextInput>
-                <TextInput type="search" icon={SearchIcon} placeholder="ENSEEIHT, ...">École</TextInput>
-                <TextInput type="search" icon={SearchIcon} placeholder="SN, ...">Filiaire</TextInput>
+                <Select
+                    options={schoolList}
+                    bind:value={selectedSchool}
+                    icon={SearchIcon}
+                    placeholder="Choisir une école"
+                    required
+                >École</Select>
+                <Select
+                    options={filiaireList}
+                    bind:value={selectedFiliaire}
+                    icon={SearchIcon}
+                    placeholder="Choisir une filiaire"
+                    disabled={!selectedSchool}
+                    required
+                >Filiaire</Select>
                 <Flex direction="column" gap="xxs">
                     <span>Année</span>
                     <ButtonGroup>
@@ -53,8 +110,21 @@
                         <Button variant="outline">3A</Button>
                     </ButtonGroup>
                 </Flex>
-                <TextInput type="search" icon={SearchIcon} placeholder="Architecture, ...">Martière</TextInput>
-                <TextInput type="search" icon={SearchIcon} placeholder="Partiel, ...">Type de fichier</TextInput>
+                <Select
+                    options={courseList}
+                    bind:value={selectedCourse}
+                    icon={SearchIcon}
+                    placeholder="Choisir une matière"
+                    disabled={!selectedFiliaire}
+                    required
+                >Matière</Select>
+                <Select
+                    options={documentTypes}
+                    bind:value={selectedDocument}
+                    icon={SearchIcon}
+                    placeholder="Choisir type doc"
+                    required
+                >Type de document</Select>
             </Flex>
             <!-- bouton-ajouter -->
             <Flex gap="xs" style="flex-grow: 1" justify='right'>
