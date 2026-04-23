@@ -54,7 +54,7 @@
             {/each}
         </select>
         
-        <ChevronDown size="1em"/>
+        <ChevronDown size="1em" style="justify-content: left"/>
     </div>
 </label>
 
@@ -63,11 +63,20 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--size-xxs);
+        width: 100%
     }
 
     .label {
         font: inherit;
         color: var(--color-fg-low);
+        width: 100%
+    }
+
+    @media (min-width: 768px) {
+
+        .text-input {
+            width: 25% 
+        }
     }
 
     .input-wrapper {
@@ -93,6 +102,7 @@
     }
 
     .input-wrapper select {
+        flex-grow: 1;
         appearance: none;
         background: transparent;
         border: none;
