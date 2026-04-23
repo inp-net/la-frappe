@@ -21,17 +21,27 @@
 
     let { data }: { data: PageData } = $props();
 
+    // Element séléctionné par l'utilisateur
+
     let selectedSchool = $state("");
     let selectedFiliaire = $state("");
     let selectedYear = $state("1A");
     let selectedCourse = $state("");
     let selectedDocument = $state("");
 
+    // Liste des éléments qui peuvent être séléctionné
+
     let schoolList = $derived(data.schoolNames);
     let filiaireList = $state<string[]>([]);
     let courseList = $state<string[]>([]);
     let documentTypes: string[] = $derived([...categoriesAccepted]);
 
+    /** Fonction qui récupère une liste des noms de fichiers à partir du chemin
+    * relatif dans la DB. Utilise l'api dirs.
+    * @param selected : string chemin relatif dans la DB.
+    * @return string[] liste des noms des fichiers contenues à cet endroit.
+    * @throws Error si le chemin n'existe pas.
+    */
     async function getNextSelection(selected : string) {
         if (!selected) {
             return [];
@@ -48,6 +58,8 @@
         }
     }
 
+    // Met à jour la séléction possible matières/filiaires en temps réel en
+    // fonction de la séléction précédentes.
     $effect(() => {
         if (selectedSchool && selectedFiliaire) {
             getNextSelection(`${selectedSchool}/${selectedFiliaire}`).then(list => {
@@ -138,9 +150,3 @@
     </Stack>
 
 </Flex>
-
-<style>
-
-    /* TODO : change style of input file */
-
-</style>
