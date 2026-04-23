@@ -23,14 +23,16 @@
 
     // Element séléctionné par l'utilisateur
 
+    let fileList = $state<FileList | undefined>(undefined);
     let selectedSchool = $state("");
     let selectedFiliaire = $state("");
     let selectedYear = $state("1A");
     let selectedCourse = $state("");
-    let selectedDocument = $state("");
+    let selectedDocumentType = $state("");
 
     // Liste des éléments qui peuvent être séléctionné
 
+    let fileToUpload = $derived(fileList?.[0]);
     let schoolList = $derived(data.schoolNames);
     let filiaireList = $state<string[]>([]);
     let courseList = $state<string[]>([]);
@@ -74,6 +76,28 @@
         }
     });
 
+    async function sendFile() {
+        if (!fileToUpload|| !selectedSchool || !selectedCourse) {
+            console.error("Formulaire incomplet");
+            return;
+        }
+        let formData = new FormData();
+		formData.append('file', fileToUpload);
+		formData.append('school', selectedSchool);
+		formData.append('year', selectedYear);
+		formData.append('subject', selectedCourse);
+		formData.append('category', selectedDocumentType);
+		try {
+			const response = await fetch('/api/document', {
+				method: 'POST',
+				body: formData
+			});
+			console.log(await response.json());
+		} catch (err) {
+			console.error("Erreur lors de l'envoi du form : ", err);
+		}
+    }
+
 </script>
 
 <Flex direction="column" gap="xxl" margin="lg">
@@ -92,7 +116,13 @@
             <Flex gap="md" align="center">
                 <span>Ajouter un fichier :</span>
                 <Flex gap="xs" align="center">
-                    <input type="file" id="document" name="document" accept="image/*,.pdf" />
+                    <input
+                        type="file"
+                        id="document"
+                        name="document"
+                        accept="image/*,.pdf"
+                        bind:files={fileList}
+                    />
                     <!-- <Button variant="outline" icon={Paperclip}>Ouvrir</Button> -->
                     <!-- <span>Nom_Fichier.pdf</span> -->
                 </Flex>
@@ -132,7 +162,7 @@
                 >Matière</Select>
                 <Select
                     options={documentTypes}
-                    bind:value={selectedDocument}
+                    bind:value={selectedDocumentType}
                     icon={SearchIcon}
                     placeholder="Choisir type doc"
                     required
