@@ -3,11 +3,11 @@ export const categoriesAccepted = [
 	'fiche',
 	'td',
 	'autre',
-	'notes_de_cours',
+	'notes',
 	'dm',
 	'tp',
 	'be',
-	'diapositives_de_cours'
+	'diapositives'
 ];
 
 // Fonction utilitaire pour normaliser les chemins (minuscules, pas de caractere special sauf _)
