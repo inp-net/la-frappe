@@ -7,7 +7,7 @@ node_modules
 .wrangler
 /.svelte-kit
 /build
-static/uploads/**/*
+static/frappe_tree
 
 # OS
 .DS_Store
