@@ -26,7 +26,7 @@
     let fileList = $state<FileList | undefined>(undefined);
     let selectedSchool = $state("");
     let selectedFiliaire = $state("");
-    let selectedYear = $state("2A");
+    let selectedYear = $state("1A");
     let selectedCourse = $state("");
     let selectedDocumentType = $state("");
 
@@ -77,7 +77,7 @@
     });
 
     async function sendFile() {
-        if (!fileToUpload|| !selectedSchool || !selectedCourse) {
+        if (!fileToUpload || !selectedSchool || !selectedCourse) {
             console.error("Formulaire incomplet");
             return;
         }
@@ -86,6 +86,7 @@
 		formData.append('school', selectedSchool);
 		formData.append('year', selectedYear);
 		formData.append('subject', selectedCourse);
+		formData.append('filaire', selectedFiliaire);
 		formData.append('category', selectedDocumentType);
 		try {
 			const response = await fetch('/api/document', {
@@ -180,7 +181,7 @@
             <!-- bouton-ajouter -->
             <Flex gap="xs" style="flex-grow: 1" justify='right'>
                 <Button variant="outline" href={FOLDER.DEFAULT_PAGE_LOCATION}>Annuler</Button>
-                <Button icon={Check} class="success" name="Success">Ajouter</Button>
+                <Button icon={Check} class="success" name="Success" onclick={sendFile}>Ajouter</Button>
             </Flex>
         </Flex>
         </Frame>
