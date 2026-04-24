@@ -76,7 +76,7 @@ function generateName(metadata: ReturnType<typeof checkMetadata>) {
     let counter = 1;
 
     while (existsSync(`${generatePath(metadata)}/${finalName}`)) {
-        finalName = `${baseName} ${counter}`;
+        finalName = `${baseName} - ${counter}`;
         counter++;
     }
 
