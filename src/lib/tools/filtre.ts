@@ -1,13 +1,13 @@
 export const categoriesAccepted = [
-	'partiel',
-	'fiche',
-	'td',
-	'autre',
-	'notes',
-	'dm',
-	'tp',
-	'be',
-	'diapositives'
+	'Partiel',
+	'Fiche',
+	'TD',
+	'Autre',
+	'Notes',
+	'DM',
+	'TP',
+	'BE',
+	'Diapositives'
 ];
 
 // Fonction utilitaire pour normaliser les chemins (minuscules, pas de caractere special sauf _)
