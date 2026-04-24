@@ -30,6 +30,7 @@ function checkMetadata(data : FormData) {
     const filiaire = data.get('filiaire') as string;
     const subject = data.get('subject') as string;
     const category = data.get('category') as string;
+    const date = data.get('date') as string;
 
     // WARN ne pas vérifier ici que les écoles existe!
     // Vérifier si il y a un string malicieux avant(../ , caractère interdit , ...)
@@ -39,7 +40,7 @@ function checkMetadata(data : FormData) {
     if (!filiaire || filiaire.length > 50) error(400, "Filiaire invalide");
     if (!school || school.length > 50) error(400, "Sujet invalide");
 
-    return { school, year, filiaire, subject, category };
+    return { school, year, filiaire, subject, category, date };
 }
 
 function securePath(segment : string) {
@@ -49,9 +50,7 @@ function securePath(segment : string) {
         .trim();
 }
 
-function generateName(metadata : ReturnType<typeof checkMetadata>) {};
-
-function saveFile(buffer: Uint8Array, metadata: ReturnType<typeof checkMetadata>) {
+function generatePath(metadata : ReturnType<typeof checkMetadata>) {
     const { school, year, filiaire, subject, category } = metadata;
     // TODO vérifier que l'école, le sujet, la filiaire exite
 
@@ -60,17 +59,33 @@ function saveFile(buffer: Uint8Array, metadata: ReturnType<typeof checkMetadata>
     const safeYear = securePath(year);
     const safeFiliaire = securePath(filiaire);
     const safeSubject = securePath(subject);
-
-    // chemin final du fichier
-    const path = join(
+    
+    return join(
         resolve(FOLDER.DEFAULT_DB_LOCATION), 
         safeSchool, 
         safeYear, 
         safeFiliaire, 
-        safeSubject,
-        "fichier.pdf"
+        safeSubject
     );
 
+}
+
+function generateName(metadata: ReturnType<typeof checkMetadata>) {
+    const baseName = `${metadata.category} - ${metadata.date}`;
+    let finalName = baseName;
+    let counter = 1;
+
+    while (existsSync(`${generatePath(metadata)}/${finalName}`)) {
+        finalName = `${baseName} ${counter}`;
+        counter++;
+    }
+
+    return finalName;
+}
+
+function saveFile(buffer: Uint8Array, metadata: ReturnType<typeof checkMetadata>) {
+    // chemin final du fichier
+    const path = join(generatePath(metadata), generateName(metadata));
     // TODO vérifier l'existence du chemin
 
     try {

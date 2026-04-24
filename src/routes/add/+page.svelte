@@ -10,7 +10,8 @@
             Flex,
             Stack,
             ButtonGroup,
-            Frame
+            Frame,
+            TextInput
     } from 'azucar-ui';
 
     import {
@@ -29,6 +30,7 @@
     let selectedYear = $state("1A");
     let selectedCourse = $state("");
     let selectedDocumentType = $state("");
+    let selectedDate = $state(2026);
 
     // Liste des éléments qui peuvent être séléctionné
 
@@ -88,6 +90,7 @@
 		formData.append('subject', selectedCourse);
 		formData.append('filiaire', selectedFiliaire);
 		formData.append('category', selectedDocumentType);
+		formData.append('date', selectedDate.toString());
 		try {
 			const response = await fetch('/api/document', {
 				method: 'POST',
@@ -177,6 +180,10 @@
                     placeholder="Choisir type doc"
                     required
                 >Type de document</Select>
+                <Flex direction="column" gap="xxs">
+                    <span>Année du TD</span>
+                    <input type="number" bind:value={selectedDate} min="1900" max="2100" placeholder="2026"/>
+                </Flex>
             </Flex>
             <!-- bouton-ajouter -->
             <Flex gap="xs" style="flex-grow: 1" justify='right'>
