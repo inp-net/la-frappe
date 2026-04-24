@@ -99,7 +99,7 @@
 		formData.append('filiaire', selectedFiliaire);
 		formData.append('category', selectedDocumentType);
 		formData.append('date', selectedDate.toString());
-        formData.append('corrige', haveCorrige ? '1': '0');
+        formData.append('corrige', haveCorrige.toString());
 		try {
 			const response = await fetch('/api/document', {
 				method: 'POST',

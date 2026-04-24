@@ -31,6 +31,7 @@ function checkMetadata(data : FormData) {
     const subject = data.get('subject') as string;
     const category = data.get('category') as string;
     const date = data.get('date') as string;
+    const corrige = data.get('corrige') as string;
 
     // WARN ne pas vérifier ici que les écoles existe!
     // Vérifier si il y a un string malicieux avant(../ , caractère interdit , ...)
@@ -40,7 +41,7 @@ function checkMetadata(data : FormData) {
     if (!filiaire || filiaire.length > 50) error(400, "Filiaire invalide");
     if (!school || school.length > 50) error(400, "Sujet invalide");
 
-    return { school, year, filiaire, subject, category, date };
+    return { school, year, filiaire, subject, category, date, corrige };
 }
 
 function securePath(segment : string) {
@@ -79,6 +80,8 @@ function generateName(metadata: ReturnType<typeof checkMetadata>) {
         finalName = `${baseName} - ${counter}`;
         counter++;
     }
+
+    if (metadata.corrige === true.toString()) finalName = finalName + ' + corrige';
 
     return finalName;
 }
