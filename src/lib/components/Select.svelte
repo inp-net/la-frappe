@@ -54,7 +54,8 @@
             {/each}
         </select>
         
-        <ChevronDown size="1em" style="justify-content: left"/>
+        <ChevronDown size="1em" style="position: absolute; justify-content: left; right: 1em; pointer-events: none;"/>
+        
     </div>
 </label>
 
@@ -96,8 +97,15 @@
     .text-input-icon {
         display: inline-flex;
         align-items: center;
-        pointer-events: none;
+        pointer-events: none; 
         color: var(--color-border-subtle);
+    }
+
+    .select-chevron {
+        position: absolute;
+        justify-content: left;
+        right: 5em;
+        pointer-events: none; 
     }
 
     .input-wrapper select {
