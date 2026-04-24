@@ -2,131 +2,91 @@ import { categoriesAccepted } from '$lib/tools/filtre';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
+import { FOLDER } from '$lib/constants'
+
+/** Taille maximale du fichier 10mo */
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+async function checkFileIntegrity(file : File | null) {
+    if (!file) error(400, 'Fichier manquant.');
+    if (file.size > MAX_FILE_SIZE) error(400, "Fichier trop volumineux.");
+    // TODO accepter aussi les png et les jpeg ?
+	if (file.type !== 'application/pdf') error(400, "Le format est incorrect.");
+
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    const signature = Array.from(uint8Array.slice(0, 4))
+                           .map(byte => byte.toString(16))
+                           .join('');
+
+    if (signature !== "25504446") error(400, "Le pdf n'est pas valide (mauvaise signature)");
+
+    return uint8Array;
+}
+
+function checkMetadata(data : FormData) {
+    const school = data.get('school') as string;
+    const year = data.get('year') as string;
+    const filiaire = data.get('filiaire') as string;
+    const subject = data.get('subject') as string;
+    const category = data.get('category') as string;
+
+    // TODO vérifier que l'école, le sujet, la filiaire exite
+    if (!categoriesAccepted.includes(category)) error(400, "Catégorie invalide");
+    if (!subject || subject.length > 50) error(400, "Sujet invalide");
+    if (!filiaire || filiaire.length > 50) error(400, "Filiaire invalide");
+    if (!school || school.length > 50) error(400, "Sujet invalide");
+
+    return { school, year, filiaire, subject, category };
+}
+
+function securePath(segment : string) {
+    return segment
+        .replace(/\./g, '') // supprime les points
+        .replace(/[\\/:*?"<>|]/g, '_') // supprime les caractères interdits Windows/Linux
+        .trim();
+}
+
+function generateName(metadata : ReturnType<typeof checkMetadata>) {};
+
+function saveFile(buffer: Uint8Array, metadata: ReturnType<typeof checkMetadata>) {
+    const { school, year, filiaire, subject, category } = metadata;
+
+    // retire toutes les injections malicieuse de string (../ , caractères interdit, ...)
+    const safeSchool = securePath(school);
+    const safeYear = securePath(year);
+    const safeFiliaire = securePath(filiaire);
+    const safeSubject = securePath(subject);
+
+    // chemin final du fichier
+    const path = join(
+        resolve(FOLDER.DEFAULT_DB_LOCATION), 
+        safeSchool, 
+        safeYear, 
+        safeFiliaire, 
+        safeSubject
+    );
+
+    // TODO vérifier l'existence du chemin
+
+    try {
+        writeFileSync(path, Buffer.from(buffer));
+    } catch (err) {
+        console.error(err)
+        error(500, "Erreur d'écriture du fichier");
+    }
+}
 
 // permet d'upload un pdf dans une categorie d'une matiere deja existente
 // ça fait peur mais c'est assez simple, me demander si besoin alexandre à net7
 export const POST: RequestHandler = async ({ request }) => {
-	const data = await request.formData();
+    const data = await request.formData();
 
-	// -- Verification du fichier --
-	const file = data.get('file') as File;
-	if (!file) {
-		error(400, 'Fichier manquant.');
-	}
-	// header
-	if (file.type !== 'application/pdf') {
-		error(400, "Le fichier n'est pas un pdf.");
-	}
-	// extension
-	const fileData: string[] = file.name.toLowerCase().split('.');
-	const ext = fileData.pop();
-	if (ext !== 'pdf' && fileData.length !== 1) {
-		error(400, "Le fichier n'est pas un pdf");
-	}
-	// signature
-	// On convertit le fichier en buffer pour lire les premiers octets
-	const arrayBuffer = await file.arrayBuffer();
-	const uint8Array = new Uint8Array(arrayBuffer);
-	// Un PDF commence par %PDF (25 50 44 46 en ASCII/Hex)
-	const signature = Array.from(uint8Array.slice(0, 4))
-		.map((byte) => byte.toString(16))
-		.join('');
+    const fileContent = await checkFileIntegrity(data.get('file') as File);
 
-	if (signature !== '25504446') {
-		error(400, "Le fichier n'est pas un pdf.");
-	}
-	// Si on arrive ici, le fichier est validé
-	console.log(`Fichier validé : ${file.name} (${file.size} octets)`);
+    const metadata = checkMetadata(data);
 
-	// -- Verification des autres parametres --
-	const category = data.get('category') as string;
-	if (!category) {
-		error(400, 'Catégorie du document manquante.');
-	}
-	if (!categoriesAccepted.includes(category)) {
-		error(400, 'Catégorie inconnue.');
-	}
-	const subject = data.get('subject') as string;
-	if (!subject) {
-		error(400, 'Sujet lié au document manquant.');
-	}
-	if (subject.length > 50) {
-		error(400, 'Le nom de la matière ne doit pas dépasser 50 caractères.');
-	}
-	const year = data.get('year') as string;
-	const regexYear = /^[1-9][0-9]{3}$/; // vérif année de 1800 à 9999, évite les prbls de convertions string et int
-	if (!year) {
-		error(400, 'Année manquante.');
-	} else if (!regexYear.test(year)) {
-		error(400, "Mauvais format d'année (1800-9999).");
-	}
-	const fileNumber = data.get('number') as string;
-	const regexNumber = /^(100|[1-9]?[0-9])$/; // vérif numéro de td/partiel/etc... de 0 à 100
-	if (!fileNumber) {
-		error(400, 'Numéro manquant.');
-	} else if (!regexNumber.test(fileNumber)) {
-		error(400, 'Mauvais format de numéro (0-100).');
-	}
-	const isCorrected = !!data.get('isCorrected') as Boolean;
-	let correction = '';
-	if (isCorrected) {
-		correction = '_corrige';
-	}
+    saveFile(fileContent, metadata);
 
-	const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo en octets, 10 * 2^10 * 2^10
-
-	if (file.size > MAX_SIZE) {
-		error(400, 'Fichier trop lourd (max 10 Mo).');
-	}
-
-	// --- Définir le chemin de stockage ---
-	const subjectDir = join(resolve('static/uploads'), subject);
-	if (!existsSync(subjectDir)) {
-		error(
-			400,
-			'Chemin de la matiere non existant. Verifier les informations ou demander à un admin (net7) de créer la matière.'
-		);
-	}
-
-	const metaPath = join(subjectDir, 'metadata.json');
-	// vérifier qu'il y a un fichier de metadata sinon le dossier du fichier n'apparaitra jamais dans la frappe
-	if (!existsSync(metaPath)) {
-		console.error(`Absence du fichier de metadata : ${metaPath}`);
-		error(500, "Fichier de metadata non existant, c'est pas normal contacte net7.");
-	}
-
-	let fileName = `${category}_${fileNumber}_${year}${correction}.pdf`;
-	const storageDir = join(subjectDir, category);
-	if (!existsSync(storageDir)) {
-		error(
-			400,
-			'Chemin de la categorie non existant. Verifier les informations ou demander à un admin (net7) de créer la catégorie.'
-		);
-	}
-	let filePath = join(storageDir, fileName);
-
-	let count = 1;
-	const maximum = 5; // fichier du meme td de la meme annee etc...
-	// le 100 évite de boucler trop longtemps dans le cas où on serait flood de pdf (cas possible que par un admin)
-	while (count < 100 && existsSync(filePath)) {
-		fileName = `${category}_${fileNumber}_${year}${correction}_${count}.pdf`;
-		filePath = join(storageDir, fileName);
-		count++;
-	}
-
-	if (count >= maximum) {
-		error(400, 'Trop de fichiers de la même catégorie et matière existants.');
-	}
-
-	// Ecriture du pdf
-	try {
-		const buffer = Buffer.from(uint8Array);
-		writeFileSync(filePath, buffer);
-		console.log(`Fichier sauvegardé sous : ${filePath}`);
-	} catch (err) {
-		console.error(`Erreur d'écriture du fichier : ${filePath}\n`, err);
-		error(500, 'Erreur lors de la sauvegarde sur le disque du serveur.');
-	}
-
-	return json({ message: 'Fichier ajouté avec succès' }, { status: 201 });
+    return json({ message: 'Fichier ajouté avec succès' }, { status: 201 });
 };
