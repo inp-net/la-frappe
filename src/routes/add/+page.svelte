@@ -77,7 +77,7 @@
     });
 
     async function sendFile() {
-        if (!fileToUpload || !selectedSchool || !selectedCourse) {
+        if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedFiliaire) {
             console.error("Formulaire incomplet");
             return;
         }
@@ -86,7 +86,7 @@
 		formData.append('school', selectedSchool);
 		formData.append('year', selectedYear);
 		formData.append('subject', selectedCourse);
-		formData.append('filaire', selectedFiliaire);
+		formData.append('filiaire', selectedFiliaire);
 		formData.append('category', selectedDocumentType);
 		try {
 			const response = await fetch('/api/document', {
