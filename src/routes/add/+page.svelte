@@ -13,13 +13,14 @@
             Stack,
             ButtonGroup,
             Frame,
-            TextInput
+            Switch
     } from 'azucar-ui';
 
     import {
         SearchIcon,
         Paperclip,
-        Check
+        Check,
+        Info
     } from '@lucide/svelte';
 
     let { data }: { data: PageData } = $props();
@@ -33,6 +34,7 @@
     let selectedCourse = $state("");
     let selectedDocumentType = $state("");
     let selectedDate = $state(2026);
+    let haveCorrige = $state(false);
 
     // Liste des éléments qui peuvent être séléctionné
 
@@ -97,6 +99,7 @@
 		formData.append('filiaire', selectedFiliaire);
 		formData.append('category', selectedDocumentType);
 		formData.append('date', selectedDate.toString());
+        formData.append('corrige', haveCorrige ? '1': '0');
 		try {
 			const response = await fetch('/api/document', {
 				method: 'POST',
@@ -148,7 +151,7 @@
                 </Flex>
             </Flex>
             <!-- inputs -->
-            <Flex gap="md">
+            <Flex gap="md" align="center">
                 <Select
                     options={schoolList}
                     bind:value={selectedSchool}
@@ -199,6 +202,16 @@
                 <Flex direction="column" gap="xxs">
                     <span>Année du TD</span>
                     <input type="number" bind:value={selectedDate} min="1900" max="2100" placeholder="2026"/>
+                </Flex>
+                <Flex direction="column" gap="xxs">
+                    <span>Contient corrigé ?</span>
+                    <Switch bind:checked={haveCorrige}/>
+                </Flex>
+            </Flex>
+            <Flex gap="xs" direction="column">
+                <Flex gap="xs" align="center">
+                    <Info size="10px"/>
+                    <span>Le corrigé (si disponible) doit être fusionné avec le sujet.</span>
                 </Flex>
             </Flex>
             <!-- bouton-ajouter -->
