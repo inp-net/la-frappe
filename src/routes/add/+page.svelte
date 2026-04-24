@@ -26,7 +26,7 @@
     let fileList = $state<FileList | undefined>(undefined);
     let selectedSchool = $state("");
     let selectedFiliaire = $state("");
-    let selectedYear = $state("1A");
+    let selectedYear = $state("2A");
     let selectedCourse = $state("");
     let selectedDocumentType = $state("");
 
@@ -147,9 +147,18 @@
                 <Flex direction="column" gap="xxs">
                     <span>Année</span>
                     <ButtonGroup>
-                        <Button>1A</Button>
-                        <Button variant="outline">2A</Button>
-                        <Button variant="outline">3A</Button>
+                        <Button
+                            variant={selectedYear === "1A" ? 'default' : 'outline'}
+                            onclick={() => selectedYear = "1A"}
+                        >1A</Button>
+                        <Button
+                            variant={selectedYear === "2A" ? 'default' : 'outline'}
+                            onclick={() => selectedYear = "2A"}
+                        >2A</Button>
+                        <Button
+                            variant={selectedYear === "3A" ? 'default' : 'outline'}
+                            onclick={() => selectedYear = "3A"}
+                        >3A</Button>
                     </ButtonGroup>
                 </Flex>
                 <Select
