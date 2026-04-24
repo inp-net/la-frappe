@@ -5,7 +5,7 @@
     import Select from '$lib/components/Select.svelte';
     import type { PageData } from './$types';
     import { goto } from '$app/navigation';
-    import { fade, scale } from 'svelte/transition';
+    import { untrack } from 'svelte';
 
     import {
         Button,
@@ -72,19 +72,30 @@
     // Met à jour la séléction possible matières/filiaires en temps réel en
     // fonction de la séléction précédentes.
     $effect(() => {
-        if (selectedSchool && selectedFiliaire && selectedYear) {
-            getNextSelection(`${selectedSchool}/${selectedYear}/${selectedFiliaire}`).then(list => {
-                courseList = list;
-            });
-        }
-        if (selectedSchool && selectedYear) {
-            getNextSelection(`${selectedSchool}/${selectedYear}`).then(list => {
-                filiaireList = list;
-            });
-        }
+        const school = selectedSchool;
+        const year = selectedYear;
+        const filiaire = selectedFiliaire;
 
-        if (!filiaireList.includes(selectedFiliaire)) selectedFiliaire = "";
-        if (!courseList.includes(selectedCourse)) selectedCourse = "";
+        if (school && year) {
+            getNextSelection(`${school}/${year}`).then(list => {
+                filiaireList = list;
+                untrack(() => {
+                    if (!list.includes(selectedFiliaire)) {
+                        selectedFiliaire = "";
+                    }
+                });
+            });
+        }
+        if (school && year && filiaire) {
+            getNextSelection(`${school}/${year}/${filiaire}`).then(list => {
+                courseList = list;
+                untrack(() => {
+                    if (!list.includes(selectedCourse)) {
+                        selectedCourse = "";
+                    }
+                });
+            });
+        }
     });
 
     async function sendFile() {
