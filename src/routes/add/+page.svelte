@@ -4,6 +4,8 @@
     import { categoriesAccepted } from '$lib/tools/filtre';
     import Select from '$lib/components/Select.svelte';
     import type { PageData } from './$types';
+    import { goto } from '$app/navigation';
+    import { fade, scale } from 'svelte/transition';
 
     import {
         Button,
@@ -39,6 +41,9 @@
     let filiaireList = $state<string[]>([]);
     let courseList = $state<string[]>([]);
     let documentTypes: string[] = $derived([...categoriesAccepted]);
+
+    let showSuccess = $state(false);
+    let showFailure = $state(false);
 
     /** Fonction qui récupère une liste des noms de fichiers à partir du chemin
     * relatif dans la DB. Utilise l'api dirs.
@@ -81,6 +86,7 @@
     async function sendFile() {
         if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedFiliaire) {
             console.error("Formulaire incomplet");
+            showFailure = true;
             return;
         }
         let formData = new FormData();
@@ -96,9 +102,19 @@
 				method: 'POST',
 				body: formData
 			});
-			console.log(await response.json());
+            if (response.ok) {
+                const result = await response.json();
+                showSuccess = true;
+                setTimeout(() => {
+                    goto(FOLDER.DEFAULT_PAGE_LOCATION); 
+                }, 2000);
+            } else {
+                const errorData = await response.json();
+                showFailure = true;
+            }
 		} catch (err) {
 			console.error("Erreur lors de l'envoi du form : ", err);
+            showFailure = true;
 		}
     }
 
