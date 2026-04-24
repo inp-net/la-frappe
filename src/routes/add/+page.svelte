@@ -64,11 +64,11 @@
     // fonction de la séléction précédentes.
     $effect(() => {
         if (selectedSchool && selectedFiliaire) {
-            getNextSelection(`${selectedSchool}/${selectedFiliaire}`).then(list => {
+            getNextSelection(`${selectedSchool}/${selectedYear}/${selectedFiliaire}`).then(list => {
                 courseList = list;
             });
         } else if (selectedSchool) {
-            getNextSelection(selectedSchool).then(list => {
+            getNextSelection(`${selectedSchool}/${selectedYear}`).then(list => {
                 filiaireList = list;
             });
         } else {
@@ -137,14 +137,6 @@
                     placeholder="Choisir une école"
                     required
                 >École</Select>
-                <Select
-                    options={filiaireList}
-                    bind:value={selectedFiliaire}
-                    icon={SearchIcon}
-                    placeholder="Choisir une filiaire"
-                    disabled={!selectedSchool}
-                    required
-                >Filiaire</Select>
                 <Flex direction="column" gap="xxs">
                     <span>Année</span>
                     <ButtonGroup>
@@ -162,6 +154,14 @@
                         >3A</Button>
                     </ButtonGroup>
                 </Flex>
+                <Select
+                    options={filiaireList}
+                    bind:value={selectedFiliaire}
+                    icon={SearchIcon}
+                    placeholder="Choisir une filiaire"
+                    disabled={!selectedSchool}
+                    required
+                >Filiaire</Select>
                 <Select
                     options={courseList}
                     bind:value={selectedCourse}
