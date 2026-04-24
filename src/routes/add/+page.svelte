@@ -72,17 +72,19 @@
     // Met à jour la séléction possible matières/filiaires en temps réel en
     // fonction de la séléction précédentes.
     $effect(() => {
-        if (selectedSchool && selectedFiliaire) {
+        if (selectedSchool && selectedFiliaire && selectedYear) {
             getNextSelection(`${selectedSchool}/${selectedYear}/${selectedFiliaire}`).then(list => {
                 courseList = list;
             });
-        } else if (selectedSchool) {
+        }
+        if (selectedSchool && selectedYear) {
             getNextSelection(`${selectedSchool}/${selectedYear}`).then(list => {
                 filiaireList = list;
             });
-        } else {
-            filiaireList = [];
         }
+
+        if (!filiaireList.includes(selectedFiliaire)) selectedFiliaire = "";
+        if (!courseList.includes(selectedCourse)) selectedCourse = "";
     });
 
     async function sendFile() {
