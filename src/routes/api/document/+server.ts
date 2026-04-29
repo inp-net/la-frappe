@@ -7,6 +7,11 @@ import { FOLDER } from '$lib/constants';
 /** Taille maximale du fichier 10mo */
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
+/** Fonction qui vérifie que le fichier en input est un pdf.
+ * Vérifie la taille, l'extension et la signature du fichier.
+ * @param file File à vérifier.
+ * @return buffer du fichier.
+ */
 async function checkFileIntegrity(file : File | null) {
     if (!file) error(400, 'Fichier manquant.');
     if (file.size > MAX_FILE_SIZE) error(400, "Fichier trop volumineux.");
@@ -24,6 +29,11 @@ async function checkFileIntegrity(file : File | null) {
     return uint8Array;
 }
 
+/** Récupère les métadonnées du form et vérifie les champs.
+ * Renvoie un dictionnaire des données.
+ * @param data FormData.
+ * @return dictionnaire des champs du form.
+ */
 function checkMetadata(data : FormData) {
     const school = data.get('school') as string;
     const year = data.get('year') as string;
@@ -44,13 +54,22 @@ function checkMetadata(data : FormData) {
     return { school, year, filiaire, subject, category, date, corrige };
 }
 
+/** Sécurise les chemins.
+ * @param segment String du chemin (ex: ENSEEIHT/1A/SN).
+ * @return chemin sécurisé.
+ */
 function securePath(segment : string) {
     return segment
-        .replace(/\./g, '') // supprime les points
+        .replace(/\./g, '') // supprime les points (empêcher les ../)
         .replace(/[\\/:*?"<>|]/g, '_') // supprime les caractères interdits Windows/Linux
         .trim();
 }
 
+/** Fonction qui génère un chemin où enregistrer le fichier en fonction
+ * des metadonnées.
+ * @param metadonnés.
+ * @return chemin (ex: ENSEEIHT/1A/SN/Reseau/)
+ */
 function generatePath(metadata : ReturnType<typeof checkMetadata>) {
     const { school, year, filiaire, subject, category } = metadata;
     // TODO vérifier que l'école, le sujet, la filiaire exite
@@ -68,9 +87,14 @@ function generatePath(metadata : ReturnType<typeof checkMetadata>) {
         safeFiliaire, 
         safeSubject
     );
-
 }
 
+/** Fonction qui génère le nom du fichier en fonction des métadonnées.
+ * Fix les doublons en ajoutant un counter.
+ * Ex : TD 1.pdf
+ * @param metadonnées
+ * @return String nom du fichier.
+ */
 function generateName(metadata: ReturnType<typeof checkMetadata>) {
     const baseName = `${metadata.category} - ${metadata.date}`;
     let finalName = baseName;
@@ -86,6 +110,10 @@ function generateName(metadata: ReturnType<typeof checkMetadata>) {
     return finalName;
 }
 
+/** Fonction qui sauvegarde le fichier.
+ * @parma buffer: fichier dans un buffer Array 8 bits.
+ * @param metadonnées
+ */
 function saveFile(buffer: Uint8Array, metadata: ReturnType<typeof checkMetadata>) {
     // chemin final du fichier
     const path = join(generatePath(metadata), generateName(metadata));
