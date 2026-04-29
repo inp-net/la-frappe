@@ -107,7 +107,7 @@ function generateName(metadata: ReturnType<typeof checkMetadata>) {
 
     if (metadata.corrige === true.toString()) finalName = finalName + ' + corrige';
 
-    return finalName;
+    return finalName + '.pdf';
 }
 
 /** Fonction qui sauvegarde le fichier.
