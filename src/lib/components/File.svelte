@@ -57,7 +57,7 @@
 >
 <Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1">
     <Flex align="center">
-        <Box padding="xs">
+        <Box>
             {#if fileItem.isDirectory}
                 <Folder/>
             {:else}

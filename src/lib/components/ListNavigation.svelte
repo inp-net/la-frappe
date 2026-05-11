@@ -31,53 +31,59 @@
 
 </script>
 
-<Flex gap="lg" align="stretch"> <Frame style="display: flex; align-items: center;">
-        <Flex gap="md" align="center">
-            <Button icon={ChevronLeft} variant="ghost"
-                href={navigateBack()}
-            />
-            <!-- <div id="bar"></div> -->
-            <!-- <Button icon={ChevronRight} variant="ghost" name="Forward" /> -->
-        </Flex>
-    </Frame>
-
-    <div id="full">
-        <Frame style="height: 100%; display: flex; flex-grow: 3; align-items: center;">
-            <Flex gap="xs" align="center">
-                <Button variant="ghost"
-                    href={navigateRoot()}    
-                >
-                    <h4>{SEPARATOR}</h4>
-                </Button>
-
-                {#each current as folder, index}
-                    <!-- Pour l'espacement à droite à gauche -->
-                    <Box padding="xxs">
-                    <ChevronRight size={16} style="align-content: center; display: flex; justify-content: center;"/>
-                    </Box>
-                    <Button variant="ghost"
-                        href={getPathTo(index)}
-                    >
-                        <h4>{folder}</h4>
-                    </Button>
-                {/each}
-                
-                {#if current.length === 0}
-                    <h4 class="ghost-spacer" aria-hidden="true">&#8203;</h4>
-                {/if}
+<Flex direction="column">
+    <Flex gap="lg" align="stretch">
+        <!-- <Frame style="display: flex; align-items: center;"> -->
+            <Flex gap="md" align="center">
+                <Button icon={ChevronLeft} variant="ghost"
+                    href={navigateBack()}
+                />
+                <!-- <div id="bar"></div> -->
+                <!-- <Button icon={ChevronRight} variant="ghost" name="Forward" /> -->
             </Flex>
-        </Frame>
-    </div>
+        <!-- </Frame> -->
 
-    <Frame style="display: flex; align-items: center;">
-        <Flex align="center">
-            <Button 
-                icon={Plus} 
-                variant="ghost" 
-                href='/add'
-            />
-        </Flex>
-    </Frame>
+        <div id="full">
+            <Frame style="height: 100%; display: flex; flex-grow: 3; align-items: center;">
+                <Flex gap="xs" align="center">
+                    <Button variant="ghost"
+                        href={navigateRoot()}    
+                    >
+                        <h4>{SEPARATOR}</h4>
+                    </Button>
+
+                    {#each current as folder, index}
+                        <!-- Pour l'espacement à droite à gauche -->
+                        <Box padding="xxs">
+                        <ChevronRight size={16} style="align-content: center; display: flex; justify-content: center;"/>
+                        </Box>
+                        <Button variant="ghost"
+                            href={getPathTo(index)}
+                        >
+                            <h4>{folder}</h4>
+                        </Button>
+                    {/each}
+                    
+                    {#if current.length === 0}
+                        <h4 class="ghost-spacer" aria-hidden="true">&#8203;</h4>
+                    {/if}
+                </Flex>
+            </Frame>
+        </div>
+
+        <!-- <Frame style="display: flex; align-items: center;"> -->
+            <Flex align="center">
+                <Button 
+                    icon={Plus} 
+                    variant="ghost" 
+                    href='/add'
+                />
+            </Flex>
+        <!-- </Frame> -->
+    </Flex>
+    <Flex gap="lg" align="stretch">
+        <h3>Test</h3>
+    </Flex>
 </Flex>
 
 <style>

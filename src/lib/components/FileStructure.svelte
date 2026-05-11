@@ -29,8 +29,10 @@
 <Flex direction="column" gap="md" padding="xs">
 
     <ListNavigation/>
+
+    <hr/>
     
-    <Flex direction="column" padding="md" gap="xxs">
+    <Flex direction="column" gap="xxs">
         {#key current.join('/')}
             {#each filteredFiles as file}
                 <File
