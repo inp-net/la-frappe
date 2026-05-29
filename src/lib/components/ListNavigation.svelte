@@ -50,7 +50,7 @@
             onmouseleave={() => isHovered = false}
         >
             <Flex align="center">
-                <h4 class="label">Nouveau fichier</h4>
+                <h4 class="label">Nouveau document</h4>
                 <div class="right">
                     <Plus />
                 </div>

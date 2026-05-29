@@ -31,14 +31,8 @@
 </div>
 
 <style>
-    .ghost-spacer {
-        visibility: hidden;
-        width: 0;
-        margin: 0;
-    }
-
     .breadcrum {
-        background-color: var(--color-fg-solid);
+        background-color: var(--color-bg);
         border-radius: var(--corner-radius);
     }
 
