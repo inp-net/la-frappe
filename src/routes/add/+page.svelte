@@ -13,7 +13,8 @@
             Stack,
             ButtonGroup,
             Frame,
-            Switch
+            Switch,
+            TextInput
     } from 'azucar-ui';
 
     import {
@@ -214,7 +215,7 @@
                 >Type de document</Select>
                 <Flex direction="column" gap="xxs">
                     <span>Année du TD</span>
-                    <input type="number" bind:value={selectedDate} min="1900" max="2100" placeholder="2026"/>
+                    <TextInput type="number" placeholder="2026" min="1900" max="2100" step="1"></TextInput>
                 </Flex>
                 <Flex direction="column" gap="xxs">
                     <span>Contient corrigé ?</span>
