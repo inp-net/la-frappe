@@ -65,6 +65,9 @@
             {/if}
         </Box>
         <h3>{fileItem.name}</h3>
+        {#if fileItem.isDirectory}
+            <h4 style="margin-left: auto;">12 fichiers</h4>
+        {/if}
     </Flex>
 </Frame>
 </Button>
@@ -72,6 +75,7 @@
 <style>
 
     h3 {
+        text-decoration: none;
         text-transform: capitalize;
     }
 

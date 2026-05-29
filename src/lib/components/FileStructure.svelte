@@ -1,6 +1,8 @@
 <script lang="ts">
 
-    import ListNavigation from "./ListNavigation.svelte";
+    import ListNavigation from "$lib/components/ListNavigation.svelte";
+    import SearchBar from '$lib/components/SearchBar.svelte';
+
 
     import {
         Flex,
@@ -28,7 +30,13 @@
 <Box>
 <Flex direction="column" gap="md" padding="xs">
 
-    <ListNavigation/>
+    <Flex gap="lg" direction="column">
+        <ListNavigation />
+        <Flex>
+            <SearchBar />
+        </Flex>
+    </Flex>
+
 
     <hr/>
     
