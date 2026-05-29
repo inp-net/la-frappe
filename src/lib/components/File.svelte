@@ -7,7 +7,8 @@
         Flex,
         Frame,
         Box,
-        Button
+        Button,
+        Badge
     } from "azucar-ui"
 
     import {
@@ -64,6 +65,7 @@
                 <File/>
             {/if}
         </Box>
+        <Badge>Partiel</Badge>
         <h3>{fileItem.name}</h3>
         {#if fileItem.isDirectory}
             <h4 style="margin-left: auto;">12 fichiers</h4>

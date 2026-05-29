@@ -49,12 +49,12 @@
             onmouseenter={() => isHovered = true}
             onmouseleave={() => isHovered = false}
         >
-                <Flex align="center">
-                    <h4 class="label">Nouveau fichier</h4>
-                    <div class="right">
-                        <Plus />
-                    </div>
-                </Flex>
+            <Flex align="center">
+                <h4 class="label">Nouveau fichier</h4>
+                <div class="right">
+                    <Plus />
+                </div>
+            </Flex>
         </Frame>
     </a>
 </Flex>
