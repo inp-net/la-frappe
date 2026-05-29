@@ -58,14 +58,14 @@
 >
 <Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1">
     <Flex align="center">
-        <Box>
+        <Flex>
             {#if fileItem.isDirectory}
                 <Folder/>
             {:else}
                 <File/>
+                <Badge>Partiel</Badge>
             {/if}
-        </Box>
-        <Badge>Partiel</Badge>
+        </Flex>
         <h3>{fileItem.name}</h3>
         {#if fileItem.isDirectory}
             <h4 style="margin-left: auto;">12 fichiers</h4>

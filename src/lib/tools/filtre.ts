@@ -10,7 +10,7 @@ export const categoriesAccepted = [
 	'Diapositives'
 ] as const;
 
-export type Category = typeof categoriesAccepted[number];
+export type CategoryAccepted = typeof categoriesAccepted[number];
 
 // Fonction utilitaire pour normaliser les chemins (minuscules, pas de caractere special sauf _)
 export const normalize = (s: string) => s.trim().toLowerCase().replaceAll(/[\s&\/\\#,+()$~%.'":*?<>{}\-_]+/g, '_');
