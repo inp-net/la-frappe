@@ -9,7 +9,7 @@
         Box,
         Button,
         Badge
-    } from "azucar-ui"
+    } from "azucar-ui";
 
     import {
         Folder,
