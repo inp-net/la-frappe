@@ -1,0 +1,56 @@
+<script lang='ts'>
+
+    import { FOLDER } from '$lib/constants/index';
+
+    import {
+        Button,
+            Flex,
+            Stack,
+            ButtonGroup,
+            TextInput,
+            Frame
+    } from 'azucar-ui';
+
+    import {
+        SearchIcon
+    } from '@lucide/svelte';
+
+</script>
+
+<Flex direction="column" gap="xxl" margin="lg">
+
+    <Stack>
+        <Flex>
+        <h1>Ajouter un fichier</h1>
+        </Flex>
+        <p>Ajouter un fichier à la base de données.</p>
+    </Stack>
+
+    <Stack>
+        <Frame>
+        <Flex gap="md" direction="columns">
+            <Flex gap="md" wrap={true}>
+                <TextInput type="text" name="Test" placeholder="Nom...">Nom du fichier</TextInput>
+                <TextInput type="search" icon={SearchIcon} placeholder="Rechercher...">École</TextInput>
+                <TextInput type="search" icon={SearchIcon} placeholder="Rechercher...">Type de fichier</TextInput>
+            </Flex>
+            <Flex gap="xs" style="flex-grow: 1" justify='right'>
+                <Button variant="outline">Quitter</Button>
+                <Button class="success" name="Success">Valider</Button>
+            </Flex>
+        </Flex>
+        </Frame>
+    </Stack>
+    <Stack>
+    </Stack>
+
+</Flex>
+
+<style>
+    
+    .left {
+        flex-grow: 1;
+        justify-content: "right";
+    }
+
+</style>
