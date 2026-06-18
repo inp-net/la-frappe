@@ -61,7 +61,7 @@
 
 </script>
 
-<Flex direction="column" gap="xxl" margin="lg">
+<Flex direction="column" gap="xl" margin="lg">
     <Stack>
         <Flex>
         <h1
@@ -77,7 +77,7 @@
         <p>Sauve tes partiels.</p>
     </Stack>
 
-    <Stack>
+    <Stack style="max-width: 100%; min-width: 0;">
         <FileStructure
             fileItems={data.items}
             current={currentPath}
@@ -93,6 +93,12 @@
 
     #italic {
         font-style: italic;
+    }
+
+    @media (max-width: 600px) {
+        h1 {
+            font-size: 2.5rem;
+        }
     }
 
 </style>

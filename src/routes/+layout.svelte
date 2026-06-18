@@ -2,6 +2,7 @@
 	import favicon from '$lib/assets/favicon.svg';
     import "azucar-ui/tokens.css"
     import "azucar-ui/base.css"
+    import { onMount } from 'svelte';
 
     import {
         Sun,
@@ -27,14 +28,31 @@
     let h = $state(white_h);
     let isDarkTheme = $state(false);
     let iconTheme = $state(Moon);
-    // let cornerRadius = $state(1.5);
+
+    function getThemeFromCookie(): boolean {
+        if (typeof document === 'undefined') return false;
+        const match = document.cookie.match(new RegExp('(^| )theme=([^;]+)'));
+        return match ? match[2] === 'dark' : false;
+    }
+
+    function setThemeCookie(dark: boolean) {
+        document.cookie = `theme=${dark ? 'dark' : 'light'}; max-age=31536000; path=/; SameSite=Lax`;
+    }
+
+    onMount(() => {
+        isDarkTheme = getThemeFromCookie();
+        iconTheme = isDarkTheme ? Sun : Moon;
+    });
+
+    $effect(() => {
+        document.documentElement.style.setProperty('--base-color', `oklch(${l} ${c} ${h})`);
+        document.documentElement.style.setProperty('color-scheme', isDarkTheme ? 'dark' : 'light');
+    });
 
     function switchTheme() {
         isDarkTheme = !isDarkTheme;
-        l = isDarkTheme ? dark_l : white_l;
-        c = isDarkTheme ? dark_c : white_c;
-        h = isDarkTheme ? dark_h : white_h;
         iconTheme = isDarkTheme ? Sun : Moon;
+        setThemeCookie(isDarkTheme);
     } 
     
     $effect(() => {
@@ -51,7 +69,7 @@
 
 <div class="container">
     <div class ="sticky">
-        <Button icon={iconTheme} variant="outline" name="Move" 
+        <Button icon={iconTheme} variant="outline" name="Move" style="position: absolute; right: 10px;" 
             onclick={switchTheme}
         />
     </div>
@@ -80,8 +98,10 @@
     }
 
     .footer-container {
+        background-color: var(--color-bg-app);
         position: fixed;
-        bottom: 10px;
+        bottom: 0px;
+        padding: 10px 0px;
         left: 0;
         width: 100%;
         z-index: 10;

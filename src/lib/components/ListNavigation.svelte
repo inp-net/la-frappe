@@ -28,12 +28,14 @@
 
 </script>
 
-<Flex gap="lg" align="stretch">
-    <Frame style="display: flex; align-items: center; flex-grow: 3;">
-        <Flex gap="lg">
-            <Flex gap="md" align="center">
-                <Button icon={ChevronLeft} variant="ghost" href={navigateBack} />
+<Flex gap="md" align="stretch" wrap={false} style="max-width: 100%; min-width: 0; width: 100%;">
+    <Frame style="display: flex; align-items: center; flex-grow: 1; width: 100%; min-width: 0; overflow: hidden;">
+        <Flex gap="lg" wrap={false} style="width: 100%; min-width: 0; align-items: center;">
+                <div id="back-button">
+            <Flex gap="md" align="center" style="flex-shrink: 0;">
+                    <Button icon={ChevronLeft} variant="ghost" href={navigateBack} />
             </Flex>
+                </div>
 
             <div id="full">
                 <Breadcrumb file_list={cleanFolderList} onFolderClick={handleNavigation} />
@@ -41,15 +43,15 @@
         </Flex>
     </Frame>
 
-    <a href="/add">
+    <a href="/add" class="action-button-link">
         <Frame 
-            style="display: flex; align-items: center; flex-wrap: nowrap;"
+            style="display: flex; align-items: center; height: 100%; box-sizing: border-box;"
             border={isHovered} 
             shadow={isHovered}
             onmouseenter={() => isHovered = true}
             onmouseleave={() => isHovered = false}
         >
-            <Flex align="center">
+            <Flex align="center" wrap={false} style="height: 100%;">
                 <h4 class="label">Nouveau document</h4>
                 <div class="right">
                     <Plus />
@@ -72,14 +74,31 @@
         display: contents;
     }
 
+    .action-button-link {
+        flex-shrink: 0; 
+        display: flex;
+        align-items: stretch;
+        height: auto;
+    }
+
     .right {
         margin-left: auto; 
         display: flex;
         align-items: center;
     }
 
-    @media (max-width: 700px) {
+    #full {
+        flex-grow: 1;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    @media (max-width: 600px) {
         .label {
+            display: none;
+        }
+
+        #back-button {
             display: none;
         }
     }

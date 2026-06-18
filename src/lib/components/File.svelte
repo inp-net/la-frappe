@@ -63,12 +63,14 @@
                 <Folder/>
             {:else}
                 <File/>
-                <Badge>Partiel</Badge>
+                <div id="badge">
+                    <Badge>Partiel</Badge>
+                </div>
             {/if}
         </Flex>
         <h3>{fileItem.name}</h3>
         {#if fileItem.isDirectory}
-            <h4 style="margin-left: auto;">12 fichiers</h4>
+            <h4 style="margin-left: auto;" id="file-count">12 fichiers</h4>
         {/if}
     </Flex>
 </Frame>
@@ -79,6 +81,23 @@
     h3 {
         text-decoration: none;
         text-transform: capitalize;
+    }
+
+    #file-count {
+        margin-left: auto;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 500px) {
+        #file-count {
+            display: none;
+        }
+    }
+
+    @media (max-width: 400px) {
+        #badge {
+            display: none;
+        }
     }
 
 </style>
