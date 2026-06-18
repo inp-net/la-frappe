@@ -3,7 +3,7 @@ import { getFilesAt } from '$lib/tools/utils'
 import { FOLDER } from "$lib/constants/index"
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ locals }) => {
 
     const session = await locals.auth();
 
@@ -15,6 +15,7 @@ export const load: PageServerLoad = async () => {
     const schoolList = getFilesAt(root);
     const schoolNames: string[] = schoolList.map(item => item.name);
     return {
-        schoolNames
+        schoolNames,
+        user: session.user
     };
 };
