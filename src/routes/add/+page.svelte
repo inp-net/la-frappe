@@ -174,7 +174,7 @@
                     required
                 >École</Select>
                 <Flex direction="column" gap="xxs">
-                    <span>Année</span>
+                    <span class="required">Année</span>
                     <ButtonGroup>
                         <Button
                             variant={selectedYear === "1A" ? 'default' : 'outline'}
@@ -214,16 +214,15 @@
                     required
                 >Type de document</Select>
                 <Flex direction="column" gap="xxs">
-                    <span>Année du TD</span>
-                    <TextInput type="number" placeholder="2026" min="1900" max="2100" step="1"></TextInput>
+                    <TextInput type="number" placeholder="2026" min="1900" max="2100" step="1">Année du TD</TextInput>
                 </Flex>
                 <Flex direction="column" gap="xxs">
                     <span>Contient corrigé ?</span>
                     <Switch bind:checked={haveCorrige}/>
                 </Flex>
             </Flex>
-            <Flex gap="xs" direction="column">
-                <Flex gap="xs" align="center">
+            <Flex gap="xs" direction="column" wrap={false}>
+                <Flex gap="xs" align="baseline" wrap={false}>
                     <Info size="10px"/>
                     <span>Le corrigé (si disponible) doit être fusionné avec le sujet.</span>
                 </Flex>

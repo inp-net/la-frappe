@@ -30,23 +30,25 @@
 
 </script>
 
+<div class="root-layout-wrapper">
 <Box>
-<Flex direction="column" gap="md" padding="xs" style="max-width: 100%; width: 100%">
+<Flex direction="column" gap="md" padding="xs" style="max-width: 100%; width: 100%; min-width: 0;">
 
-    <Flex gap="sm" direction="column">
-        <ListNavigation />
-        <Flex wrap={true} style="max-width: 100%; width: 100%;">
+    <!-- cette div sert à scroll horizontalement les filtes indépendament de la page -->
+    <div class="filter-block">
+        <Flex gap="md" direction="column" style="maxWidth: '100%', minWidth: 0">
+            <ListNavigation />
             <div class="filters-wrapper">
                 <Filters 
                     filters={categoriesAccepted} 
-                    bind:activeIndexes={activeFilterIndexes}
+                    activeIndexes={activeFilterIndexes} 
                 />
             </div>
         </Flex>
-    </Flex>
+    </div>
 
 
-    <hr/>
+    <!-- <hr/> -->
     
     <Flex direction="column" gap="xxs">
         {#key current.join('/')}
@@ -60,12 +62,37 @@
 
 </Flex>
 </Box>
+</div>
 
 <style>
 
     .filters-wrapper {
         flex: 1;
         min-width: 0;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .root-layout-wrapper {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .filter-block {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    hr {
+        border-color: var(--color-bg);
+        background-color: var(--color-bg);
+        color: var(--color-bg);
+        height: 2px;
+        border: 0;
     }
 
 </style>

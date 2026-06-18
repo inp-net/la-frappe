@@ -13,20 +13,28 @@
 </script>
 
 <div class="breadcrum">
-    <Flex align="center" gap="xxs">
-        <Button variant="ghost" onclick={() => onFolderClick?.(-1)}>
-            <h4>/</h4>
-        </Button>
-
-        {#each file_list as folder, index}
-            <Box padding="xxs">
-                <ChevronRight size={16} style="display: flex; align-items: center;" />
-            </Box>
-            
-            <Button variant="ghost" onclick={() => onFolderClick?.(index)}>
-                <h4>{folder}</h4>
+    <Flex align="center" gap="xxs" style="width: 100%; max-width: 100%;">
+        
+        <div class="fixed-root">
+            <Button variant="ghost" onclick={() => onFolderClick?.(-1)}>
+                <h4>/</h4>
             </Button>
-        {/each}
+        </div>
+
+        <div class="scrollable-path">
+            <div class="scroll-content">
+                {#each file_list as folder, index}
+                    <Box padding="xxs" style="display: flex; align-items: center; flex-shrink: 0;">
+                        <ChevronRight size={16} />
+                    </Box>
+                    
+                    <Button variant="ghost" onclick={() => onFolderClick?.(index)} style="flex-shrink: 0;">
+                        <h4>{folder}</h4>
+                    </Button>
+                {/each}
+            </div>
+        </div>
+
     </Flex>
 </div>
 
@@ -34,6 +42,36 @@
     .breadcrum {
         background-color: var(--color-bg);
         border-radius: var(--corner-radius);
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .fixed-root {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .scrollable-path {
+        flex: 1;
+        overflow-x: auto;
+        scrollbar-width: none;
+        display: flex;
+        align-items: center;
+    }
+
+    .scrollable-path::-webkit-scrollbar {
+        display: none;
+    }
+
+    .scroll-content {
+        display: flex;
+        align-items: center;
+        gap: var(--size-xxs, 4px);
+        min-width: max-content;
     }
 
     h4 {

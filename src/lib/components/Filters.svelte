@@ -53,7 +53,7 @@
 </script>
 
 <div class="scrollable">
-    <Flex gap="xs" wrap={false}>
+    <Flex gap="xs" wrap={false} style="min-width: max-content;">
         {#each sortedFilters as { name, originalIndex, isTous }}
             {@const isActive = isTous ? isTousActive : activeIndexes.includes(originalIndex)}
             
@@ -98,5 +98,6 @@
     .filter-btn {
         flex-shrink: 0;
         display: inline-block;
+        white-space: nowrap; /* Forces badges to stay perfectly side-by-side */
     }
 </style>

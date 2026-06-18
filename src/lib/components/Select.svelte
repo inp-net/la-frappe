@@ -69,7 +69,6 @@
 
     .label {
         font: inherit;
-        color: var(--color-fg-low);
         width: 100%
     }
 
@@ -153,5 +152,10 @@
 
     .required-star {
         color: var(--color-danger);
+    }
+
+    .input-wrapper select:focus-visible {
+        outline: 2px solid var(--color-border-focus);
+        outline-offset: 4px;
     }
 </style>
