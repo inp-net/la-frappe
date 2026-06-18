@@ -3,11 +3,13 @@
     import "azucar-ui/tokens.css"
     import "azucar-ui/base.css"
     import { onMount } from 'svelte';
+    import { signOut } from "@auth/sveltekit/client";
 
     import {
         Sun,
         Moon,
-        Heart
+        Heart,
+        PowerOff
     } from '@lucide/svelte';
 
     import {
@@ -69,9 +71,14 @@
 
 <div class="container">
     <div class ="sticky">
-        <Button icon={iconTheme} variant="outline" name="Move" style="position: absolute; right: 10px;" 
-            onclick={switchTheme}
-        />
+        <Flex style="position: absolute; right: 10px;" gap="xs">
+            <Button icon={iconTheme} variant="outline" name="Move"
+                onclick={switchTheme}
+            />
+            <Button icon={PowerOff} name="Move"
+                onclick={() => signOut("authentik", { callbackUrl: "/" })}
+            />
+        </Flex>
     </div>
     {@render children()}
     <footer class="footer-container">
