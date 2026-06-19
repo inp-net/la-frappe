@@ -3,19 +3,12 @@
     import ListNavigation from "$lib/components/ListNavigation.svelte";
     import SearchBar from '$lib/components/SearchBar.svelte';
     import Filters from '$lib/components/Filters.svelte';
-
-    import {
-        Flex,
-        Box
-    } from "azucar-ui"
-
     import File from "./File.svelte";
-
-    import type { FileItem } from '$lib/store/types';
-    import { categoriesAccepted } from '$lib/tools/filtre';
+    import { type FileData, DocumentTypes } from '$lib/types/types.d';
+    import { Flex, Box } from "azucar-ui"
 
     interface Props {
-        fileItems?: FileItem[];
+        fileItems?: FileData[];
         isFolders?: boolean[];
         current?: string[]; 
     };
@@ -40,8 +33,8 @@
             <ListNavigation />
             <div class="filters-wrapper">
                 <Filters 
-                    filters={categoriesAccepted} 
-                    activeIndexes={activeFilterIndexes} 
+                    filters={Object.values(DocumentTypes)}
+                    activeIndexes={activeFilterIndexes}
                 />
             </div>
         </Flex>

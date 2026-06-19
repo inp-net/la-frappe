@@ -15,7 +15,7 @@
         <h1>La Frappe</h1>
         <p>Explorateur de partiels.</p>
         <Flex>
-        <Button onclick={() => signIn("authentik", { callbackUrl: "/browse/" })}> Se connecter </Button>
+            <Button onclick={() => signIn("authentik", { callbackUrl: "/browse/" })}> Se connecter </Button>
         </Flex>
     </Stack>
 </Flex>

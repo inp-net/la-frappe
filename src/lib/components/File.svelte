@@ -1,27 +1,14 @@
 <script lang="ts">
 
-    import { FOLDER } from '$lib/constants/index';
     import type { HTMLAttributes } from 'svelte/elements';
-
-    import {
-        Flex,
-        Frame,
-        Box,
-        Button,
-        Badge
-    } from "azucar-ui";
-
-    import {
-        Folder,
-        File
-    } from '@lucide/svelte';
-
-    import type { FileItem } from '$lib/store/types';
+    import { StoragePaths, type FileData } from '$lib/types/types.d';
+    import { Flex, Frame, Button, Badge } from "azucar-ui";
+    import { Folder, File } from '@lucide/svelte';
 
     let isHovered = $state(false);
 
     type Props = HTMLAttributes<HTMLElement> & {
-        fileItem: FileItem;
+        fileItem: FileData;
     };
 
     let {
@@ -38,12 +25,12 @@
 
     /** Position réel du fichier dans le serveur. */
     let filePath = $derived(
-        `/${FOLDER.DEFAULT_DB_LOCATION}${realPath}`.replace(/\/+/g, '/')
+        `/${StoragePaths.DEFAULT_DB_LOCATION}${realPath}`.replace(/\/+/g, '/')
     );
 
     /** Position de la page (svelte) pour naviger dans la DB. */
     let href = $derived(
-        `/${FOLDER.DEFAULT_PAGE_LOCATION}${realPath}`.replace(/\/+/g, '/')
+        `/${StoragePaths.DEFAULT_PAGE_LOCATION}${realPath}`.replace(/\/+/g, '/')
     );
 
 </script>
