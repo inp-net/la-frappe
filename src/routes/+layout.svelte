@@ -83,9 +83,12 @@
     {@render children()}
     <footer class="footer-container">
         <Flex align="center" justify="center" gap="md">
-            <p>Made with Svelte</p>
+            <p>Made with Azucar-UI</p>
             <Button icon={Heart} class="danger-text" name="Delete" />
-            <p>Azucar-UI</p>
+            <Flex wrap={false} align="center" gap="xs">
+                <p>By</p>
+                <img src="/net7.svg" alt="net7" width="50" height="50" style="position: inline-block; top: 10px; transform: translateY(-5px)"/>
+            </Flex>
         </Flex>
     </footer>
 </div>
