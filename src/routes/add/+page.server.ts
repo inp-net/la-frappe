@@ -1,7 +1,8 @@
 import { resolve } from 'path';
-import { getFilesAt } from '$lib/tools/utils'
-import { FOLDER } from "$lib/constants/index"
-import type { PageServerLoad } from "./$types";
+import { redirect } from '@sveltejs/kit';
+import { StoragePaths } from '$lib/types/types.d';
+import { getFilesAt } from '$lib/server/fileService';
+import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 
@@ -11,7 +12,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         throw redirect(303, '/');
     }
 
-    const root = resolve(FOLDER.DEFAULT_DB_LOCATION);
+    const root = resolve(StoragePaths.DEFAULT_DB_LOCATION);
     const schoolList = getFilesAt(root);
     const schoolNames: string[] = schoolList.map(item => item.name);
     return {
