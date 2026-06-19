@@ -1,8 +1,7 @@
-import { categoriesAccepted } from '$lib/tools/filtre';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
-import { FOLDER } from '$lib/constants';
+import { DocumentTypes, StoragePaths } from '$lib/types/types.d';
 
 /** Taille maximale du fichier 10mo */
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -43,10 +42,12 @@ function checkMetadata(data : FormData) {
     const date = data.get('date') as string;
     const corrige = data.get('corrige') as string;
 
+    const documentTypes: string[] = Object.values(DocumentTypes);
+
     // WARN ne pas vérifier ici que les écoles existe!
     // Vérifier si il y a un string malicieux avant(../ , caractère interdit , ...)
 
-    if (!categoriesAccepted.includes(category)) error(400, "Catégorie invalide");
+    if (!documentTypes.includes(category)) error(400, "Catégorie invalide");
     if (!subject || subject.length > 50) error(400, "Sujet invalide");
     if (!filiaire || filiaire.length > 50) error(400, "Filiaire invalide");
     if (!school || school.length > 50) error(400, "Sujet invalide");
@@ -81,7 +82,7 @@ function generatePath(metadata : ReturnType<typeof checkMetadata>) {
     const safeSubject = securePath(subject);
     
     return join(
-        resolve(FOLDER.DEFAULT_DB_LOCATION), 
+        resolve(StoragePaths.DEFAULT_DB_LOCATION), 
         safeSchool, 
         safeYear, 
         safeFiliaire, 
