@@ -39,9 +39,6 @@
             </div>
         </Flex>
     </div>
-
-
-    <!-- <hr/> -->
     
     <Flex direction="column" gap="xxs">
         {#key current.join('/')}
@@ -78,14 +75,6 @@
         display: block;
         width: 100%;
         max-width: 100%;
-    }
-
-    hr {
-        border-color: var(--color-bg);
-        background-color: var(--color-bg);
-        color: var(--color-bg);
-        height: 2px;
-        border: 0;
     }
 
 </style>
