@@ -36,7 +36,7 @@ flat/
 - ...
 ```
 
-À l'intérieur des fichiers UEs. Il y a tous les pdfs associé à cette UE.
+À l'intérieur des dossiers UEs. Il y a tous les pdfs associés à cette UE.
 
 Il y a aussi systématiquement un fichier `metadata.json` :
 
