@@ -25,7 +25,7 @@ en prenant en compte les UE dupliqués (une UE commune à plusieurs filiaires).
 
 La base de donné est structuré de cette manière :
 
-1. Un répertoire flat qui contient une liste d'UE.
+#### Répertoire flat
 
 ```
 flat/
@@ -60,7 +60,7 @@ une liste. Par exemple :
 }
 ```
 
-2. Répertoire arbre
+#### Répertoire arbre
 
 Le répertoire arbre est entièrement généré par [generate-hierachy](generate-hierachy.js).
 
@@ -88,9 +88,7 @@ Les types sont définies dans [types.d.ts](src/lib/types/types.d.ts).
 
 Ce fichier contient touts les utilitaires pour le projet.
 
-#### API recherche de fichiers
-
-GET: [get-files-at](src/routes/get-files-at/+server.ts)
+#### get-files-at
 
 Nécéssite d'être authentifié.
 
@@ -99,10 +97,12 @@ absolue.
 
 Renvoie une liste de `FileData`.
 
-#### API ajout de document
+GET: [get-files-at](src/routes/get-files-at/+server.ts)
 
-POST: [add-document](src/routes/add-document/+server.ts)
+#### add-document
 
 Nécéssite d'être authentifié.
 
 Cette API permet d'ajouter un document à la DB.
+
+POST: [add-document](src/routes/add-document/+server.ts)
