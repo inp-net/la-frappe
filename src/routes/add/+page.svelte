@@ -58,7 +58,7 @@
         }
         try {
             const pathParam = `${StoragePaths.DEFAULT_DB_LOCATION}/${selected}`;
-            const response = await fetch(`/api/dirs?path=${encodeURIComponent(pathParam)}`);
+            const response = await fetch(`/api/get-files-at?path=${encodeURIComponent(pathParam)}`);
             if (!response.ok) throw new Error('Impossible de récupérer la séléction suivante');
             const data: { name: string; isDirectory: boolean }[] = await response.json();
             const listName = data.map(item => item.name);
@@ -113,7 +113,7 @@
 		formData.append('date', selectedDate.toString());
         formData.append('corrige', haveCorrige.toString());
 		try {
-			const response = await fetch('/api/document', {
+			const response = await fetch('/api/add-document', {
 				method: 'POST',
 				body: formData
 			});
