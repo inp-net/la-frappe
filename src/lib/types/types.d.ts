@@ -1,10 +1,3 @@
-/** Le struct qui représente un fichier. */
-export type FileData = {
-    name: string;
-    isDirectory: boolean;
-    path?: string[]; // la liste des fichiers chemins
-}
-
 /** Les types de documents acceptés. */
 export enum DocumentTypes {
     PARTIEL = 'Partiel',
@@ -23,4 +16,12 @@ export enum StoragePaths {
     DEFAULT_PAGE_LOCATION = 'browse/',
     DEFAULT_DB_LOCATION = 'static/frappe_tree',
     DEFAULT_SUBJECT_LOCATION = 'static/uploads',
+}
+
+/** Le struct qui représente un fichier. */
+export type FileData = {
+    name: string;
+    isDirectory: boolean;
+    path?: string[]; // la liste des fichiers chemins
+    type?: DocumentType;
 }

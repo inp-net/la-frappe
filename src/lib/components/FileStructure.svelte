@@ -14,11 +14,13 @@
 
     let { fileItems = [], current = $bindable([]) }: Props = $props();
 
-    let filteredFiles = $derived(
+    let filteredFiles: FileData[] = $derived(
         fileItems.filter(file => file.name !== 'metadata.json')
     );
 
-    let activeFilterIndexes = $state<number[]>([]);
+    const filters: string[] = Object.values(DocumentTypes);
+    let activeFiltersIndexes = $state<number[]>([]);
+    let activeFilters = $state<string[]>([]);
 
 </script>
 
@@ -37,8 +39,8 @@
                 <ListNavigation />
                 <div class="filters-wrapper">
                     <Filters 
-                        filters={Object.values(DocumentTypes)}
-                        activeIndexes={activeFilterIndexes}
+                        filters={filters}
+                        bind:activeIndexes={activeFiltersIndexes}
                     />
                 </div>
             </Flex>
@@ -48,11 +50,18 @@
         <Flex direction="column" gap="xxs">
             {#key current.join('/')}
                 {#each filteredFiles as file}
-                    <File
-                        fileItem={file}
-                    />
+                    {#if
+                        file.isDirectory ||
+                        activeFiltersIndexes.length === 0 ||
+                        activeFiltersIndexes.map(i => filters[i].toLowerCase()).includes(file.type?.toLowerCase())
+                    }
+                        <File
+                            fileItem={file}
+                        />
+                    {/if}
                 {/each}
             {/key}
+            <span style="height: 100px;"></span>
         </Flex>
 
     </Flex>

@@ -48,41 +48,29 @@
     onmouseleave={() => isHovered = false}
 >
 <Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1">
-    <Flex align="center">
-        <Flex>
+    <Flex align="center" wrap={false}>
+        <Flex wrap={false}>
             {#if fileItem.isDirectory}
                 <Folder/>
             {:else}
                 <File/>
-                <div id="badge">
-                    <Badge>Partiel</Badge>
-                </div>
             {/if}
         </Flex>
-        <h3>{fileItem.name}</h3>
-        {#if fileItem.isDirectory}
-            <h4 style="margin-left: auto;" id="file-count">12 fichiers</h4>
-        {/if}
+        <h3 class="file-name">{fileItem.name}</h3>
     </Flex>
 </Frame>
 </Button>
 
 <style>
 
-    h3 {
+    .file-name {
         text-decoration: none;
         text-transform: capitalize;
-    }
-
-    #file-count {
-        margin-left: auto;
         white-space: nowrap;
-    }
-
-    @media (max-width: 500px) {
-        #file-count {
-            display: none;
-        }
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+        flex-shrink: 1;
     }
 
     @media (max-width: 400px) {
