@@ -47,7 +47,7 @@
         </div>
 
         <!-- affiche l'arborescence courante dans FileStructure -->
-        <Flex direction="column" gap="xxs">
+        <Flex direction="column" gap="xxs" style="z-index: -1;">
             {#key current.join('/')}
                 {#each filteredFiles as file}
                     {#if
