@@ -1,7 +1,7 @@
 import { readdirSync, statSync, existsSync } from 'fs';
 import { join } from 'path';
 import { error } from '@sveltejs/kit';
-import type { FileData } from '$lib/types/types.d';
+import { type FileData, DocumentTypes } from '$lib/types/types.d';
 
 //
 // Service server side pour la gestion de fichiers
@@ -18,8 +18,15 @@ export function getFilesAt(relativePath: string): FileData[] {
     }
     const files: FileData[] = readdirSync(relativePath).map(name => ({
         name: name,
-        isDirectory: statSync(join(relativePath, name)).isDirectory()
+        isDirectory: statSync(join(relativePath, name)).isDirectory(),
+        path: relativePath,
+        // Le nom du fichier définie son type, pas besoin de métadonnées
+        type: (Object.values(DocumentTypes).find(
+            type => type.toLowerCase() === name.split(" - ")[0].toLowerCase()
+        ) ?? DocumentTypes.AUTRE) as DocumentTypes
     }));
+
+    console.log(files);
 
     return files;
 }
