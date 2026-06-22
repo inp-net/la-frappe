@@ -28,6 +28,7 @@ export type FileData = {
 
 /** Informations nécéssaires pour l'ajout d'un document. */
 export type DocumentInfo = {
+    file: string;
     school: string;
     year: string;
     filiaire: string;

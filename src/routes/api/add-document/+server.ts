@@ -29,8 +29,12 @@ function validateMetadata(fields: DocumentInfo) {
         validated[key] = safe;
     }
 
+    console.log(validated);
+
     // Valider les catégories séparéments car c'est un enum
     const documentTypes = Object.values(DocumentTypes);
+    console.log(documentTypes);
+    console.log(validated.category);
     if (!documentTypes.includes(validated.category)) {
         error(400, "Invalid category");
     }
@@ -120,7 +124,7 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
     }
 
     try {
-        writeFileSync(path, Buffer.from(buffer), { mode: 0o644 });
+        writeFileSync(fullPath, Buffer.from(buffer), { mode: 0o644 });
     } catch (err) {
         console.error(err)
         error(500, "Erreur d'écriture du fichier");
@@ -142,7 +146,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     const fileContent = await checkFileIntegrity(data.get('file') as File);
 
-    const metadata = checkMetadata(data);
+    const rawFields = Object.fromEntries(data.entries()) as unknown as DocumentInfo;
+    delete rawFields.file;
+    const metadata = validateMetadata(rawFields);
 
     saveFile(fileContent, metadata);
 

@@ -213,7 +213,7 @@
                     required
                 >Type de document</Select>
                 <Flex direction="column" gap="xxs">
-                    <TextInput type="number" placeholder="2026" min="1900" max="2100" step="1">Année du TD</TextInput>
+                    <TextInput type="number" bind:value={selectedDate} placeholder="2026" min="1900" max="2100" step="1">Année du TD</TextInput>
                 </Flex>
                 <Flex direction="column" gap="xxs">
                     <span>Contient corrigé ?</span>
