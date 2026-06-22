@@ -1,10 +1,42 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
-import { DocumentTypes, StoragePaths } from '$lib/types/types.d';
+import { DocumentTypes, StoragePaths, type DocumentInfo } from '$lib/types/types.d';
+import { securePath } from '$lib/server/fileService';
 
 /** Taille maximale du fichier 10mo */
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
+/** Position par défaut de la DB. */
+const BASE_DIR = resolve(StoragePaths.DEFAULT_DB_LOCATION);
+
+/** Fonction qui vérifie l'intégrité des métadonnées.
+ * @param fields : DocumentInfo données du formulaires.
+ * @throw error 400 si invalide.
+ */
+function validateMetadata(fields: DocumentInfo) {
+    const validated: DocumentInfo = {};
+    
+    for (const [key, value] of Object.entries(fields)) {
+        if (!value || typeof value !== 'string') {
+            error(400, `Missing or invalid ${key}`);
+        }
+        
+        const safe = securePath(value);
+        if (!safe) {
+            error(400, `Invalid characters in ${key}`);
+        }
+        
+        validated[key] = safe;
+    }
+
+    // Valider les catégories séparéments car c'est un enum
+    const documentTypes = Object.values(DocumentTypes);
+    if (!documentTypes.includes(validated.category)) {
+        error(400, "Invalid category");
+    }
+
+    return validated;
+};
 
 /** Fonction qui vérifie que le fichier en input est un pdf.
  * Vérifie la taille, l'extension et la signature du fichier.
@@ -28,66 +60,22 @@ async function checkFileIntegrity(file : File | null) {
     return uint8Array;
 }
 
-/** Récupère les métadonnées du form et vérifie les champs.
- * Renvoie un dictionnaire des données.
- * @param data FormData.
- * @return dictionnaire des champs du form.
- */
-function checkMetadata(data : FormData) {
-    const school = data.get('school') as string;
-    const year = data.get('year') as string;
-    const filiaire = data.get('filiaire') as string;
-    const subject = data.get('subject') as string;
-    const category = data.get('category') as string;
-    const date = data.get('date') as string;
-    const corrige = data.get('corrige') as string;
-
-    const documentTypes: string[] = Object.values(DocumentTypes);
-
-    // WARN ne pas vérifier ici que les écoles existe!
-    // Vérifier si il y a un string malicieux avant(../ , caractère interdit , ...)
-
-    if (!documentTypes.includes(category)) error(400, "Catégorie invalide");
-    if (!subject || subject.length > 50) error(400, "Sujet invalide");
-    if (!filiaire || filiaire.length > 50) error(400, "Filiaire invalide");
-    if (!school || school.length > 50) error(400, "Sujet invalide");
-
-    return { school, year, filiaire, subject, category, date, corrige };
-}
-
-/** Sécurise les chemins.
- * @param segment String du chemin (ex: ENSEEIHT/1A/SN).
- * @return chemin sécurisé.
- */
-function securePath(segment : string) {
-    return segment
-        .replace(/\./g, '') // supprime les points (empêcher les ../)
-        .replace(/[\\/:*?"<>|]/g, '_') // supprime les caractères interdits Windows/Linux
-        .trim();
-}
-
 /** Fonction qui génère un chemin où enregistrer le fichier en fonction
  * des metadonnées.
  * @param metadonnés.
  * @return chemin (ex: ENSEEIHT/1A/SN/Reseau/)
  */
-function generatePath(metadata : ReturnType<typeof checkMetadata>) {
+function generatePath(metadata : DocumentInfo) {
     const { school, year, filiaire, subject, category } = metadata;
-    // TODO vérifier que l'école, le sujet, la filiaire exite
 
-    // retire toutes les injections malicieuse de string (../ , caractères interdit, ...)
-    const safeSchool = securePath(school);
-    const safeYear = securePath(year);
-    const safeFiliaire = securePath(filiaire);
-    const safeSubject = securePath(subject);
+    const relativePath = join(school, year, filiaire, subject);
+    const fullPath = resolve(BASE_DIR, relativePath);
     
-    return join(
-        resolve(StoragePaths.DEFAULT_DB_LOCATION), 
-        safeSchool, 
-        safeYear, 
-        safeFiliaire, 
-        safeSubject
-    );
+    if (!fullPath.startsWith(BASE_DIR)) {
+        error(403, "Access Denied.");
+    }
+    
+    return fullPath;
 }
 
 /** Fonction qui génère le nom du fichier en fonction des métadonnées.
@@ -96,17 +84,24 @@ function generatePath(metadata : ReturnType<typeof checkMetadata>) {
  * @param metadonnées
  * @return String nom du fichier.
  */
-function generateName(metadata: ReturnType<typeof checkMetadata>) {
-    const baseName = `${metadata.category} - ${metadata.date}`;
+function generateName(metadata: DocumentInfo) {
+    const { category, date, corrige } = metadata;
+    
+    let baseName = `${category} - ${date}`;
+    baseName = baseName.replace(/[\/\\]/g, '_');
+    
+    const filePath = generatePath(metadata);
     let finalName = baseName;
     let counter = 1;
 
-    while (existsSync(`${generatePath(metadata)}/${finalName}`)) {
+    while (existsSync(join(filePath, finalName + '.pdf'))) {
         finalName = `${baseName} - ${counter}`;
         counter++;
     }
 
-    if (metadata.corrige === true.toString()) finalName = finalName + ' + corrige';
+    if (corrige === 'true') {
+        finalName = finalName + ' + corrige';
+    }
 
     return finalName + '.pdf';
 }
@@ -115,13 +110,17 @@ function generateName(metadata: ReturnType<typeof checkMetadata>) {
  * @parma buffer: fichier dans un buffer Array 8 bits.
  * @param metadonnées
  */
-function saveFile(buffer: Uint8Array, metadata: ReturnType<typeof checkMetadata>) {
-    // chemin final du fichier
-    const path = join(generatePath(metadata), generateName(metadata));
-    // TODO vérifier l'existence du chemin
+function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
+    const dirPath = generatePath(metadata);
+    const fileName = generateName(metadata);
+    const fullPath = join(dirPath, fileName);
+
+    if (!fullPath.startsWith(BASE_DIR)) {
+        error(403, "Access denied");
+    }
 
     try {
-        writeFileSync(path, Buffer.from(buffer));
+        writeFileSync(path, Buffer.from(buffer), { mode: 0o644 });
     } catch (err) {
         console.error(err)
         error(500, "Erreur d'écriture du fichier");

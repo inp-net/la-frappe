@@ -33,3 +33,36 @@ export function getFilesAt(relativePath: string): FileData[] {
  * @param s : string à normaliser.
  */
 export const normalizePath = (s: string) => s.trim().toLowerCase().replaceAll(/[\s&\/\\#,+()$~%.'":*?<>{}\-_]+/g, '_');
+
+/** Sécurise les chemins.
+ * @param segment String du chemin (ex: ENSEEIHT/1A/SN).
+ * @return chemin sécurisé.
+ */
+export function securePath(input: string): string | null {
+    // Vérifie le type
+    if (typeof input !== 'string' || !input || input.length > 100) {
+        return null;
+    }
+
+    // Decode l'URL
+    try {
+        input = decodeURIComponent(input);
+    } catch {
+        return null;
+    }
+
+    // Supprime bytes null
+    if (input.includes('\0')) return null;
+
+    // Bloquage navigations
+    if (/\.\./.test(input) || /\/\.\//.test(input) || /^\.\//.test(input)) {
+        return null;
+    }
+
+    // Autoriser seulement caractères safe
+    if (!/^[a-zA-Z0-9\-_ ]+$/.test(input)) {
+        return null;
+    }
+
+    return input;
+}
