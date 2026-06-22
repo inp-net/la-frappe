@@ -6,6 +6,15 @@ import { join, resolve } from 'node:path';
 
 // Permet de créer un dossier avec un json de metadata et les categories pour une matiere dans le dossier flat d'upload
 export const POST: RequestHandler = async ({ request }) => {
+
+    // TODO gérer les admins en DB
+    return json({ 
+        error: 'Not Implemented', 
+        message: 'Cet endpoint est en cours de construction.' 
+    }, { status: 501 });
+
+    // ------
+
 	const data = await request.formData();
 	const rawSubject = data.get('subject') as string;
 

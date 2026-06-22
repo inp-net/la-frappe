@@ -5,6 +5,15 @@ import { join, resolve } from 'path';
 
 // permet d'ajouter dans les paths les ecole/filiere etc... qui utilisent cette matiere
 export const POST: RequestHandler = async ({ request }) => {
+
+    // TODO gérer les admins en DB
+    return json({ 
+        error: 'Not Implemented', 
+        message: 'Cet endpoint est en cours de construction.' 
+    }, { status: 501 });
+
+    // ------
+
 	const data = await request.formData();
 
 	const school = data.get('school') as string;
