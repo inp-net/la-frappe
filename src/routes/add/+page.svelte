@@ -55,7 +55,7 @@
             return [];
         }
         try {
-            const pathParam = `${StoragePaths.DEFAULT_DB_LOCATION}/${selected}`;
+            const pathParam = `${StoragePaths.DEFAULT_DB_LOCATION}/${selected}/`;
             const response = await fetch(`/api/get-files-at?path=${encodeURIComponent(pathParam)}`);
             if (!response.ok) throw new Error('Impossible de récupérer la séléction suivante');
             const data: { name: string; isDirectory: boolean }[] = await response.json();
