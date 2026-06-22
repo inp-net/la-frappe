@@ -44,9 +44,6 @@
     let courseList = $state<string[]>([]);
     let documentTypes: string[] = $derived([...Object.values(DocumentTypes)]);
 
-    let showSuccess = $state(false);
-    let showFailure = $state(false);
-
     /** Fonction qui récupère une liste des noms de fichiers à partir du chemin
     * relatif dans la DB. Utilise l'api get-files-at.
     * @param selected : string chemin relatif dans la DB.
@@ -102,8 +99,8 @@
     /** Fonction qui envoie le form au serveur. */
     async function sendFile() {
         if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedFiliaire) {
+            toast.error("Formulaire incomplet.")
             console.error("Formulaire incomplet");
-            showFailure = true;
             return;
         }
         let formData = new FormData();
@@ -116,23 +113,24 @@
 		formData.append('date', selectedDate.toString());
         formData.append('corrige', haveCorrige.toString());
 		try {
+            toast("Envoie du formulaire en cours.")
 			const response = await fetch('/api/add-document', {
 				method: 'POST',
 				body: formData
 			});
             if (response.ok) {
                 const result = await response.json();
-                showSuccess = true;
+                toast.success("Formulaire envoyé avec succès. Redirection en cours ...")
                 setTimeout(() => {
                     goto(StoragePaths.DEFAULT_PAGE_LOCATION); 
                 }, 2000);
             } else {
+                toast.error("Erreur lors de l'envoi du formulaire.")
                 const errorData = await response.json();
-                showFailure = true;
             }
 		} catch (err) {
+            toast.error("Erreur lors de l'envoi du formulaire : " + err)
 			console.error("Erreur lors de l'envoi du form : ", err);
-            showFailure = true;
 		}
     }
 
@@ -236,7 +234,7 @@
         </Flex>
         </Frame>
     </Stack>
-    <Stack>
-    </Stack>
+
+    <Toaster  richColors />
 
 </Flex>
