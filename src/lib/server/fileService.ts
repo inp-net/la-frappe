@@ -26,8 +26,6 @@ export function getFilesAt(relativePath: string): FileData[] {
         ) ?? DocumentTypes.AUTRE) as DocumentTypes
     }));
 
-    console.log(files);
-
     return files;
 }
 
