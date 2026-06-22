@@ -1,4 +1,5 @@
-import { categoriesAccepted, normalize } from '$lib/tools/filtre';
+import { DocumentTypes } from '$lib/types/types.d';
+import { normalizePath } from '$lib/server/fileService';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -12,7 +13,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(400, 'Matiere manquante.');
 	}
 
-	const subject = normalize(rawSubject); // Normalisation du nom
+	const subject = normalizePath(rawSubject); // Normalisation du nom
 
 	if (subject.length > 100) {
 		error(400, 'Le nom de la matière ne doit pas dépasser 100 caractères.');
@@ -41,7 +42,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		error(500, "Erreur lors de l'écriture du fichier metadata.");
 	}
 
-	categoriesAccepted.forEach((category) => {
+	Object.values(DocumentTypes).forEach((category) => {
 		const categoryPath = join(storageDir, category);
 		try {
 			mkdirSync(categoryPath);
@@ -63,7 +64,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 		error(400, 'Matiere manquante.');
 	}
 
-	const subject = normalize(rawSubject);
+	const subject = normalizePath(rawSubject);
 	const storageDir = join(resolve('static/uploads'), subject);
 	if (!existsSync(storageDir)) {
 		error(400, "La matière n'existe pas.");
@@ -80,7 +81,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 		}
 	}
 
-	categoriesAccepted.forEach((category) => {
+	Object.values(DocumentTypes).forEach((category) => {
 		const categoryPath = join(storageDir, category);
 		if (!existsSync(categoryPath)) {
 			try {

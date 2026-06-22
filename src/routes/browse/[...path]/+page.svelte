@@ -1,15 +1,12 @@
 <script lang="ts">
 
-    import {
-        Flex,
-        Stack
-    } from 'azucar-ui';
-
+    import { Flex, Stack } from 'azucar-ui';
     import FileStructure from '$lib/components/FileStructure.svelte'
     import { fly } from 'svelte/transition'
     import type { PageData } from './$types';
+    import type { FileData } from '$lib/types/types.d';
 
-    let funWords = [
+    const funWords = [
         "atomique 🤯",
         "à Pelé ⚽",
         "nucléaire ☢️",
@@ -48,16 +45,10 @@
 		funWord = funWords[Math.floor(Math.random() * funWords.length)];
 	}
 
-    // Api
     let { data }: { data: PageData } = $props();
 
-    interface FileItem {
-        name: string;
-        isDirectory: boolean;
-    }
-
-    let items = $derived(data.items as FileItem[]);
-    const currentPath = data.currentPath.split("/");
+    let files: FileData[] = $derived(data.files);
+    const currentPath: string[] = $derived(data.currentPath.split("/"));
 
 </script>
 
@@ -79,7 +70,7 @@
 
     <Stack style="max-width: 100%; min-width: 0;">
         <FileStructure
-            fileItems={data.items}
+            fileItems={files}
             current={currentPath}
         />
     </Stack>

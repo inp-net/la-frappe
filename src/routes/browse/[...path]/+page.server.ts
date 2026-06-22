@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types';
-import { getFilesAt } from '$lib/tools/utils'
 import { join } from 'path';
 import { redirect } from '@sveltejs/kit';
-import { FOLDER } from '$lib/constants/index';
+import { type FileData, StoragePaths } from '$lib/types/types.d';
+import { getFilesAt } from '$lib/server/fileService';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 
@@ -12,11 +12,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         throw redirect(303, '/');
     }
 
-    const currentPath = params.path || "";
-    const fullPath = join(process.cwd(), FOLDER.DEFAULT_DB_LOCATION, currentPath);
-    const items = getFilesAt(fullPath);
+    const currentPath: string = params.path || "";
+    const fullPath: string = join(process.cwd(), StoragePaths.DEFAULT_DB_LOCATION, currentPath);
+    const files: FileData[] = getFilesAt(fullPath);
     return {
-        items,
+        files,
         currentPath,
         user: session.user
     };

@@ -3,20 +3,12 @@
     import ListNavigation from "$lib/components/ListNavigation.svelte";
     import SearchBar from '$lib/components/SearchBar.svelte';
     import Filters from '$lib/components/Filters.svelte';
-
-    import {
-        Flex,
-        Box
-    } from "azucar-ui"
-
     import File from "./File.svelte";
-
-    import type { FileItem } from '$lib/store/types';
-    import { categoriesAccepted } from '$lib/tools/filtre';
+    import { type FileData, DocumentTypes } from '$lib/types/types.d';
+    import { Flex } from "azucar-ui"
 
     interface Props {
-        fileItems?: FileItem[];
-        isFolders?: boolean[];
+        fileItems?: FileData[];
         current?: string[]; 
     };
 
@@ -30,38 +22,40 @@
 
 </script>
 
+<!--
+    @component
+    Composant complet de navigation de fichier. Contient touts les
+    sous-composants comme filtre, barre de recherche, ...
+-->
+
 <div class="root-layout-wrapper">
-<Box>
-<Flex direction="column" gap="md" padding="xs" style="max-width: 100%; width: 100%; min-width: 0;">
+    <Flex direction="column" gap="md" padding="xs" style="max-width: 100%; width: 100%; min-width: 0;">
 
-    <!-- cette div sert à scroll horizontalement les filtes indépendament de la page -->
-    <div class="filter-block">
-        <Flex gap="md" direction="column" style="maxWidth: '100%', minWidth: 0">
-            <ListNavigation />
-            <div class="filters-wrapper">
-                <Filters 
-                    filters={categoriesAccepted} 
-                    activeIndexes={activeFilterIndexes} 
-                />
-            </div>
+        <!-- cette div sert à scroll horizontalement les filtes indépendament de la page -->
+        <div class="filter-block">
+            <Flex gap="md" direction="column" style="maxWidth: '100%', minWidth: 0">
+                <ListNavigation />
+                <div class="filters-wrapper">
+                    <Filters 
+                        filters={Object.values(DocumentTypes)}
+                        activeIndexes={activeFilterIndexes}
+                    />
+                </div>
+            </Flex>
+        </div>
+
+        <!-- affiche l'arborescence courante dans FileStructure -->
+        <Flex direction="column" gap="xxs">
+            {#key current.join('/')}
+                {#each filteredFiles as file}
+                    <File
+                        fileItem={file}
+                    />
+                {/each}
+            {/key}
         </Flex>
-    </div>
 
-
-    <!-- <hr/> -->
-    
-    <Flex direction="column" gap="xxs">
-        {#key current.join('/')}
-            {#each filteredFiles as file}
-                <File
-                    fileItem={file}
-                />
-            {/each}
-        {/key}
     </Flex>
-
-</Flex>
-</Box>
 </div>
 
 <style>
@@ -85,14 +79,6 @@
         display: block;
         width: 100%;
         max-width: 100%;
-    }
-
-    hr {
-        border-color: var(--color-bg);
-        background-color: var(--color-bg);
-        color: var(--color-bg);
-        height: 2px;
-        border: 0;
     }
 
 </style>

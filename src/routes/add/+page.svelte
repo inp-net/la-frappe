@@ -1,7 +1,6 @@
 <script lang='ts'>
 
-    import { FOLDER } from '$lib/constants/index';
-    import { categoriesAccepted } from '$lib/tools/filtre';
+    import { DocumentTypes, StoragePaths } from '$lib/types/types.d';
     import Select from '$lib/components/Select.svelte';
     import type { PageData } from './$types';
     import { goto } from '$app/navigation';
@@ -19,7 +18,6 @@
 
     import {
         SearchIcon,
-        Paperclip,
         Check,
         Info
     } from '@lucide/svelte';
@@ -43,7 +41,7 @@
     let schoolList = $derived(data.schoolNames);
     let filiaireList = $state<string[]>([]);
     let courseList = $state<string[]>([]);
-    let documentTypes: string[] = $derived([...categoriesAccepted]);
+    let documentTypes: string[] = $derived([...Object.values(DocumentTypes)]);
 
     let showSuccess = $state(false);
     let showFailure = $state(false);
@@ -59,8 +57,8 @@
             return [];
         }
         try {
-            const pathParam = `${FOLDER.DEFAULT_DB_LOCATION}/${selected}`;
-            const response = await fetch(`/api/dirs?path=${encodeURIComponent(pathParam)}`);
+            const pathParam = `${StoragePaths.DEFAULT_DB_LOCATION}/${selected}`;
+            const response = await fetch(`/api/get-files-at?path=${encodeURIComponent(pathParam)}`);
             if (!response.ok) throw new Error('Impossible de récupérer la séléction suivante');
             const data: { name: string; isDirectory: boolean }[] = await response.json();
             const listName = data.map(item => item.name);
@@ -115,7 +113,7 @@
 		formData.append('date', selectedDate.toString());
         formData.append('corrige', haveCorrige.toString());
 		try {
-			const response = await fetch('/api/document', {
+			const response = await fetch('/api/add-document', {
 				method: 'POST',
 				body: formData
 			});
@@ -123,7 +121,7 @@
                 const result = await response.json();
                 showSuccess = true;
                 setTimeout(() => {
-                    goto(FOLDER.DEFAULT_PAGE_LOCATION); 
+                    goto(StoragePaths.DEFAULT_PAGE_LOCATION); 
                 }, 2000);
             } else {
                 const errorData = await response.json();
@@ -229,7 +227,7 @@
             </Flex>
             <!-- bouton-ajouter -->
             <Flex gap="xs" style="flex-grow: 1" justify='right'>
-                <Button variant="outline" href={FOLDER.DEFAULT_PAGE_LOCATION}>Annuler</Button>
+                <Button variant="outline" href={StoragePaths.DEFAULT_PAGE_LOCATION}>Annuler</Button>
                 <Button icon={Check} class="success" name="Success" onclick={sendFile}>Ajouter</Button>
             </Flex>
         </Flex>

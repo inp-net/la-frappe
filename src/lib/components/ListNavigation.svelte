@@ -1,32 +1,38 @@
 <script lang="ts">
 
-    import { FOLDER } from '$lib/constants/index';
     import { ChevronLeft, Plus } from '@lucide/svelte';
     import { Button, Flex, Frame } from 'azucar-ui';
     import Breadcrumb from '$lib/components/Breadcrumb.svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import { StoragePaths } from '$lib/types/types.d';
 
     let cleanFolderList = $derived(page.params.path?.split('/').filter(Boolean) ?? []);
     let isHovered = $state(false);
 
     let navigateBack = $derived.by(() => {
-        const segments = (FOLDER.DEFAULT_PAGE_LOCATION + (page.params.path ?? '')).split('/').filter(Boolean);
-        if (segments.length <= 1) return `/${FOLDER.DEFAULT_PAGE_LOCATION}`;
+        const segments = (StoragePaths.DEFAULT_PAGE_LOCATION + (page.params.path ?? '')).split('/').filter(Boolean);
+        if (segments.length <= 1) return `/${StoragePaths.DEFAULT_PAGE_LOCATION}`;
         return '/' + segments.slice(0, -1).join('/');
     });
 
     function handleNavigation(index: number) {
         if (index === -1) {
-            goto(`/${FOLDER.DEFAULT_PAGE_LOCATION}`);
+            goto(`/${StoragePaths.DEFAULT_PAGE_LOCATION}`);
             return;
         }
-        const segments = (FOLDER.DEFAULT_PAGE_LOCATION + (page.params.path ?? '')).split('/').filter(Boolean);
+        const segments = (StoragePaths.DEFAULT_PAGE_LOCATION + (page.params.path ?? '')).split('/').filter(Boolean);
         const targetPath = segments.slice(0, index + 2).join('/');
         goto(`/${targetPath}`);
     }
 
 </script>
+
+<!--
+    @component
+    Barre du haut de FileStructure. Contient les composants de navigation,
+    bouton retour, bouton ajouté le document, ...
+-->
 
 <Flex gap="md" align="stretch" wrap={false} style="max-width: 100%; min-width: 0; width: 100%;">
     <Frame style="display: flex; align-items: center; flex-grow: 1; width: 100%; min-width: 0; overflow: hidden;">
