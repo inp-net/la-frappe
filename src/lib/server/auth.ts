@@ -1,6 +1,5 @@
 import { SvelteKitAuth } from '@auth/sveltekit';
 import Authentik, { type AuthentikProfile } from '@auth/sveltekit/providers/authentik';
-import Credentials from '@auth/sveltekit/providers/credentials';
 import { BETTER_AUTH_SECRET, AUTHENTIK_SECRET, AUTHENTIK_ID } from '$env/static/private';
 import { PUBLIC_AUTH_AUTHENTIK_ISSUER } from '$env/static/public';
 import type { CredentialInput, CredentialsConfig, OAuthConfig } from '@auth/core/providers';

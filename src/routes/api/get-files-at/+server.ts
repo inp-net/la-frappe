@@ -4,11 +4,28 @@ import { json } from '@sveltejs/kit';
 import { getFilesAt } from '$lib/server/fileService';
 import type { FileData } from '$lib/types/types.d';
 import type { RequestHandler } from './$types';
+import { resolve } from 'path';
+import { securePath } from '$lib/server/fileService';
 
-/** Api pour récupérer les fichiers dans la déstination. */
-export const GET: RequestHandler = async ({ url }) => {
-    // TODO sécurité
-    const path = url.searchParams.get('path') || "";
-    const items: FileData[] = getFilesAt(path);
+/** Api pour récupérer les fichiers dans la déstination.
+ * @param path : Path où la recherche s'effectue.
+ */
+export const GET: RequestHandler = async ({ url, locals }) => {
+    // Authentification
+    if (!locals.session) {
+        return json({ 
+            error: 'Unauthorized', 
+            message: 'Vous devez être connecté' 
+        }, { status: 401 });
+    }
+
+    const rawPath = url.searchParams.get('path') || '';
+    const safePath = securePath(rawPath, true);
+    
+    if (!safePath) {
+        return json({ error: 'Invalid path' }, { status: 400 });
+    }
+    
+    const items = await getFilesAt(safePath);
     return json(items);
-};
+}
