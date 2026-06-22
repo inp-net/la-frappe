@@ -129,7 +129,15 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
 
 // permet d'upload un pdf dans une categorie d'une matiere deja existente
 // ça fait peur mais c'est assez simple, me demander si besoin alexandre à net7
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
+    // Authentification
+    if (!locals.session) {
+        return json({ 
+            error: 'Unauthorized', 
+            message: 'Vous devez être connecté' 
+        }, { status: 401 });
+    }
+
     const data = await request.formData();
 
     const fileContent = await checkFileIntegrity(data.get('file') as File);

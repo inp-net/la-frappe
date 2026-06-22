@@ -30,7 +30,6 @@ const handleAuthGuard: Handle = async ({ event, resolve }) => {
     }
 
     event.locals.session = session;
-    
     return resolve(event);
 };
 
