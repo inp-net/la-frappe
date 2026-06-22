@@ -1,61 +1,108 @@
-# La_Frappe
+# La Frappe
 
-## Getting started
-...
+## Vision du projet
 
-## Integrate with your tools
+Cette version de **La Frappe** à été crée pour la dissocier de Churros. Elle
+utilise la nouvelle librairie graphique de net7 : [Azucar-UI](https://git.inpt.fr/inp-net/azucar-ui).
 
-* [Set up project integrations](https://git.inpt.fr/fighting/la_frappe/-/settings/integrations)
+La base de données repose sur les liens symboliques entre fichiers. Pas besoin
+donc de connaître SQL, Prisma, ...
 
-## Collaborate with your team
+## Contribuer
 
-* [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Test and Deploy
+## Choix techniques et structure du code
 
-Use the built-in continuous integration in GitLab.
+### Base de données
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+Le projet n'utilise pas de bases de données telles que SQL. Il utilise les
+liens symboliques entre fichiers de Linux. Ces liens symboliques sont générés
+au lancement du serveur grâce à [generate-hierachy.js](generate-hierachy.js).
 
-***
+L'objectif est de pouvoir naviguer dans un explorateur de fichier classique tout
+en prenant en compte les UE dupliqués (une UE commune à plusieurs filiaires).
 
-## Description
-Refaire la frappe de churros, c'est tout, yeah !
+La base de donné est structuré de cette manière :
 
-## Visuals
-...
+1. Un répertoire flat qui contient une liste d'UE.
 
-## Installation
-...
+```
+flat/
+- Architecture des ordinateurs/
+- PIM/
+- Réseau 1A/
+- Réseau 2A/
+- ...
+```
 
-## Usage
-...
+À l'intérieur des fichiers UEs. Il y a tous les pdfs associé à cette UE.
 
-## Support
-Contact : alexandre.poncin@etu.inp-n7.fr, elena.cortinasgarcia@etu.inp-n7.fr
+Il y a aussi systématiquement un fichier `metadata.json` :
 
-## Roadmap
-- faire une api rest pour refaire le système de la frappe, en respectant l'architecture actuelle https://api-docs.churros.inpt.fr/curriculum/ ^^
-- faire une ui
-- faire les logins
-- mettre en prod
+```
+{
+    "paths": [
+        "ENSEEIHT/2A/ASR/"
+    ]
+}
+```
 
-## Contributing
-...
+Puisque un EU peut être commun à plusieurs filiaires, paths prend en paramètre
+une liste. Par exemple :
 
-## Authors and acknowledgment
-Alexandre Poncin, Elena Cortinas Garcia
+```
+{
+    "paths": [
+        "ENSEEIHT/2A/ASR/",
+        "ENSEEIHT/2A/Réseau/"
+    ]
+}
+```
 
-## License
-...
+2. Répertoire arbre
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Le répertoire arbre est entièrement généré par [generate-hierachy](generate-hierachy.js).
+
+Il lit les fichiers `metadata.json` puis crée l'arborescence suivante :
+
+```
+tree/
+- ENSEEIHT/
+-- 2A/
+--- ASR/
+---- Réseau/
+---- ...
+--- Big Data/
+--- ...
+```
+
+Un lien symbolique est crée du répertoire UE de l'arbre (par exemple Réseaux)
+vers le répertoire flat (flat/Réseaux).
+
+### API
+
+Les APIs utilisent un fichier server side commun [fileService.ts](src/lib/server/fileService.ts).
+
+Les types sont définies dans [types.d.ts](src/lib/types/types.d.ts).
+
+Ce fichier contient touts les utilitaires pour le projet.
+
+#### API recherche de fichiers
+
+GET: [get-files-at](src/routes/get-files-at/+server.ts)
+
+Nécéssite d'être authentifié.
+
+Cette API est utilisé pour récuprérer les fichiers en lui donnant un chemin
+absolue.
+
+Renvoie une liste de `FileData`.
+
+#### API ajout de document
+
+POST: [add-document](src/routes/add-document/+server.ts)
+
+Nécéssite d'être authentifié.
+
+Cette API permet d'ajouter un document à la DB.
