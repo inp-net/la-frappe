@@ -5,11 +5,10 @@
     import Filters from '$lib/components/Filters.svelte';
     import File from "./File.svelte";
     import { type FileData, DocumentTypes } from '$lib/types/types.d';
-    import { Flex, Box } from "azucar-ui"
+    import { Flex } from "azucar-ui"
 
     interface Props {
         fileItems?: FileData[];
-        isFolders?: boolean[];
         current?: string[]; 
     };
 
@@ -23,35 +22,40 @@
 
 </script>
 
+<!--
+    @component
+    Composant complet de navigation de fichier. Contient touts les
+    sous-composants comme filtre, barre de recherche, ...
+-->
+
 <div class="root-layout-wrapper">
-<Box>
-<Flex direction="column" gap="md" padding="xs" style="max-width: 100%; width: 100%; min-width: 0;">
+    <Flex direction="column" gap="md" padding="xs" style="max-width: 100%; width: 100%; min-width: 0;">
 
-    <!-- cette div sert à scroll horizontalement les filtes indépendament de la page -->
-    <div class="filter-block">
-        <Flex gap="md" direction="column" style="maxWidth: '100%', minWidth: 0">
-            <ListNavigation />
-            <div class="filters-wrapper">
-                <Filters 
-                    filters={Object.values(DocumentTypes)}
-                    activeIndexes={activeFilterIndexes}
-                />
-            </div>
+        <!-- cette div sert à scroll horizontalement les filtes indépendament de la page -->
+        <div class="filter-block">
+            <Flex gap="md" direction="column" style="maxWidth: '100%', minWidth: 0">
+                <ListNavigation />
+                <div class="filters-wrapper">
+                    <Filters 
+                        filters={Object.values(DocumentTypes)}
+                        activeIndexes={activeFilterIndexes}
+                    />
+                </div>
+            </Flex>
+        </div>
+
+        <!-- affiche l'arborescence courante dans FileStructure -->
+        <Flex direction="column" gap="xxs">
+            {#key current.join('/')}
+                {#each filteredFiles as file}
+                    <File
+                        fileItem={file}
+                    />
+                {/each}
+            {/key}
         </Flex>
-    </div>
-    
-    <Flex direction="column" gap="xxs">
-        {#key current.join('/')}
-            {#each filteredFiles as file}
-                <File
-                    fileItem={file}
-                />
-            {/each}
-        {/key}
-    </Flex>
 
-</Flex>
-</Box>
+    </Flex>
 </div>
 
 <style>

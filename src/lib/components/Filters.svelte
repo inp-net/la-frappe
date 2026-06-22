@@ -52,6 +52,13 @@
     }
 </script>
 
+<!--
+    @component
+    Composant qui affiche les options de filtrage horizontalement. Tout est par
+    défaut. Si un ou plusieurs filtre sont cliqué, liste activeIndexes est mis
+    à jour.
+-->
+
 <div class="scrollable">
     <Flex gap="xs" wrap={false} style="min-width: max-content;">
         {#each sortedFilters as { name, originalIndex, isTous }}

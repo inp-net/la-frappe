@@ -1,10 +1,6 @@
 <script lang="ts">
 
-    import {
-        Flex,
-        Stack
-    } from 'azucar-ui';
-
+    import { Flex, Stack } from 'azucar-ui';
     import FileStructure from '$lib/components/FileStructure.svelte'
     import { fly } from 'svelte/transition'
     import type { PageData } from './$types';

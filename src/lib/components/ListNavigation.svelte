@@ -28,6 +28,12 @@
 
 </script>
 
+<!--
+    @component
+    Barre du haut de FileStructure. Contient les composants de navigation,
+    bouton retour, bouton ajouté le document, ...
+-->
+
 <Flex gap="md" align="stretch" wrap={false} style="max-width: 100%; min-width: 0; width: 100%;">
     <Frame style="display: flex; align-items: center; flex-grow: 1; width: 100%; min-width: 0; overflow: hidden;">
         <Flex gap="lg" wrap={false} style="width: 100%; min-width: 0; align-items: center;">

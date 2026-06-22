@@ -12,6 +12,12 @@
 
 </script>
 
+<!--
+    @component
+    Composant qui affiche l'arborescence de fichier.
+    ENSEEIHT > 2A > ASR > ...
+-->
+
 <div class="breadcrum">
     <Flex align="center" gap="xxs" style="width: 100%; max-width: 100%;">
         

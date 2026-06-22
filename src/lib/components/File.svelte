@@ -35,6 +35,10 @@
 
 </script>
 
+<!--
+    @component
+    Composant bouton fichier. Permet de naviguer dans l'arborescence.
+-->
 
 <Button
     href={fileItem.isDirectory ? href : filePath}

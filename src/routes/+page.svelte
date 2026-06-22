@@ -1,12 +1,7 @@
 <script lang="ts">
 
     import { signIn } from "@auth/sveltekit/client";
-
-    import {
-        Button,
-        Stack,
-        Flex
-    } from 'azucar-ui';
+    import { Button, Stack, Flex } from 'azucar-ui';
 
 </script>
 
