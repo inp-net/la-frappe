@@ -23,7 +23,7 @@
         
         <div class="fixed-root">
             <Button variant="ghost" onclick={() => onFolderClick?.(-1)}>
-                <h4>/</h4>
+                <h4 id="root">/</h4>
             </Button>
         </div>
 
@@ -88,5 +88,10 @@
         text-transform: capitalize;
         color: var(--color-fg-high); 
     }
-</style>
 
+    #root {
+        position: inherit;
+        bottom: 1px;
+        left: 6px;
+    }
+</style>
