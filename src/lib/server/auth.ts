@@ -1,7 +1,11 @@
 import { SvelteKitAuth } from '@auth/sveltekit';
 import Authentik, { type AuthentikProfile } from '@auth/sveltekit/providers/authentik';
-import { BETTER_AUTH_SECRET, AUTHENTIK_SECRET, AUTHENTIK_ID } from '$env/static/private';
-import { PUBLIC_AUTH_AUTHENTIK_ISSUER } from '$env/static/public';
+import { env } from '$env/dynamic/private';
+
+const BETTER_AUTH_SECRET = env.BETTER_AUTH_SECRET;
+const AUTHENTIK_SECRET = env.AUTHENTIK_SECRET;
+const AUTHENTIK_ID = env.AUTHENTIK_ID;
+const PUBLIC_AUTH_AUTHENTIK_ISSUER = env.PUBLIC_AUTH_AUTHENTIK_ISSUER;
 
 declare module '@auth/sveltekit' {
     interface Session {
