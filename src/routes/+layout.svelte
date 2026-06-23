@@ -114,7 +114,7 @@
 <style>
     :root {
         /* couleur du theme (rouge-rosé) */
-        --base-color: oklch(0.62 0.546 360);
+        --base-color: oklch(66.54% 0.282 345.73);
     }
 
     /* center container */
