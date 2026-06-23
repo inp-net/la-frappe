@@ -14,8 +14,12 @@ RUN pnpm install --frozen-lockfile
 # Copier le code
 COPY . .
 
+# Générer la base de données
+RUN node generate-hierachy.js
+
 # Build l'application
 RUN pnpm run build
+RUN pnpm prune --prod
 
 FROM node:20-alpine
 
