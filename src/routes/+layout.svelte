@@ -17,19 +17,15 @@
         Flex
     } from 'azucar-ui'
 
-    const dark_l = 0.62;
-    const dark_c = 0.556;
-    const dark_h = 360;
+    const DARK_PREFERENCE = '(prefers-color-scheme: dark)';
 
-    const white_l = 0.62;
-    const white_c = 0.546;
-    const white_h = 360;
-
-    let l = $state(white_l);
-    let c = $state(white_c);
-    let h = $state(white_h);
     let isDarkTheme = $state(false);
     let iconTheme = $state(Moon);
+
+    function getSystemPreference(): boolean {
+        if (typeof window === 'undefined') return false;
+        return window.matchMedia(DARK_PREFERENCE).matches;
+    }
 
     function getThemeFromCookie(): boolean {
         if (typeof document === 'undefined') return false;
@@ -37,30 +33,47 @@
         return match ? match[2] === 'dark' : false;
     }
 
-    function setThemeCookie(dark: boolean) {
-        document.cookie = `theme=${dark ? 'dark' : 'light'}; max-age=31536000; path=/; SameSite=Lax`;
+    function setThemeCookie(value: boolean) {
+        document.cookie = `theme=${value ? 'dark' : 'light'}; max-age=31536000; path=/; SameSite=Lax`;
+    }
+
+    function applyTheme(dark: boolean) {
+        isDarkTheme = dark;
+        iconTheme = dark ? Sun : Moon;
+        if (typeof document !== 'undefined') {
+            document.documentElement.style.setProperty('color-scheme', isDarkTheme ? 'dark' : 'light');
+        }
     }
 
     onMount(() => {
-        isDarkTheme = getThemeFromCookie();
-        iconTheme = isDarkTheme ? Sun : Moon;
-    });
+        const cookieTheme = getThemeFromCookie();
+        if (cookieTheme !== null) {
+            // cookie existe, l'utiliser
+            applyTheme(cookieTheme);
+        } else {
+            // pas de cookie, utiliser la préférence système
+            applyTheme(getSystemPreference());
+        }
 
-    $effect(() => {
-        document.documentElement.style.setProperty('--base-color', `oklch(${l} ${c} ${h})`);
-        document.documentElement.style.setProperty('color-scheme', isDarkTheme ? 'dark' : 'light');
+        // ecouter les changements de préférence système
+        const mediaQuery = window.matchMedia(DARK_PREFERENCE);
+        const handleChange = (e: MediaQueryListEvent) => {
+            // ne changer que si pas de cookie
+            if (getThemeFromCookie() === null) {
+                applyTheme(e.matches);
+            }
+        };
+
+        mediaQuery.addEventListener('change', handleChange);
+
+        return () => mediaQuery.removeEventListener('change', handleChange);
     });
 
     function switchTheme() {
-        isDarkTheme = !isDarkTheme;
-        iconTheme = isDarkTheme ? Sun : Moon;
-        setThemeCookie(isDarkTheme);
-    } 
-    
-    $effect(() => {
-        document.documentElement.style.setProperty('--base-color', `oklch(${l} ${c} ${h})`);
-        document.documentElement.style.setProperty('color-scheme', isDarkTheme ? 'dark' : 'light');
-    });
+        const newDark = !isDarkTheme;
+        applyTheme(newDark);
+        setThemeCookie(newDark);
+    }
 
 	let { children } = $props();
 </script>
@@ -99,6 +112,11 @@
 </div>
 
 <style>
+    :root {
+        /* couleur du theme (rouge-rosé) */
+        --base-color: oklch(0.62 0.546 360);
+    }
+
     /* center container */
     .container {
         max-width: min(1000px, 100%);
