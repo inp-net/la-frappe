@@ -2,11 +2,6 @@ import { SvelteKitAuth } from '@auth/sveltekit';
 import Authentik, { type AuthentikProfile } from '@auth/sveltekit/providers/authentik';
 import { env } from '$env/dynamic/private';
 
-const BETTER_AUTH_SECRET = env.BETTER_AUTH_SECRET;
-const AUTHENTIK_SECRET = env.AUTHENTIK_SECRET;
-const AUTHENTIK_ID = env.AUTHENTIK_ID;
-const PUBLIC_AUTH_AUTHENTIK_ISSUER = env.PUBLIC_AUTH_AUTHENTIK_ISSUER;
-
 declare module '@auth/sveltekit' {
     interface Session {
         user: {
@@ -27,16 +22,21 @@ declare module '@auth/core/jwt' {
 
 const providers = [
     Authentik({
-        clientId: AUTHENTIK_ID,
-        issuer: PUBLIC_AUTH_AUTHENTIK_ISSUER,
-        clientSecret: AUTHENTIK_SECRET,
-        authorization: { params: { scope: 'openid profile email churros:profile' } }
+        clientId: env.AUTHENTIK_ID,
+        issuer: env.AUTHENTIK_ISSUER,
+        clientSecret: env.AUTHENTIK_SECRET,
+        authorization: env.AUTHORIZE_URL,
+        token: env.TOKEN_URL,
+        userinfo: env.USER_INFO_URL,
     }),
 ];
 
 export const { handle, signIn, signOut } = SvelteKitAuth({
-    secret: BETTER_AUTH_SECRET,
+    secret: env.BETTER_AUTH_SECRET,
     providers,
+    pages: {
+        signIn: "/", 
+    },
     trustHost: true,
     debug: true,
     callbacks: {

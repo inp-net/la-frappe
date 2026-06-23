@@ -15,7 +15,7 @@ const handleAuthGuard: Handle = async ({ event, resolve }) => {
     
     const session = await event.locals.auth();
     const pathname = event.url.pathname;
-    const isPublicRoute = pathname.startsWith('/signin') || pathname.startsWith('/auth');
+    const isPublicRoute = pathname === '/';
 
     // Si non connecté, redirection vers login
     if (!session && !isPublicRoute) {
@@ -28,7 +28,7 @@ const handleAuthGuard: Handle = async ({ event, resolve }) => {
             );
         }
 
-        throw redirect(302, '/signin');
+        throw redirect(302, '/');
     }
 
     event.locals.session = session;
