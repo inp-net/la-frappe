@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:3000"
+    environment:
+      - PORT
+      - NODE_ENV
+      - ORIGIN
+      - DEV_FAKE_AUTH
+      - PUBLIC_AUTH_AUTHENTIK_ISSUER
+      - AUTHENTIK_URL
+      - AUTHORIZE_URL
+      - TOKEN_URL
+      - USER_INFO_URL
+      - LOGOUT_URL
+      - REDIRECT_URL
+      - BETTER_AUTH_SECRET
+      - AUTHENTIK_ID
+      - AUTHENTIK_SECRET
+    volumes:
+      - ./local_storage/uploads:/app/static/uploads
+      - ./local_storage/browse:/app/browse

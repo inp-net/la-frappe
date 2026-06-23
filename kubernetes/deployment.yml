@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: la-frappe
+    namespace: la-frappe
+spec:
+    selector:
+        matchLabels:
+            app: la-frappe
+    template:
+        metadata:
+            labels:
+                app: la-frappe
+        spec:
+            containers:
+                - name: la-frappe
+                  image: registry.inpt.fr/inp-net/lafrappe:v0.1.0
+                  resources:
+                      requests:
+                          memory: '128Mi'
+                          cpu: '250m'
+                  ports:
+                      - containerPort: 3000
+                  envFrom:
+                      - configMapRef:
+                            name: la-frappe-configmap
+                      - secretRef:
+                            name: la-frappe-secrets
+                  volumeMounts:
+                      - name: la-frappe-uploads
+                        mountPath: /app/static/uploads
+            volumes:
+                - name: la-frappe-uploads
+                  persistentVolumeClaim:
+                      claimName: la-frappe-uploads

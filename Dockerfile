@@ -3,7 +3,8 @@ FROM node:22-slim AS base
 WORKDIR /app
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+COPY package.json pnpm-lock.yaml /app/
+RUN corepack enable && corepack install
 
 # Récupérer les dépendences
 FROM base AS prod
