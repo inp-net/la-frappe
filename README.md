@@ -8,6 +8,10 @@ utilise la nouvelle librairie graphique de net7 : [Azucar-UI](https://git.inpt.f
 La base de données repose sur les liens symboliques entre fichiers. Pas besoin
 donc de connaître SQL, Prisma, ...
 
+![Homepage](sample-1.png)
+
+![Add Document](sample-2.png)
+
 ## Contribuer
 
 [CONTRIBUTING.md](CONTRIBUTING.md).

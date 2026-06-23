@@ -54,18 +54,27 @@
 
 <Flex direction="column" gap="xl" margin="lg">
     <Stack>
-        <Flex>
-        <h1
-            onclick={handleClick}
-            role="presentation"
-        >La Frappe</h1>
-        {#key funWord}
-            <h1 in:fly={{ y: 20, duration: 400 }} id="italic">
-                {funWord}
-            </h1>
-        {/key}
+        <Flex gap="lg" wrap={false} align="center">
+            <svg width="80" height="80" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.59091 16L15.9298 19.7636L7.5 25H17.5" stroke="#FF00B8" stroke-width="3" stroke-linecap="square" stroke-linejoin="bevel"/>
+                <path d="M24.5 6.5V25L23 26.5H18.5V23.5H21.5V8H10V11H7V6.5L8.5 5H23L24.5 6.5Z" fill="var(--color-fg-high)"/>
+            </svg>
+            <!-- <img src="static/logo-lafrappe.svg" width="45px"/> -->
+            <Flex direction="column" gap="xxs">
+                <Flex>
+                    <h1
+                        onclick={handleClick}
+                        role="presentation"
+                    >La Frappe</h1>
+                    {#key funWord}
+                        <h1 in:fly={{ y: 20, duration: 400 }} id="italic">
+                            {funWord}
+                        </h1>
+                    {/key}
+                </Flex>
+                <p>Sauve tes partiels.</p>
+            </Flex>
         </Flex>
-        <p>Sauve tes partiels.</p>
     </Stack>
 
     <Stack style="max-width: 100%; min-width: 0;">
