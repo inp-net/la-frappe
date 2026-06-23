@@ -140,7 +140,7 @@
 
     <Stack>
         <Flex>
-        <h1>Ajouter un fichier</h1>
+        <h2>Ajouter un fichier</h2>
         </Flex>
         <p>Ajouter un fichier à la base de données.</p>
     </Stack>
