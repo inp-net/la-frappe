@@ -106,7 +106,7 @@
     }
 
     .sticky {
-        position: sticky;
+        position: relative;
         top: 20px;
         display: flex;
         justify-content: right;
