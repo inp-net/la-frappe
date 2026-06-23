@@ -106,10 +106,9 @@
     }
 
     .sticky {
-        position: sticky;
-        top: 20px;
         display: flex;
         justify-content: right;
+        margin: 1em;
     }
 
     .footer-container {
