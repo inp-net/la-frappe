@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -6,10 +6,12 @@ WORKDIR /app
 RUN npm install -g pnpm
 
 # Copier le fichier package
-COPY package*.json pnpm-lock.yaml ./
+COPY package*.json pnpm-lock.yaml svelte.config.js vite.config.* tsconfig.json* ./
+
+ENV PNPM_CONFIG_ONLY_BUILT_DEPENDENCIES=esbuild
 
 # Installer les dépendences
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # Copier le code
 COPY . .
@@ -21,7 +23,7 @@ RUN node generate-hierachy.js
 RUN pnpm run build
 RUN pnpm prune --prod
 
-FROM node:20-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
