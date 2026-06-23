@@ -46,8 +46,9 @@
     variant="ghost"
     onmouseenter={() => isHovered = true} 
     onmouseleave={() => isHovered = false}
+    style="padding: 0; margin: 0; max-width: 100%;"
 >
-<Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1">
+<Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1; overflow: scroll;">
     <Flex align="center" wrap={false}>
         <Flex wrap={false}>
             {#if fileItem.isDirectory}
@@ -56,7 +57,7 @@
                 <File/>
             {/if}
         </Flex>
-        <h3 class="file-name">{fileItem.name}</h3>
+        <h4 class="file-name">{fileItem.name}</h4>
     </Flex>
 </Frame>
 </Button>
@@ -71,6 +72,7 @@
         text-overflow: ellipsis;
         min-width: 0;
         flex-shrink: 1;
+        font-size: 1em;
     }
 
     @media (max-width: 400px) {

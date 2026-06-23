@@ -31,7 +31,7 @@
 -->
 
 <div class="root-layout-wrapper">
-    <Flex direction="column" gap="md" padding="xs" style="max-width: 100%; width: 100%; min-width: 0;">
+    <Flex direction="column" gap="md" style="max-width: 100%; width: 100%; min-width: 0;">
 
         <!-- cette div sert à scroll horizontalement les filtes indépendament de la page -->
         <div class="filter-block">
@@ -47,7 +47,7 @@
         </div>
 
         <!-- affiche l'arborescence courante dans FileStructure -->
-        <Flex direction="column" gap="xxs">
+        <Flex direction="column" gap="sm" style="max-width: 100%; overflow: hidden;">
             {#key current.join('/')}
                 {#each filteredFiles as file}
                     {#if
