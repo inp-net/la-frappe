@@ -9,24 +9,26 @@ const handleAuthGuard: Handle = async ({ event, resolve }) => {
         // Condition particulière si le projet est en test, pas besoin
         // d'authentifications.
         console.log("Using fake auth");
-        event.locals.session = { id: crypto.randomUUID() };
+        event.locals.session = { user: { name: "Fake User", email: "fake@test.com" } };
         return resolve(event);
     };
     
     const session = await event.locals.auth();
+    const pathname = event.url.pathname;
+    const isPublicRoute = pathname.startsWith('/signin') || pathname.startsWith('/auth');
 
     // Si non connecté, redirection vers login
-    if (!session) {
+    if (!session && !isPublicRoute) {
         event.locals.session = null;
-        if (event.url.pathname.startsWith('/api/')) {
+        // Si c'est une API, renvoie une erreur
+        if (pathname.startsWith('/api/')) {
             return new Response(
                 JSON.stringify({ error: 'Unauthorized', message: 'Vous devez être connecté' }), 
                 { status: 401, headers: { 'Content-Type': 'application/json' } }
             );
         }
-        // if (!event.url.pathname.includes('/signin')) {
-        //     redirect(302, '/signin');
-        // }
+
+        throw redirect(302, '/signin');
     }
 
     event.locals.session = session;
