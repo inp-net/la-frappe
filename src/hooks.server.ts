@@ -24,9 +24,9 @@ const handleAuthGuard: Handle = async ({ event, resolve }) => {
                 { status: 401, headers: { 'Content-Type': 'application/json' } }
             );
         }
-        if (!event.url.pathname.includes('/signin')) {
-            redirect(302, '/signin');
-        }
+        // if (!event.url.pathname.includes('/signin')) {
+        //     redirect(302, '/signin');
+        // }
     }
 
     event.locals.session = session;
