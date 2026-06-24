@@ -14,7 +14,7 @@
         if (data.isFakeAuth) {
             window.location.reload();
         } else {
-            signIn("authentik", { redirectTo: "/browse" });
+            signIn("authentik", { redirectTo: "browse/" });
         }
     }
 
