@@ -33,7 +33,6 @@ const providers = [
 
 export const { handle, signIn, signOut } = SvelteKitAuth({
     secret: env.BETTER_AUTH_SECRET,
-    basePath: "/auth",
     providers,
     trustHost: true,
     debug: true,

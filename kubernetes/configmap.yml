@@ -9,4 +9,5 @@ data:
     AUTHORIZE_URL: 'https://auth.inpt.fr/application/o/authorize/'
     TOKEN_URL: 'https://auth.inpt.fr/application/o/token/'
     USER_INFO_URL: 'https://auth.inpt.fr/application/o/userinfo/'
-    AUTHENTIK_URL: "https://auth.inpt.fr"
+    AUTH_URL: 'https://frappe.inpt.fr/'
+    AUTH_TRUST_HOST: 'true'
