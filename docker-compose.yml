@@ -1,25 +1,18 @@
-version: '3.8'
-
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: la-frappe:latest
+    network_mode: host
     ports:
       - "5173:3000"
     environment:
-      - PORT
-      - NODE_ENV
-      - ORIGIN
+      - BETTER_AUTH_SECRET
       - DEV_FAKE_AUTH
-      - PUBLIC_AUTH_AUTHENTIK_ISSUER
       - AUTHENTIK_URL
       - AUTHORIZE_URL
       - TOKEN_URL
       - USER_INFO_URL
       - LOGOUT_URL
       - REDIRECT_URL
-      - BETTER_AUTH_SECRET
       - AUTHENTIK_ID
       - AUTHENTIK_SECRET
     volumes:

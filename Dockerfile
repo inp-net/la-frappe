@@ -16,7 +16,7 @@ RUN pnpm fetch --prod
 FROM base AS builder
 
 COPY . /app
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 RUN node generate-hierachy.js
 RUN pnpm svelte-kit sync
 RUN pnpm run build
@@ -26,7 +26,7 @@ FROM base
 COPY package.json /app
 COPY pnpm-lock.yaml /app
 COPY --from=prod /pnpm /pnpm
-RUN pnpm install --frozen-lockfile --prod --ignore-scripts
+RUN pnpm install --no-frozen-lockfile --prod --ignore-scripts
 COPY --from=builder /app/build /app/build
 
 CMD ["node", "build/index.js"]
