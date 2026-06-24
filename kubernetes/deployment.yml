@@ -4,6 +4,8 @@ metadata:
     name: la-frappe
     namespace: la-frappe
 spec:
+    strategy:
+      type: Recreate
     selector:
         matchLabels:
             app: la-frappe
@@ -14,7 +16,7 @@ spec:
         spec:
             containers:
                 - name: la-frappe
-                  image: registry.inpt.fr/inp-net/lafrappe:v0.1.2
+                  image: registry.inpt.fr/inp-net/lafrappe:v0.1.3
                   resources:
                       requests:
                           memory: '128Mi'
