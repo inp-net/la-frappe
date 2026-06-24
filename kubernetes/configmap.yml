@@ -9,5 +9,4 @@ data:
     AUTHORIZE_URL: 'https://auth.inpt.fr/application/o/authorize/'
     TOKEN_URL: 'https://auth.inpt.fr/application/o/token/'
     USER_INFO_URL: 'https://auth.inpt.fr/application/o/userinfo/'
-    LOGOUT_URL: 'https://auth.inpt.fr/application/o/la-frappe/end-session/'
-    REDIRECT_URL: 'http://localhost:5173/login/callback'
+    AUTHENTIK_URL: "https://auth.inpt.fr"

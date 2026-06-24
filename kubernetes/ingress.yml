@@ -11,7 +11,7 @@ metadata:
     namespace: la-frappe
 spec:
     rules:
-        - host: frappe.inpt.fr
+        - host: la-frappe.inpt.fr
           http:
               paths:
                   - pathType: Prefix
@@ -24,5 +24,5 @@ spec:
 
     tls:
         - hosts:
-              - frappe.inpt.fr
+              - la-frappe.inpt.fr
           secretName: la-frappe-tls

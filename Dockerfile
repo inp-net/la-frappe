@@ -4,7 +4,7 @@ WORKDIR /app
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 COPY package.json pnpm-lock.yaml /app/
-RUN corepack enable && corepack install
+RUN corepack enable
 
 # Récupérer les dépendences
 FROM base AS prod

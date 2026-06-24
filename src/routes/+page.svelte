@@ -4,10 +4,6 @@
     import { Button, Stack, Flex } from 'azucar-ui';
     import { CircleArrowRight } from '@lucide/svelte';
 
-    function handleSignIn() {
-        signIn("authentik", { callbackUrl: "/browse/" });
-    };
-
 </script>
 
 <Flex direction="column" gap="xl" margin="lg" align="center" style="max-width: 500px; margin: auto; margin-top: 5rem;">
@@ -25,7 +21,9 @@
     </Stack>
     <Stack>
         <Flex>
-            <Button icon={CircleArrowRight} onclick={() => handleSignIn()}> Se connecter avec Authentik </Button>
+            <Button icon={CircleArrowRight} onclick={() => signIn("authentik", { redirectTo: "/browse" })}>
+                Se connecter avec Authentik
+            </Button>
         </Flex>
     </Stack>
 </Flex>
