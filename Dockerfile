@@ -9,14 +9,16 @@ RUN corepack enable
 # Récupérer les dépendences
 FROM base AS prod
 
-COPY pnpm-lock.yaml /app
+COPY package.json pnpm-lock.yaml /app/
 RUN pnpm fetch --prod
 
 # Build de l'app et création de la DB
 FROM base AS builder
 
+COPY package.json pnpm-lock.yaml /app/
+RUN pnpm install --no-frozen-lockfile --ignore-scripts
+
 COPY . /app
-RUN pnpm install --no-frozen-lockfile
 RUN node generate-hierachy.js
 RUN pnpm svelte-kit sync
 RUN pnpm run build

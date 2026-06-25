@@ -17,6 +17,7 @@ spec:
             containers:
                 - name: la-frappe
                   image: registry.inpt.fr/inp-net/lafrappe:0.1
+                  imagePullPolicy: Always
                   resources:
                       requests:
                           memory: '128Mi'
