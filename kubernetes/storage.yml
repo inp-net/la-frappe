@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: la-frappe-uploads
+    namespace: la-frappe
+spec:
+    storageClassName: ceph-cephfs
+    accessModes:
+        - ReadWriteOnce
+    resources:
+        requests:
+            storage: 30Gi

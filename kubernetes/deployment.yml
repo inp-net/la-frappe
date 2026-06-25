@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: la-frappe
+    namespace: la-frappe
+spec:
+    strategy:
+      type: Recreate
+    selector:
+        matchLabels:
+            app: la-frappe
+    template:
+        metadata:
+            labels:
+                app: la-frappe
+        spec:
+            initContainers:
+                - name: init-volume
+                  image: registry.inpt.fr/inp-net/lafrappe:0.1
+                  # Copier les métadonnées de l'image dans le Ceph
+                  command: ["sh", "-c", "if [ -z \"$(ls -A /mnt/uploads)\" ]; then cp -r /app/static/uploads/. /mnt/uploads/; fi"]
+                  volumeMounts:
+                    - name: la-frappe-uploads
+                      mountPath: /mnt/uploads
+            containers:
+                - name: la-frappe
+                  image: registry.inpt.fr/inp-net/lafrappe:0.1
+                  imagePullPolicy: Always
+                  resources:
+                      requests:
+                          memory: '128Mi'
+                          cpu: '250m'
+                  ports:
+                      - containerPort: 3000
+                  envFrom:
+                      - configMapRef:
+                            name: la-frappe-configmap
+                      - secretRef:
+                            name: la-frappe-secrets
+                  volumeMounts:
+                      - name: la-frappe-uploads
+                        mountPath: /app/static/uploads
+                      - name: frappe-tree-writable
+                        mountPath: /app/static/frappe_tree
+            volumes:
+                - name: la-frappe-uploads
+                  persistentVolumeClaim:
+                      claimName: la-frappe-uploads
+                - name: frappe-tree-writable
+                  emptyDir: {}

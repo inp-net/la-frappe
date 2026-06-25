@@ -1,7 +1,7 @@
 // peut se lancer avec node <nomdufichier>
 
 import { readFileSync, mkdirSync, existsSync, symlinkSync, readdirSync, lstatSync, rmSync } from 'fs';
-import { join, resolve } from 'path';
+import { join, resolve, dirname, relative } from 'path'; // Ajout de dirname et relative
 
 const UPLOADS_ROOT = resolve('static/uploads');
 const DIST_ROOT = resolve('static/frappe_tree'); // Le dossier de sortie
@@ -11,12 +11,17 @@ function generateHierarchy() {
 
     // Nettoyage du dossier de sortie pour repartir à neuf
     if (existsSync(DIST_ROOT)) {
-        rmSync(DIST_ROOT, { recursive: true, force: true });
+        const items = readdirSync(DIST_ROOT);
+        for (const item of items) {
+            const itemPath = join(DIST_ROOT, item);
+            rmSync(itemPath, { recursive: true, force: true });
+        }
+        console.log("Contenu de frappe_tree nettoyé.");
+    } else {
+        mkdirSync(DIST_ROOT, { recursive: true });
     }
-    mkdirSync(DIST_ROOT, { recursive: true });
 
     // Parcourir chaque dossier de matière dans static/uploads
-    // Est-ce qu'on peut faire un ls ???
     const subjects = readdirSync(UPLOADS_ROOT).filter(f =>
         lstatSync(join(UPLOADS_ROOT, f)).isDirectory()
     );
@@ -38,18 +43,20 @@ function generateHierarchy() {
                 // Créer le dossier parent (ex : static/frappe_tree/n7/sn)
                 mkdirSync(targetDir, { recursive: true });
 
-                // Créer un lien symbolique vers le dossier de la matière
                 const linkName = join(targetDir, subject);
+                
                 if (!existsSync(linkName)) {
-                    symlinkSync(subjectPath, linkName, 'dir');
-                    console.log(` Link créé : ${virtualPath} -> ${subject}`);
+                    const relativeTarget = relative(dirname(linkName), subjectPath);
+                    symlinkSync(relativeTarget, linkName, 'dir');
+                    
+                    console.log(`Link créé : ${virtualPath} -> ${subject} (relatif: ${relativeTarget})`);
                 }
             }
         } catch (err) {
-            console.error(` Erreur de la matière ${subject}:`, err.message);
+            console.error(`Erreur de la matière ${subject}:`, err.message);
         }
     }
 
-    console.log(" Arborescence générée avec succès ! ");
+    console.log("Arborescence générée avec succès ! ");
 }
-generateHierarchy()
+generateHierarchy();

@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: la-frappe
+    annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/proxy-read-timeout: '3600'
+        nginx.ingress.kubernetes.io/proxy-send-timeout: '3600'
+        nginx.ingress.kubernetes.io/proxy-connect-timeout: '3600'
+        nginx.ingress.kubernetes.io/proxy-body-size: '500m'
+    namespace: la-frappe
+spec:
+    rules:
+        - host: frappe.inpt.fr
+          http:
+              paths:
+                  - pathType: Prefix
+                    path: '/'
+                    backend:
+                        service:
+                            name: la-frappe
+                            port:
+                                number: 3000
+
+    tls:
+        - hosts:
+              - frappe.inpt.fr
+          secretName: la-frappe-tls

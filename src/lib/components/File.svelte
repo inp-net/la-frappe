@@ -75,10 +75,4 @@
         font-size: 1em;
     }
 
-    @media (max-width: 400px) {
-        #badge {
-            display: none;
-        }
-    }
-
 </style>

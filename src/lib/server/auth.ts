@@ -1,36 +1,20 @@
 import { SvelteKitAuth } from '@auth/sveltekit';
-import Authentik, { type AuthentikProfile } from '@auth/sveltekit/providers/authentik';
-import { BETTER_AUTH_SECRET, AUTHENTIK_SECRET, AUTHENTIK_ID } from '$env/static/private';
-import { PUBLIC_AUTH_AUTHENTIK_ISSUER } from '$env/static/public';
-import type { CredentialInput, CredentialsConfig, OAuthConfig } from '@auth/core/providers';
+import Authentik from '@auth/sveltekit/providers/authentik';
+import { env } from '$env/dynamic/private';
 
-// GESTION DE L'AUTHENTIFICATION
-
-type Provider = OAuthConfig<AuthentikProfile> | CredentialsConfig<Record<string, CredentialInput>>;
-
-const providers: Provider[] = [
+const providers = [
     Authentik({
-        clientId: AUTHENTIK_ID,
-        issuer: PUBLIC_AUTH_AUTHENTIK_ISSUER,
-        clientSecret: AUTHENTIK_SECRET,
-        authorization: { params: { scope: 'openid profile email churros:profile' } }
+        clientId: env.AUTHENTIK_ID,
+        issuer: env.AUTHENTIK_ISSUER,
+        clientSecret: env.AUTHENTIK_SECRET,
+        authorization: env.AUTHORIZE_URL,
+        token: env.TOKEN_URL,
+        userinfo: env.USER_INFO_URL,
     }),
 ];
 
 export const { handle, signIn, signOut } = SvelteKitAuth({
-    secret: BETTER_AUTH_SECRET,
+    secret: env.BETTER_AUTH_SECRET,
     providers,
     trustHost: true,
-    debug: true,
-    callbacks: {
-        async signIn({ profile, user, account }) {
-            return true;
-        },
-        async session({ session, token }) {
-            if (token.groups) {
-                session.user.groups = token.groups;
-            }
-            return session;
-        }
-    }
 });

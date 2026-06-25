@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: la-frappe-configmap
+    namespace: la-frappe
+data:
+    DEV_FAKE_AUTH: 'false'
+    AUTHENTIK_ISSUER: 'https://auth.inpt.fr/application/o/la-frappe/'
+    AUTHORIZE_URL: 'https://auth.inpt.fr/application/o/authorize/'
+    TOKEN_URL: 'https://auth.inpt.fr/application/o/token/'
+    USER_INFO_URL: 'https://auth.inpt.fr/application/o/userinfo/'
+    AUTH_URL: 'https://frappe.inpt.fr/'
+    AUTH_TRUST_HOST: 'true'

@@ -6,7 +6,7 @@ import { getFilesAt } from '$lib/server/fileService';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 
-    const session = locals.session;
+    const session = await locals.auth();
 
     if (!session) {
         throw redirect(303, '/');

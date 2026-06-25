@@ -135,7 +135,8 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
 // ça fait peur mais c'est assez simple, me demander si besoin alexandre à net7
 export const POST: RequestHandler = async ({ request, locals }) => {
     // Authentification
-    if (!locals.session) {
+    const session = await locals.auth();
+    if (!session) {
         return json({ 
             error: 'Unauthorized', 
             message: 'Vous devez être connecté' 

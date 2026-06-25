@@ -1,36 +1,24 @@
-import { handle as handleAuth } from '$lib/server/auth';
-import type { Handle } from '@sveltejs/kit';
-import { sequence } from '@sveltejs/kit/hooks';
-import { redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { env } from "$env/dynamic/private";
+import type { Handle } from "@sveltejs/kit";
+import { sequence } from "@sveltejs/kit/hooks";
+import { handle as authjsHandle } from "$lib/server/auth";
 
-const handleAuthGuard: Handle = async ({ event, resolve }) => {
-    if (env.DEV_FAKE_AUTH === 'true') {
-        // Condition particulière si le projet est en test, pas besoin
-        // d'authentifications.
-        console.log("Using fake auth");
-        event.locals.session = { id: crypto.randomUUID() };
+const fakeAuthHandle: Handle = async ({ event, resolve }) => {
+    if (env.DEV_FAKE_AUTH === "true") {
+        event.locals.auth = async () => ({
+            user: { name: "Utilisateur Test", groups: ["admin"] },
+        });
         return resolve(event);
-    };
-    
-    const session = await event.locals.auth();
-
-    // Si non connecté, redirection vers login
-    if (!session) {
-        event.locals.session = null;
-        if (event.url.pathname.startsWith('/api/')) {
-            return new Response(
-                JSON.stringify({ error: 'Unauthorized', message: 'Vous devez être connecté' }), 
-                { status: 401, headers: { 'Content-Type': 'application/json' } }
-            );
-        }
-        // if (!event.url.pathname.includes('/signin')) {
-        //     redirect(302, '/signin');
-        // }
     }
-
-    event.locals.session = session;
     return resolve(event);
 };
 
-export const handle: Handle = sequence(handleAuth, handleAuthGuard);
+const realAuthHandle: Handle = async ({ event, resolve }) => {
+    if (env.DEV_FAKE_AUTH === "true") {
+        return resolve(event);
+    }
+    
+    return authjsHandle({ event, resolve });
+};
+
+export const handle = sequence(fakeAuthHandle, realAuthHandle);

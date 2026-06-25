@@ -1,0 +1,12 @@
+node_modules
+.svelte-kit
+.git
+.env
+*.log
+.DS_Store
+sample-*.png
+CONTRIBUTING.md
+README.md
+.vscode
+*.pdf
+static/frappe_tree
