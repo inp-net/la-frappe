@@ -18,8 +18,8 @@ importers:
         specifier: ^1.6.20
         version: 1.6.20(@better-fetch/fetch@1.3.1)(@sveltejs/kit@2.65.2(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.3)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)))(svelte@5.56.3)(typescript@5.9.3)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)))(better-call@1.3.6(zod@4.4.3))(jose@6.2.3)(kysely@0.29.2)(nanostores@1.3.0)(svelte@5.56.3)
       azucar-ui:
-        specifier: ^0.0.5
-        version: 0.0.5(@sveltejs/kit@2.65.2(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.3)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)))(svelte@5.56.3)(typescript@5.9.3)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)))(svelte@5.56.3)
+        specifier: ^0.0.6
+        version: 0.0.6(@sveltejs/kit@2.65.2(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.3)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)))(svelte@5.56.3)(typescript@5.9.3)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)))(svelte@5.56.3)
       svelte-sonner:
         specifier: ^1.1.1
         version: 1.1.1(svelte@5.56.3)
@@ -809,8 +809,8 @@ packages:
     resolution: {integrity: sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ==}
     engines: {node: '>= 0.4'}
 
-  azucar-ui@0.0.5:
-    resolution: {integrity: sha512-++xBod8xq3/n8kxiUNSQsRjduNsZEDCtT6ev3SBhwA61PgsxyK7WAKFJbWeP7eT8COtNi6y1sSrNMG1IcJDG8Q==}
+  azucar-ui@0.0.6:
+    resolution: {integrity: sha512-+qaQqL5TvwKLZ4VbaxybZPR/VtngB/c6YlKO0VQcqioJbhuq7i4d/eTa4IJIdWl/cheedl4Q7xgMsJrK3jFzNg==}
     peerDependencies:
       svelte: ^5.0.0
 
@@ -2070,7 +2070,7 @@ snapshots:
 
   axobject-query@4.1.0: {}
 
-  azucar-ui@0.0.5(@sveltejs/kit@2.65.2(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.3)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)))(svelte@5.56.3)(typescript@5.9.3)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)))(svelte@5.56.3):
+  azucar-ui@0.0.6(@sveltejs/kit@2.65.2(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.3)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)))(svelte@5.56.3)(typescript@5.9.3)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)))(svelte@5.56.3):
     dependencies:
       '@lucide/svelte': 1.20.0(svelte@5.56.3)
       '@sveltejs/adapter-static': 3.0.10(@sveltejs/kit@2.65.2(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.3)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)))(svelte@5.56.3)(typescript@5.9.3)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)))

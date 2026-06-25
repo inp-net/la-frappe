@@ -136,11 +136,16 @@
 
 </script>
 
+<svelte:head>
+    <title>
+        La Frappe · Dépôt de documents
+    </title>
+</svelte:head>
 <Flex direction="column" gap="xxl" margin="lg">
 
     <Stack>
         <Flex>
-        <h2>Ajouter un fichier</h2>
+        <h2>Ajouter un document</h2>
         </Flex>
         <p>Ajouter un fichier à la base de données.</p>
     </Stack>
@@ -228,7 +233,7 @@
             </Flex>
             <!-- bouton-ajouter -->
             <Flex gap="xs" style="flex-grow: 1" justify='right'>
-                <Button variant="outline" href={StoragePaths.DEFAULT_PAGE_LOCATION}>Annuler</Button>
+                <Button variant="outline" href={StoragePaths.DEFAULT_PAGE_LOCATION}>Retour</Button>
                 <Button icon={Check} class="success" name="Success" onclick={sendFile}>Ajouter</Button>
             </Flex>
         </Flex>
