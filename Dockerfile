@@ -30,5 +30,7 @@ COPY pnpm-lock.yaml /app
 COPY --from=prod /pnpm /pnpm
 RUN pnpm install --no-frozen-lockfile --prod --ignore-scripts
 COPY --from=builder /app/build /app/build
+# Due à la modification des fichiers de generate-hierachy
+COPY --from=builder /app/static /app/static
 
 CMD ["node", "build/index.js"]
