@@ -11,9 +11,15 @@ function generateHierarchy() {
 
     // Nettoyage du dossier de sortie pour repartir à neuf
     if (existsSync(DIST_ROOT)) {
-        rmSync(DIST_ROOT, { recursive: true, force: true });
+        const items = readdirSync(DIST_ROOT);
+        for (const item of items) {
+            const itemPath = join(DIST_ROOT, item);
+            rmSync(itemPath, { recursive: true, force: true });
+        }
+        console.log("Contenu de frappe_tree nettoyé.");
+    } else {
+        mkdirSync(DIST_ROOT, { recursive: true });
     }
-    mkdirSync(DIST_ROOT, { recursive: true });
 
     // Parcourir chaque dossier de matière dans static/uploads
     const subjects = readdirSync(UPLOADS_ROOT).filter(f =>

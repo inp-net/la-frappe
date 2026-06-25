@@ -32,7 +32,11 @@ spec:
                   volumeMounts:
                       - name: la-frappe-uploads
                         mountPath: /app/static/uploads
+                      - name: frappe-tree-writable
+                        mountPath: /app/static/frappe_tree
             volumes:
                 - name: la-frappe-uploads
                   persistentVolumeClaim:
                       claimName: la-frappe-uploads
+                - name: frappe-tree-writable
+                  emptyDir: {}
