@@ -12,7 +12,8 @@ import { securePath } from '$lib/server/fileService';
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
     // Authentification
-    if (!locals.session) {
+    const session = await locals.auth();
+    if (!session) {
         return json({ 
             error: 'Unauthorized', 
             message: 'Vous devez être connecté' 
