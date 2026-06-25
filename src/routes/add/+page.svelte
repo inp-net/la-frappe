@@ -228,7 +228,7 @@
             </Flex>
             <!-- bouton-ajouter -->
             <Flex gap="xs" style="flex-grow: 1" justify='right'>
-                <Button variant="outline" href={StoragePaths.DEFAULT_PAGE_LOCATION}>Annuler</Button>
+                <Button variant="outline" href={StoragePaths.DEFAULT_PAGE_LOCATION}>Retour</Button>
                 <Button icon={Check} class="success" name="Success" onclick={sendFile}>Ajouter</Button>
             </Flex>
         </Flex>
