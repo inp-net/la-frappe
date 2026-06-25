@@ -1,9 +1,12 @@
 services:
   app:
-    image: la-frappe:latest
+    # image: la-frappe:latest
     network_mode: host
+    build: .
     ports:
       - "5173:3000"
+    env_file:
+      - .env
     environment:
       - BETTER_AUTH_SECRET
       - DEV_FAKE_AUTH
@@ -16,5 +19,4 @@ services:
       - AUTHENTIK_ID
       - AUTHENTIK_SECRET
     volumes:
-      - ./local_storage/uploads:/app/static/uploads
       - ./local_storage/browse:/app/browse
