@@ -13,6 +13,11 @@
 
 </script>
 
+<svelte:head>
+    <title>
+        La Frappe · Naviguer les documents
+    </title>
+</svelte:head>
 <Flex direction="column" gap="xl" margin="lg">
     <Stack>
         <Logo />

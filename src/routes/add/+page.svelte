@@ -136,6 +136,11 @@
 
 </script>
 
+<svelte:head>
+    <title>
+        La Frappe · Dépôt de documents
+    </title>
+</svelte:head>
 <Flex direction="column" gap="xxl" margin="lg">
 
     <Stack>

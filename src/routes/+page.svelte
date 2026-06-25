@@ -14,6 +14,11 @@
 
 </script>
 
+<svelte:head>
+    <title>
+        La Frappe · Connexion
+    </title>
+</svelte:head>
 <Flex direction="column" gap="xl" margin="lg" align="center" style="max-width: 500px; margin: auto; margin-top: 5rem;">
     <Stack>
         <Logo />
