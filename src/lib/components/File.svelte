@@ -23,14 +23,16 @@
         `/${page.params.path || ''}/${fileItem.name}`.replace(/\/+/g, '/')
     );
 
+    let treePath: string[] = StoragePaths.DEFAULT_DB_LOCATION.split("/");
+
     /** Position réel du fichier dans le serveur. */
     let filePath = $derived(
-        `/${StoragePaths.DEFAULT_DB_LOCATION}${realPath}`.replace(/\/+/g, '/')
+        `/${treePath[1]}/${realPath}`.replace(/\/+/g, '/')
     );
 
     /** Position de la page (svelte) pour naviger dans la DB. */
     let href = $derived(
-        `/${StoragePaths.DEFAULT_PAGE_LOCATION}${realPath}`.replace(/\/+/g, '/')
+        `/${StoragePaths.DEFAULT_PAGE_LOCATION}/${realPath}`.replace(/\/+/g, '/')
     );
 
 </script>
