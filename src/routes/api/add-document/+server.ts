@@ -1,5 +1,5 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
-import { writeFileSync, existsSync, mkdirSync, setxattrSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
 import { LogCategory, DocumentTypes, StoragePaths, type DocumentInfo } from '$lib/types/types.d';
 import { NewLog } from '$lib/server/logService';
@@ -130,7 +130,6 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
     try {
         mkdirSync(dirPath, { recursive: true });
         writeFileSync(fullPath, Buffer.from(buffer), { mode: 0o644 });
-        setxattrSync(fullPath, 'user.author', metadata.author, 'utf-8');
 
         NewLog(`Document '${fileName}' dans '${fullPath}' ajouté par ${metadata.author}`, LogCategory.DOCUMENT_ADD);
     } catch (err) {
