@@ -1,5 +1,5 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
-import { writeFileSync, existsSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
 import { DocumentTypes, StoragePaths, type DocumentInfo } from '$lib/types/types.d';
 import { securePath } from '$lib/server/fileService';
@@ -14,7 +14,7 @@ const BASE_DIR = resolve(StoragePaths.DEFAULT_DB_LOCATION);
  * @throw error 400 si invalide.
  */
 function validateMetadata(fields: DocumentInfo) {
-    const validated: DocumentInfo = {};
+    const validated = {} as Record<string, string>;
     
     for (const [key, value] of Object.entries(fields)) {
         if (!value || typeof value !== 'string') {
@@ -32,14 +32,14 @@ function validateMetadata(fields: DocumentInfo) {
     console.log(validated);
 
     // Valider les catégories séparéments car c'est un enum
-    const documentTypes = Object.values(DocumentTypes);
+    const documentTypes = Object.values(DocumentTypes) as string[];
     console.log(documentTypes);
     console.log(validated.category);
     if (!documentTypes.includes(validated.category)) {
         error(400, "Invalid category");
     }
 
-    return validated;
+    return validated as unknown as DocumentInfo;
 };
 
 /** Fonction qui vérifie que le fichier en input est un pdf.
@@ -51,12 +51,13 @@ async function checkFileIntegrity(file : File | null) {
     if (!file) error(400, 'Fichier manquant.');
     if (file.size > MAX_FILE_SIZE) error(400, "Fichier trop volumineux.");
     // TODO accepter aussi les png et les jpeg ?
-	if (file.type !== 'application/pdf') error(400, "Le format est incorrect.");
+    if (file.type !== 'application/pdf') error(400, "Le format est incorrect.");
 
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
+    
     const signature = Array.from(uint8Array.slice(0, 4))
-                           .map(byte => byte.toString(16))
+                           .map(byte => byte.toString(16).padStart(2, '0'))
                            .join('');
 
     if (signature !== "25504446") error(400, "Le pdf n'est pas valide (mauvaise signature)");
@@ -94,6 +95,10 @@ function generateName(metadata: DocumentInfo) {
     let baseName = `${category} - ${date}`;
     baseName = baseName.replace(/[\/\\]/g, '_');
     
+    if (corrige === 'true') {
+        baseName = baseName + ' + corrige';
+    }
+    
     const filePath = generatePath(metadata);
     let finalName = baseName;
     let counter = 1;
@@ -101,10 +106,6 @@ function generateName(metadata: DocumentInfo) {
     while (existsSync(join(filePath, finalName + '.pdf'))) {
         finalName = `${baseName} - ${counter}`;
         counter++;
-    }
-
-    if (corrige === 'true') {
-        finalName = finalName + ' + corrige';
     }
 
     return finalName + '.pdf';
@@ -124,6 +125,7 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
     }
 
     try {
+        mkdirSync(dirPath, { recursive: true });
         writeFileSync(fullPath, Buffer.from(buffer), { mode: 0o644 });
     } catch (err) {
         console.error(err)
@@ -131,8 +133,6 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
     }
 }
 
-// permet d'upload un pdf dans une categorie d'une matiere deja existente
-// ça fait peur mais c'est assez simple, me demander si besoin alexandre à net7
 export const POST: RequestHandler = async ({ request, locals }) => {
     // Authentification
     const session = await locals.auth();
@@ -145,9 +145,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     const data = await request.formData();
 
-    const fileContent = await checkFileIntegrity(data.get('file') as File);
+    const file = data.get('file');
+    if (!(file instanceof File)) {
+        error(400, "Fichier manquant ou invalide.");
+    }
 
-    const rawFields = Object.fromEntries(data.entries()) as unknown as DocumentInfo;
+    const fileContent = await checkFileIntegrity(file);
+
+    const rawFields = Object.fromEntries(data.entries()) as DocumentInfo;
     delete rawFields.file;
     const metadata = validateMetadata(rawFields);
 
