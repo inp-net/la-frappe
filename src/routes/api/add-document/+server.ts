@@ -1,7 +1,8 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { DocumentTypes, StoragePaths, type DocumentInfo } from '$lib/types/types.d';
+import { LogCategory, DocumentTypes, StoragePaths, type DocumentInfo } from '$lib/types/types.d';
+import { NewLog } from '$lib/server/logService';
 import { securePath } from '$lib/server/fileService';
 
 /** Taille maximale du fichier 10mo */
@@ -127,6 +128,8 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
     try {
         mkdirSync(dirPath, { recursive: true });
         writeFileSync(fullPath, Buffer.from(buffer), { mode: 0o644 });
+
+        NewLog(`Document '${fileName}' dans '${fullPath}' ajouté par ${metadata.author}`, LogCategory.DOCUMENT_ADD);
     } catch (err) {
         console.error(err)
         error(500, "Erreur d'écriture du fichier");
@@ -153,6 +156,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const fileContent = await checkFileIntegrity(file);
 
     const rawFields = Object.fromEntries(data.entries()) as DocumentInfo;
+    // Ajout de l'auteur du fichier coté serveur
+    rawFields.author = session.user.name;
+    // On supprime le fichier car c'est pas une métadonnée du form
     delete rawFields.file;
     const metadata = validateMetadata(rawFields);
 
