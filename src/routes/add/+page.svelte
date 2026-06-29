@@ -96,6 +96,8 @@
         }
     });
 
+    let isSending = $state(false);
+
     /** Fonction qui envoie le form au serveur. */
     async function sendFile() {
         if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedFiliaire) {
@@ -116,6 +118,7 @@
         
         try {
             toast("Envoie du formulaire en cours.");
+            isSending = true;
             const response = await fetch('/api/add-document', {
                 method: 'POST',
                 body: formData,
@@ -139,6 +142,8 @@
         } catch (err) {
             toast.error("Erreur lors de l'envoi du formulaire : " + err);
             console.error("Erreur lors de l'envoi du form : ", err);
+        } finally {
+            isSending = false;
         }
     }
 
@@ -242,7 +247,7 @@
             <!-- bouton-ajouter -->
             <Flex gap="xs" style="flex-grow: 1" justify='right'>
                 <Button variant="outline" href={StoragePaths.DEFAULT_PAGE_LOCATION}>Retour</Button>
-                <Button icon={Check} class="success" name="Success" onclick={sendFile}>Ajouter</Button>
+                <Button icon={Check} class="success" name="Success" onclick={sendFile} disabled={isSending}>Ajouter</Button>
             </Flex>
         </Flex>
         </Frame>

@@ -23,6 +23,7 @@ function validateMetadata(fields: DocumentInfo) {
             error(400, `Missing or invalid ${key}`);
         }
         
+        // TODO faire la sécurité
         const safe = securePath(value);
         if (!safe) {
             error(400, `Invalid characters in ${key}`);
@@ -169,9 +170,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     rawFields.author = session.user.name;
     // On supprime le fichier car c'est pas une métadonnée du form
     delete rawFields.file;
-    const metadata = validateMetadata(rawFields);
-
-    saveFile(fileContent, metadata);
-
-    return json({ message: 'Fichier ajouté avec succès' }, { status: 201 });
+    try {
+        const metadata = validateMetadata(rawFields);
+        saveFile(fileContent, metadata);
+        return json({ message: 'Fichier ajouté avec succès' }, { status: 201 });
+    } catch (err) {
+        return json({message: err});
+    }
 };
