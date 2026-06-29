@@ -1,5 +1,5 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync, setxattrSync } from 'fs';
 import { join, resolve } from 'path';
 import { LogCategory, DocumentTypes, StoragePaths, type DocumentInfo } from '$lib/types/types.d';
 import { NewLog } from '$lib/server/logService';
@@ -23,7 +23,7 @@ function validateMetadata(fields: DocumentInfo) {
             error(400, `Missing or invalid ${key}`);
         }
         
-        const safe = value;
+        const safe = securePath(value);
         if (!safe) {
             error(400, `Invalid characters in ${key}`);
         }
@@ -129,6 +129,7 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
     try {
         mkdirSync(dirPath, { recursive: true });
         writeFileSync(fullPath, Buffer.from(buffer), { mode: 0o644 });
+        setxattrSync(fullPath, 'user.author', metadata.author, 'utf-8');
 
         NewLog(`Document '${fileName}' dans '${fullPath}' ajouté par ${metadata.author}`, LogCategory.DOCUMENT_ADD);
     } catch (err) {
@@ -140,14 +141,14 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
 export const POST: RequestHandler = async ({ request, locals }) => {
     // Authentification
     const session = await locals.auth();
-    if (!session) {
+    if (!session || !session.user) {
         return json({ 
             error: 'Unauthorized', 
             message: 'Vous devez être connecté' 
         }, { status: 401 });
     }
 
-    if (IsBan(session.user.name)) {
+    if (!session && !session.user && IsBan(session.user.name)) {
         return json({ 
             error: 'Fobidden', 
             message: "Vous devez banni de La-Frappe. Si vous pensez que c'est une erreur, contactez net7"
