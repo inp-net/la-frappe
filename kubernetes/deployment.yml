@@ -16,7 +16,7 @@ spec:
         spec:
             initContainers:
                 - name: init-volume
-                  image: registry.inpt.fr/inp-net/lafrappe:0.2.0
+                  image: registry.inpt.fr/inp-net/lafrappe:0.2.1
                   # Copier les métadonnées de l'image dans le Ceph
                   command: ["sh", "-c", "if [ -z \"$(ls -A /mnt/uploads)\" ]; then cp -r /app/data/uploads/. /mnt/uploads/; fi"]
                   volumeMounts:
@@ -24,7 +24,7 @@ spec:
                       mountPath: /mnt/uploads
             containers:
                 - name: la-frappe
-                  image: registry.inpt.fr/inp-net/lafrappe:0.2.0
+                  image: registry.inpt.fr/inp-net/lafrappe:0.2.1
                   imagePullPolicy: Always
                   resources:
                       requests:
