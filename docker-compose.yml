@@ -20,4 +20,4 @@ services:
       - AUTHENTIK_ID
       - AUTHENTIK_SECRET
     volumes:
-      - ./local_storage/browse:/app/browse
+      - ./data:/app/data

@@ -1,5 +1,4 @@
 <script lang="ts">
-
     import { Flex, Stack } from 'azucar-ui';
     import type { PageData } from './$types';
     import type { FileData } from '$lib/types/types.d';
@@ -10,7 +9,6 @@
 
     let files: FileData[] = $derived(data.files);
     const currentPath: string[] = $derived(data.currentPath.split("/"));
-
 </script>
 
 <svelte:head>
@@ -18,6 +16,7 @@
         La Frappe · Naviguer les documents
     </title>
 </svelte:head>
+
 <Flex direction="column" gap="xl" margin="lg">
     <Stack>
         <Logo />
@@ -32,9 +31,7 @@
 </Flex>
 
 <style>
-
     :global(.danger-text) {
         color: var(--color-error);
     }
-
 </style>

@@ -11,9 +11,7 @@
         fileItem: FileData;
     };
 
-    let {
-        fileItem
-    } : Props = $props();
+    let { fileItem } : Props = $props();
 
     import { page } from '$app/state';
 
@@ -23,11 +21,9 @@
         `/${page.params.path || ''}/${fileItem.name}`.replace(/\/+/g, '/')
     );
 
-    let treePath: string[] = StoragePaths.DEFAULT_DB_LOCATION.split("/");
-
     /** Position réel du fichier dans le serveur. */
     let filePath = $derived(
-        `/${treePath[1]}/${realPath}`.replace(/\/+/g, '/')
+        `/api/files/${realPath}`.replace(/\/+/g, '/')
     );
 
     /** Position de la page (svelte) pour naviger dans la DB. */

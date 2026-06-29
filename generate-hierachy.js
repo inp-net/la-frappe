@@ -3,8 +3,8 @@
 import { readFileSync, mkdirSync, existsSync, symlinkSync, readdirSync, lstatSync, rmSync } from 'fs';
 import { join, resolve, dirname, relative } from 'path'; // Ajout de dirname et relative
 
-const UPLOADS_ROOT = resolve('static/uploads');
-const DIST_ROOT = resolve('static/frappe_tree'); // Le dossier de sortie
+const UPLOADS_ROOT = resolve('data/uploads');
+const DIST_ROOT = resolve('data/frappe_tree'); // Le dossier de sortie
 
 function generateHierarchy() {
     console.log("Début de la génération de l'arborescence...");

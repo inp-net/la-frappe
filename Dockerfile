@@ -28,9 +28,9 @@ COPY package.json /app
 COPY pnpm-lock.yaml /app
 RUN pnpm install --no-frozen-lockfile --prod --ignore-scripts
 
-# On récupère le build et le dossier static
+# On récupère le build et le dossier data
 COPY --from=builder /app/build /app/build
-COPY --from=builder /app/static /app/static
+COPY --from=builder /app/data /app/data
 COPY --from=builder /app/generate-hierachy.js /app/generate-hierachy.js
 
 CMD ["sh", "-c", "node generate-hierachy.js && node build/index.js"]
