@@ -9,7 +9,6 @@ import { securePath } from '$lib/server/fileService';
  * @param path : Path où la recherche s'effectue.
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
-    console.log("API GET appelée !");
 
     // Authentification
     const session = await locals.auth();
@@ -23,8 +22,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     const rawPath = url.searchParams.get('path') || '';
     const safePath = securePath(rawPath);
 
-    console.log("Secured path : " + safePath);
-    
     if (!safePath) {
         return json({ error: 'Invalid path' }, { status: 400 });
     }

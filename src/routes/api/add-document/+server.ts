@@ -1,7 +1,9 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync, setxattrSync } from 'fs';
 import { join, resolve } from 'path';
-import { DocumentTypes, StoragePaths, type DocumentInfo } from '$lib/types/types.d';
+import { LogCategory, DocumentTypes, StoragePaths, type DocumentInfo } from '$lib/types/types.d';
+import { NewLog } from '$lib/server/logService';
+import { IsBan } from '$lib/server/authService';
 import { securePath } from '$lib/server/fileService';
 
 /** Taille maximale du fichier 10mo */
@@ -21,7 +23,7 @@ function validateMetadata(fields: DocumentInfo) {
             error(400, `Missing or invalid ${key}`);
         }
         
-        const safe = value;
+        const safe = securePath(value);
         if (!safe) {
             error(400, `Invalid characters in ${key}`);
         }
@@ -127,6 +129,9 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
     try {
         mkdirSync(dirPath, { recursive: true });
         writeFileSync(fullPath, Buffer.from(buffer), { mode: 0o644 });
+        setxattrSync(fullPath, 'user.author', metadata.author, 'utf-8');
+
+        NewLog(`Document '${fileName}' dans '${fullPath}' ajouté par ${metadata.author}`, LogCategory.DOCUMENT_ADD);
     } catch (err) {
         console.error(err)
         error(500, "Erreur d'écriture du fichier");
@@ -136,10 +141,17 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
 export const POST: RequestHandler = async ({ request, locals }) => {
     // Authentification
     const session = await locals.auth();
-    if (!session) {
+    if (!session || !session.user) {
         return json({ 
             error: 'Unauthorized', 
             message: 'Vous devez être connecté' 
+        }, { status: 401 });
+    }
+
+    if (!session && !session.user && IsBan(session.user.name)) {
+        return json({ 
+            error: 'Fobidden', 
+            message: "Vous devez banni de La-Frappe. Si vous pensez que c'est une erreur, contactez net7"
         }, { status: 401 });
     }
 
@@ -153,6 +165,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const fileContent = await checkFileIntegrity(file);
 
     const rawFields = Object.fromEntries(data.entries()) as DocumentInfo;
+    // Ajout de l'auteur du fichier coté serveur
+    rawFields.author = session.user.name;
+    // On supprime le fichier car c'est pas une métadonnée du form
     delete rawFields.file;
     const metadata = validateMetadata(rawFields);
 

@@ -99,49 +99,47 @@
     /** Fonction qui envoie le form au serveur. */
     async function sendFile() {
         if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedFiliaire) {
-            toast.error("Formulaire incomplet.")
+            toast.error("Formulaire incomplet.");
             console.error("Formulaire incomplet");
             return;
         }
+        
         let formData = new FormData();
-		formData.append('file', fileToUpload);
-		formData.append('school', selectedSchool);
-		formData.append('year', selectedYear);
-		formData.append('subject', selectedCourse);
-		formData.append('filiaire', selectedFiliaire);
-		formData.append('category', selectedDocumentType);
-		formData.append('date', selectedDate.toString());
+        formData.append('file', fileToUpload);
+        formData.append('school', selectedSchool);
+        formData.append('year', selectedYear);
+        formData.append('subject', selectedCourse);
+        formData.append('filiaire', selectedFiliaire);
+        formData.append('category', selectedDocumentType);
+        formData.append('date', selectedDate.toString());
         formData.append('corrige', haveCorrige.toString());
-		try {
-            toast("Envoie du formulaire en cours.")
-			const response = await fetch('/api/add-document', {
-				method: 'POST',
-				body: formData,
+        
+        try {
+            toast("Envoie du formulaire en cours.");
+            const response = await fetch('/api/add-document', {
+                method: 'POST',
+                body: formData,
                 headers: {
                     'X-SvelteKit-Action': 'true'
                 }
-			});
+            });
+
+            const data = await response.json();
+
             if (response.ok) {
-                const result = await response.json();
                 toast.success("Formulaire envoyé avec succès. Redirection en cours ...");
                 setTimeout(() => {
-                    goto(StoragePaths.DEFAULT_PAGE_LOCATION); 
+                    goto(StoragePaths.DEFAULT_PAGE_LOCATION);
                 }, 2000);
             } else {
-                toast.error("Erreur lors de l'envoi du formulaire.");
-                const contentType = response.headers.get("content-type");
-                if (contentType && contentType.includes("application/json")) {
-                    const errorData = await response.json();
-                    console.error("Erreur :", errorData);
-                } else {
-                    const textError = await response.text();
-                    console.error(`Erreur serveur (${response.status}) :`, textError);
-                }
+                // Utiliser data.message ici
+                toast.error("Erreur : " + (data.message || data.error || 'Erreur inconnue'));
+                console.error("Erreur détaillée :", data);
             }
-		} catch (err) {
-            toast.error("Erreur lors de l'envoi du formulaire : " + err)
-			console.error("Erreur lors de l'envoi du form : ", err);
-		}
+        } catch (err) {
+            toast.error("Erreur lors de l'envoi du formulaire : " + err);
+            console.error("Erreur lors de l'envoi du form : ", err);
+        }
     }
 
 </script>

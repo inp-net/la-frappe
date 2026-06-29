@@ -16,7 +16,13 @@ export enum StoragePaths {
     DEFAULT_PAGE_LOCATION = 'browse/',
     DEFAULT_DB_LOCATION = 'data/frappe_tree',
     DEFAULT_SUBJECT_LOCATION = 'data/uploads',
+    DEFAULT_LOG_LOCATION = 'data/logs',
+    DEFAULT_BANLIST_FILE = 'data/banlist.json'
 };
+
+export enum LogCategory {
+    DOCUMENT_ADD = "AddDocument"
+}
 
 /** Le struct qui représente un fichier. */
 export type FileData = {
@@ -36,4 +42,5 @@ export type DocumentInfo = {
     category: string;
     date: string;
     corrige: string;
+    author?: string;
 };
