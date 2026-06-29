@@ -2,9 +2,7 @@
 
 import { json } from '@sveltejs/kit';
 import { getFilesAt } from '$lib/server/fileService';
-import type { FileData } from '$lib/types/types.d';
 import type { RequestHandler } from './$types';
-import { resolve } from 'path';
 import { securePath } from '$lib/server/fileService';
 
 /** Api pour récupérer les fichiers dans la déstination.

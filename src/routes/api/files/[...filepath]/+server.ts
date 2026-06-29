@@ -1,7 +1,8 @@
+import { json } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { StoragePaths } from '$lib/types/types.d';
-import { securePath } from '$lib/server/fileService.ts';
+import { securePath } from '$lib/server/fileService';
 import fs from 'fs';
 import path from 'path';
 
@@ -14,7 +15,17 @@ function getMimeType(filePath: string): string {
     return 'application/octet-stream';
 }
 
-export const GET: RequestHandler = async ({ params }) => {
+/** Récupère les PDFs */
+export const GET: RequestHandler = async ({ params, locals }) => {
+
+    const session = await locals.auth();
+    if (!session) {
+        return json({ 
+            error: 'Unauthorized', 
+            message: 'Vous devez être connecté' 
+        }, { status: 401 });
+    }
+
     const baseDir = path.resolve(StoragePaths.DEFAULT_DB_LOCATION);
     const safePath = '/' + securePath(path.resolve(baseDir, params.filepath));
 
