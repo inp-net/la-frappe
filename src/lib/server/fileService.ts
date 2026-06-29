@@ -41,9 +41,7 @@ export const normalizePath = (s: string) => s.trim().toLowerCase().replaceAll(/[
  */
 export function securePath(input: string): string | null {
     // Vérifie le type
-    if (typeof input !== 'string' || !input || input.length > 100) {
-        return null;
-    }
+    if (typeof input !== 'string' || !input || input.length > 500) return null;
 
     // Limite du chemin
     const trimmed = input.trim();
@@ -84,7 +82,7 @@ export function securePath(input: string): string | null {
     for (const segment of segments) {
         if (!segment || segment === '.' || segment === '..') return null;
         if (segment.length > 255) return null;
-        if (!/^[a-zA-Z0-9\-_ a-zA-Z0-9À-ÿ]+$/.test(segment)) return null;
+        if (!/^[a-zA-Z0-9\-_ a-zA-Z0-9À-ÿ.]+$/.test(segment)) return null;
         if (segment.startsWith('.')) return null;
     }
 
