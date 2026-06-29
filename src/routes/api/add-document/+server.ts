@@ -21,7 +21,7 @@ function validateMetadata(fields: DocumentInfo) {
             error(400, `Missing or invalid ${key}`);
         }
         
-        const safe = securePath(value);
+        const safe = value;
         if (!safe) {
             error(400, `Invalid characters in ${key}`);
         }

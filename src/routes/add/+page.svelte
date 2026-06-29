@@ -9,12 +9,12 @@
 
     import {
         Button,
-            Flex,
-            Stack,
-            ButtonGroup,
-            Frame,
-            Switch,
-            TextInput
+        Flex,
+        Stack,
+        ButtonGroup,
+        Frame,
+        Switch,
+        TextInput
     } from 'azucar-ui';
 
     import {
@@ -45,11 +45,11 @@
     let documentTypes: string[] = $derived([...Object.values(DocumentTypes)]);
 
     /** Fonction qui récupère une liste des noms de fichiers à partir du chemin
-    * relatif dans la DB. Utilise l'api get-files-at.
-    * @param selected : string chemin relatif dans la DB.
-    * @return string[] liste des noms des fichiers contenues à cet endroit.
-    * @throws Error si le chemin n'existe pas.
-    */
+     * relatif dans la DB. Utilise l'api get-files-at.
+     * @param selected : string chemin relatif dans la DB.
+     * @return string[] liste des noms des fichiers contenues à cet endroit.
+     * @throws Error si le chemin n'existe pas.
+     */
     async function getNextSelection(selected : string) {
         if (!selected) {
             return [];
@@ -116,17 +116,27 @@
             toast("Envoie du formulaire en cours.")
 			const response = await fetch('/api/add-document', {
 				method: 'POST',
-				body: formData
+				body: formData,
+                headers: {
+                    'X-SvelteKit-Action': 'true'
+                }
 			});
             if (response.ok) {
                 const result = await response.json();
-                toast.success("Formulaire envoyé avec succès. Redirection en cours ...")
+                toast.success("Formulaire envoyé avec succès. Redirection en cours ...");
                 setTimeout(() => {
                     goto(StoragePaths.DEFAULT_PAGE_LOCATION); 
                 }, 2000);
             } else {
-                toast.error("Erreur lors de l'envoi du formulaire.")
-                const errorData = await response.json();
+                toast.error("Erreur lors de l'envoi du formulaire.");
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    const errorData = await response.json();
+                    console.error("Erreur :", errorData);
+                } else {
+                    const textError = await response.text();
+                    console.error(`Erreur serveur (${response.status}) :`, textError);
+                }
             }
 		} catch (err) {
             toast.error("Erreur lors de l'envoi du formulaire : " + err)

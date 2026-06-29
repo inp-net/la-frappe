@@ -1,13 +1,14 @@
 services:
   app:
     # image: la-frappe:latest
-    network_mode: host
     build: .
+    restart: always
     ports:
       - "5173:3000"
     env_file:
       - .env
     environment:
+      - PORT=3000
       - BETTER_AUTH_SECRET
       - DEV_FAKE_AUTH
       - AUTHENTIK_URL
