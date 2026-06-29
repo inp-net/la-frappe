@@ -7,7 +7,7 @@ import { LogCategory, StoragePaths } from '$lib/types/types.d'
  * @param data: la valeur de la ligne
  */
 export function NewLog(data: string, category: LogCategory) {
-    const logDir = StoragePaths.DEFAULT_LOG_LOCATION;
+    const logDir = resolve(StoragePaths.DEFAULT_LOG_LOCATION);
 
     if (!existsSync(logDir)) {
         mkdirSync(logDir, { recursive: true })
