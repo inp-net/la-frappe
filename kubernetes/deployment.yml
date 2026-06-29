@@ -16,15 +16,15 @@ spec:
         spec:
             initContainers:
                 - name: init-volume
-                  image: registry.inpt.fr/inp-net/lafrappe:0.1
+                  image: registry.inpt.fr/inp-net/lafrappe:0.1.2
                   # Copier les métadonnées de l'image dans le Ceph
-                  command: ["sh", "-c", "if [ -z \"$(ls -A /mnt/uploads)\" ]; then cp -r /app/static/uploads/. /mnt/uploads/; fi"]
+                  command: ["sh", "-c", "if [ -z \"$(ls -A /mnt/uploads)\" ]; then cp -r /app/data/uploads/. /mnt/uploads/; fi"]
                   volumeMounts:
                     - name: la-frappe-uploads
                       mountPath: /mnt/uploads
             containers:
                 - name: la-frappe
-                  image: registry.inpt.fr/inp-net/lafrappe:0.1
+                  image: registry.inpt.fr/inp-net/lafrappe:0.1.2
                   imagePullPolicy: Always
                   resources:
                       requests:
@@ -39,9 +39,9 @@ spec:
                             name: la-frappe-secrets
                   volumeMounts:
                       - name: la-frappe-uploads
-                        mountPath: /app/static/uploads
+                        mountPath: /app/data/uploads
                       - name: frappe-tree-writable
-                        mountPath: /app/static/frappe_tree
+                        mountPath: /app/data/frappe_tree
             volumes:
                 - name: la-frappe-uploads
                   persistentVolumeClaim:
