@@ -31,6 +31,7 @@ RUN pnpm install --no-frozen-lockfile --prod --ignore-scripts
 # On récupère le build et le dossier data
 COPY --from=builder /app/build /app/build
 COPY --from=builder /app/data /app/data
+COPY --from=builder /app/static /app/static # Récupérer le favicon
 COPY --from=builder /app/generate-hierachy.js /app/generate-hierachy.js
 
 CMD ["sh", "-c", "node generate-hierachy.js && node build/index.js"]
