@@ -29,9 +29,6 @@ export const GET: RequestHandler = async ({ params, locals }) => {
     const baseDir = path.resolve(StoragePaths.DEFAULT_DB_LOCATION);
     const safePath = '/' + securePath(path.resolve(baseDir, params.filepath));
 
-    console.error("Base Dir : " + baseDir);
-    console.error("New path : " + safePath);
-
     if (!fs.existsSync(safePath) || fs.statSync(safePath).isDirectory()) {
         throw error(404, 'File not found');
     }

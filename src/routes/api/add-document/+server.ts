@@ -3,6 +3,7 @@ import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
 import { LogCategory, DocumentTypes, StoragePaths, type DocumentInfo } from '$lib/types/types.d';
 import { NewLog } from '$lib/server/logService';
+import { IsBan } from '$lib/server/authService';
 import { securePath } from '$lib/server/fileService';
 
 /** Taille maximale du fichier 10mo */
@@ -143,6 +144,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         return json({ 
             error: 'Unauthorized', 
             message: 'Vous devez être connecté' 
+        }, { status: 401 });
+    }
+
+    if (IsBan(session.user.name)) {
+        return json({ 
+            error: 'Fobidden', 
+            message: "Vous devez banni de La-Frappe. Si vous pensez que c'est une erreur, contactez net7"
         }, { status: 401 });
     }
 
