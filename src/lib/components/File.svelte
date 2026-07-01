@@ -46,7 +46,7 @@
     onmouseleave={() => isHovered = false}
     style="padding: 0; margin: 0; max-width: 100%;"
 >
-<Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1; overflow: scroll;">
+<Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1; overflow: scroll; -webkit-overflow-scrolling: touch;">
     <Flex align="center" wrap={false}>
         <Flex wrap={false}>
             {#if fileItem.isDirectory}
@@ -71,6 +71,10 @@
         min-width: 0;
         flex-shrink: 1;
         font-size: 1em;
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
     }
 
 </style>

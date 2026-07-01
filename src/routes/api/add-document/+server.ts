@@ -74,9 +74,9 @@ async function checkFileIntegrity(file : File | null) {
  * @return chemin (ex: ENSEEIHT/1A/SN/Reseau/)
  */
 function generatePath(metadata : DocumentInfo) {
-    const { school, year, filiaire, subject, category } = metadata;
+    const { school, year, filière, subject, category } = metadata;
 
-    const relativePath = join(school, year, filiaire, subject);
+    const relativePath = join(school, year, filière, subject);
     const fullPath = resolve(BASE_DIR, relativePath);
     
     if (!fullPath.startsWith(BASE_DIR)) {

@@ -37,7 +37,7 @@ export type DocumentInfo = {
     file: string;
     school: string;
     year: string;
-    filiaire: string;
+    filière: string;
     subject: string;
     category: string;
     date: string;
