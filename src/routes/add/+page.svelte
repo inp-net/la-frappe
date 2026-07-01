@@ -29,7 +29,7 @@
 
     let fileList = $state<FileList | undefined>(undefined);
     let selectedSchool = $state("");
-    let selectedFiliaire = $state("");
+    let selectedFilière = $state("");
     let selectedYear = $state("1A");
     let selectedCourse = $state("");
     let selectedDocumentType = $state("");
@@ -40,7 +40,7 @@
 
     let fileToUpload = $derived(fileList?.[0]);
     let schoolList = $derived(data.schoolNames);
-    let filiaireList = $state<string[]>([]);
+    let filièreList = $state<string[]>([]);
     let courseList = $state<string[]>([]);
     let documentTypes: string[] = $derived([...Object.values(DocumentTypes)]);
 
@@ -66,26 +66,26 @@
         }
     }
 
-    // Met à jour la séléction possible matières/filiaires en temps réel en
+    // Met à jour la séléction possible matières/filières en temps réel en
     // fonction de la séléction précédentes.
     // TODO rendre plus intelligent au lieu de hard code
     $effect(() => {
         const school = selectedSchool;
         const year = selectedYear;
-        const filiaire = selectedFiliaire;
+        const filière = selectedFilière;
 
         if (school && year) {
             getNextSelection(`${school}/${year}`).then(list => {
-                filiaireList = list;
+                filièreList = list;
                 untrack(() => {
-                    if (!list.includes(selectedFiliaire)) {
-                        selectedFiliaire = "";
+                    if (!list.includes(selectedFilière)) {
+                        selectedFilière = "";
                     }
                 });
             });
         }
-        if (school && year && filiaire) {
-            getNextSelection(`${school}/${year}/${filiaire}`).then(list => {
+        if (school && year && filière) {
+            getNextSelection(`${school}/${year}/${filière}`).then(list => {
                 courseList = list;
                 untrack(() => {
                     if (!list.includes(selectedCourse)) {
@@ -100,7 +100,7 @@
 
     /** Fonction qui envoie le form au serveur. */
     async function sendFile() {
-        if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedFiliaire) {
+        if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedFilière) {
             toast.error("Formulaire incomplet.");
             console.error("Formulaire incomplet");
             return;
@@ -111,7 +111,7 @@
         formData.append('school', selectedSchool);
         formData.append('year', selectedYear);
         formData.append('subject', selectedCourse);
-        formData.append('filiaire', selectedFiliaire);
+        formData.append('filière', selectedFilière);
         formData.append('category', selectedDocumentType);
         formData.append('date', selectedDate.toString());
         formData.append('corrige', haveCorrige.toString());
@@ -208,19 +208,19 @@
                     </ButtonGroup>
                 </Flex>
                 <Select
-                    options={filiaireList}
-                    bind:value={selectedFiliaire}
+                    options={filièreList}
+                    bind:value={selectedFilière}
                     icon={SearchIcon}
-                    placeholder="Choisir une filiaire"
+                    placeholder="Choisir une filière"
                     disabled={!selectedSchool}
                     required
-                >Filiaire</Select>
+                >Filière</Select>
                 <Select
                     options={courseList}
                     bind:value={selectedCourse}
                     icon={SearchIcon}
                     placeholder="Choisir une matière"
-                    disabled={!selectedFiliaire}
+                    disabled={!selectedFilière}
                     required
                 >Matière</Select>
                 <Select

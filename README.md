@@ -25,7 +25,7 @@ liens symboliques entre fichiers de Linux. Ces liens symboliques sont générés
 au lancement du serveur grâce à [generate-hierachy.js](generate-hierachy.js).
 
 L'objectif est de pouvoir naviguer dans un explorateur de fichier classique tout
-en prenant en compte les UE dupliqués (une UE commune à plusieurs filiaires).
+en prenant en compte les UE dupliqués (une UE commune à plusieurs filières).
 
 La base de donné est structuré de cette manière :
 
@@ -52,7 +52,7 @@ Il y a aussi systématiquement un fichier `metadata.json` :
 }
 ```
 
-Puisque un EU peut être commun à plusieurs filiaires, paths prend en paramètre
+Puisque un EU peut être commun à plusieurs filières, paths prend en paramètre
 une liste. Par exemple :
 
 ```
