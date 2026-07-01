@@ -33,7 +33,7 @@
     let selectedYear = $state("1A");
     let selectedCourse = $state("");
     let selectedDocumentType = $state("");
-    let selectedDate = $state(2026);
+    let selectedDate = $state(new Date().getFullYear());
     let haveCorrige = $state(false);
 
     // Liste des éléments qui peuvent être séléctionné
@@ -191,7 +191,7 @@
                     required
                 >École</Select>
                 <Flex direction="column" gap="xxs">
-                    <span class="required">Année</span>
+                    <span class="required">Niveau</span>
                     <ButtonGroup>
                         <Button
                             variant={selectedYear === "1A" ? 'default' : 'outline'}
@@ -231,7 +231,7 @@
                     required
                 >Type de document</Select>
                 <Flex direction="column" gap="xxs">
-                    <TextInput type="number" bind:value={selectedDate} placeholder="2026" min="1900" max="2100" step="1">Année du TD</TextInput>
+                    <TextInput type="number" bind:value={selectedDate} placeholder="2026-2027" min="1900" max="2100" step="1">Année universitaire</TextInput>
                 </Flex>
                 <Flex direction="column" gap="xxs">
                     <span>Contient corrigé ?</span>
@@ -242,6 +242,10 @@
                 <Flex gap="xs" align="baseline" wrap={false}>
                     <Info size="10px"/>
                     <span>Le corrigé (si disponible) doit être fusionné avec le sujet.</span>
+                </Flex>
+                <Flex gap="xs" align="baseline" wrap={false}>
+                    <Info size="10px"/>
+                    <span>L'année universitaire débute en septembre.</span>
                 </Flex>
             </Flex>
             <!-- bouton-ajouter -->
