@@ -28,10 +28,11 @@
     // Element séléctionné par l'utilisateur
 
     let fileList = $state<FileList | undefined>(undefined);
-    let selectedSchool = $state("");
-    let selectedFilière = $state("");
-    let selectedYear = $state("1A");
-    let selectedCourse = $state("");
+    let selectedSchool = $state("");    // ENSEEIHT
+    let selectedMajor = $state("");     // SN, MFEE, ...
+    let selectedYear = $state("1A");    // 1A, 2A, 3A
+    let selectedMinor = $state("");     // Logiciel, ASR
+    let selectedCourse = $state("");    // TOB, PIM, Architecture
     let selectedDocumentType = $state("");
     let selectedDate = $state(new Date().getFullYear());
     let haveCorrige = $state(false);
@@ -40,7 +41,8 @@
 
     let fileToUpload = $derived(fileList?.[0]);
     let schoolList = $derived(data.schoolNames);
-    let filièreList = $state<string[]>([]);
+    let minorList = $state<string[]>([]);
+    let majorList = $state<string[]>([]);
     let courseList = $state<string[]>([]);
     let documentTypes: string[] = $derived([...Object.values(DocumentTypes)]);
 
@@ -72,14 +74,14 @@
     $effect(() => {
         const school = selectedSchool;
         const year = selectedYear;
-        const filière = selectedFilière;
+        const filière = selectedMajor;
 
         if (school && year) {
             getNextSelection(`${school}/${year}`).then(list => {
-                filièreList = list;
+                minorList = list;
                 untrack(() => {
-                    if (!list.includes(selectedFilière)) {
-                        selectedFilière = "";
+                    if (!list.includes(selectedMajor)) {
+                        selectedMajor = "";
                     }
                 });
             });
@@ -100,7 +102,7 @@
 
     /** Fonction qui envoie le form au serveur. */
     async function sendFile() {
-        if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedFilière) {
+        if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedMajor) {
             toast.error("Formulaire incomplet.");
             console.error("Formulaire incomplet");
             return;
@@ -111,7 +113,7 @@
         formData.append('school', selectedSchool);
         formData.append('year', selectedYear);
         formData.append('subject', selectedCourse);
-        formData.append('filière', selectedFilière);
+        formData.append('filière', selectedMajor);
         formData.append('category', selectedDocumentType);
         formData.append('date', selectedDate.toString());
         formData.append('corrige', haveCorrige.toString());
@@ -190,6 +192,14 @@
                     placeholder="Choisir une école"
                     required
                 >École</Select>
+                <Select
+                    options={majorList}
+                    bind:value={selectedMajor}
+                    icon={SearchIcon}
+                    placeholder="Choisir un département"
+                    disabled={!selectedSchool}
+                    required
+                >Département</Select>
                 <Flex direction="column" gap="xxs">
                     <span class="required">Niveau</span>
                     <ButtonGroup>
@@ -208,11 +218,11 @@
                     </ButtonGroup>
                 </Flex>
                 <Select
-                    options={filièreList}
-                    bind:value={selectedFilière}
+                    options={minorList}
+                    bind:value={selectedMinor}
                     icon={SearchIcon}
                     placeholder="Choisir une filière"
-                    disabled={!selectedSchool}
+                    disabled={!selectedMajor}
                     required
                 >Filière</Select>
                 <Select
@@ -220,7 +230,7 @@
                     bind:value={selectedCourse}
                     icon={SearchIcon}
                     placeholder="Choisir une matière"
-                    disabled={!selectedFilière}
+                    disabled={!selectedMajor}
                     required
                 >Matière</Select>
                 <Select
