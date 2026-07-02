@@ -5,19 +5,17 @@
     import type { PageData } from './$types';
     import { goto } from '$app/navigation';
     import { invalidateAll } from '$app/navigation';
-    import { untrack } from 'svelte';
-    import { enhance } from '$app/forms';
     import { Toaster, toast } from 'svelte-sonner';
 
     import { Button, Flex, Stack, ButtonGroup, Frame, Switch, TextInput } from 'azucar-ui';
 
-    import { Plus, SearchIcon, Check, Info } from '@lucide/svelte';
+    import { TriangleAlert, SearchIcon, Check, Info } from '@lucide/svelte';
 
     let { data }: { data: PageData } = $props();
 
     // Element séléctionné par l'utilisateur
 
-    let fileList = $state<File | undefined>(undefined);
+    let fileList = $state<FileList | undefined>(undefined);
     let selectedSchool = $state("");    // ENSEEIHT
     let selectedMajor = $state("");     // SN, MFEE, ...
     let selectedYear = $state("1A");    // 1A, 2A, 3A
@@ -86,7 +84,7 @@
     // fonction de la séléction précédentes.
     $effect(() => {
         for (const node of dependencyGraph) {
-            const currentDeps = node.keys;
+            const currentDeps = node.keys; 
             if (currentDeps.some(dep => !dep)) {
                 node.options = [];
                 node.reset();
@@ -95,41 +93,108 @@
             const computedPath = node.path(currentDeps);
             fetchSelectionOptions(computedPath).then(list => {
                 node.options = list;
-                untrack(() => {
-                    if (node.value && !list.includes(node.value)) {
-                        node.reset();
-                    }
-                });
             });
         }
     });
 
     let isSending = $state(false);
+    let isCountingDown = $state(false);
+    let countdownTimer: ReturnType<typeof setTimeout> | undefined;
+    let currentToastId: string | number | undefined = undefined;
 
-    function handleSubmit() {
-        if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedMajor || !selectedMinor || !selectedDocumentType) {
-            toast.error("Formulaire incomplet.");
-            return ({ cancel }) => cancel();
-        }
+    /** Gère l'upload du form. */
+    async function executeUpload() {
         isSending = true;
-        const toastId = toast.loading("Envoi du formulaire en cours...");
-        return async ({ result }) => {
-            isSending = false;
-            toast.dismiss(toastId);
+        const loadingToastId = toast.loading("Envoi du formulaire en cours...");
+
+        try {
+            const formData = new FormData();
+            formData.append('document', fileToUpload as File);
+            formData.append('school', selectedSchool);
+            formData.append('major', selectedMajor);
+            formData.append('year', selectedYear);
+            formData.append('minor', selectedMinor);
+            formData.append('course', selectedCourse);
+            formData.append('documentType', selectedDocumentType);
+            formData.append('date', selectedDate.toString());
+            formData.append('hasCorrection', hasCorrection ? "true" : "false");
+
+            const response = await fetch('?/add', {
+                method: 'POST',
+                body: formData,
+                headers: { 'x-sveltekit-action': 'true' }
+            });
+
+            const result = await response.json();
+            toast.dismiss(loadingToastId);
+
             if (result.type === 'failure') {
                 toast.error("Erreur : " + (result.data?.message || 'Erreur inconnue'));
-            } 
-            if (result.type === 'redirect') {
-                toast.success("Formulaire envoyé avec succès. Redirection en cours...");
+            } else if (result.type === 'redirect' || response.redirected) {
+                toast.success("Formulaire envoyé avec succès !");
                 setTimeout(async () => {
                     await invalidateAll();
-                }, 1500);
-            }
-            if (result.type === 'error') {
+                    goto(StoragePaths.DEFAULT_PAGE_LOCATION); 
+                }, 1000);
+            } else if (result.type === 'error') {
                 toast.error(`Erreur critique : ${result.error.message}`);
             }
-        };
+        } catch {
+            toast.dismiss(loadingToastId);
+            toast.error("Une erreur réseau est survenue.");
+        } finally {
+            isSending = false;
+        }
     }
+
+    /** Evenement lors du clique de Ajouter. */
+    function sendFile(event: Event) {
+        event.preventDefault();
+
+        if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedMajor || !selectedMinor || !selectedDocumentType) {
+            toast.error("Formulaire incomplet.");
+            return;
+        }
+
+        isCountingDown = true;
+
+        currentToastId = toast('Document prêt', {
+            description: "Envoi automatique dans 3s...",
+            duration: 3000,
+            action: {
+                label: 'Valider',
+                onClick: () => {
+                    clearTimeout(countdownTimer);
+                    isCountingDown = false;
+                    executeUpload();
+                }
+            },
+            cancel: {
+                label: 'Annuler',
+                onClick: () => {
+                    clearTimeout(countdownTimer);
+                    isCountingDown = false;
+                    toast("Envoi annulé.");
+                }
+            },
+            onDismiss: () => {
+                clearTimeout(countdownTimer);
+                isCountingDown = false;
+            }
+        });
+
+        countdownTimer = setTimeout(() => {
+            isCountingDown = false;
+            toast.dismiss(currentToastId);
+            executeUpload();
+        }, 3000);
+    }
+
+    /** Trigger si l'utilisateur crée une catégorie inexistante. */
+    let isCreating: boolean = $derived(
+        (selectedMinor.length > 0 && !minorList.includes(selectedMinor)) ||
+        (selectedMajor.length > 0 && !majorList.includes(selectedMajor))
+    );
 
 </script>
 
@@ -148,7 +213,7 @@
 
     <Stack>
         <Frame>
-            <form method="POST" action="?/add" enctype="multipart/form-data" use:enhance={handleSubmit}>
+            <form>
                 <Flex gap="lg" direction="column">
                     
                     <Flex gap="md" align="center">
@@ -213,6 +278,8 @@
                             icon={SearchIcon}
                             placeholder="Choisir une filière"
                             disabled={!selectedMajor}
+                            type="datalist"
+                            id="1"
                             required
                         >Filière</Select>
 
@@ -223,6 +290,8 @@
                             icon={SearchIcon}
                             placeholder="Choisir une matière"
                             disabled={!selectedMinor}
+                            type="datalist"
+                            id="2"
                             required
                         >Matière</Select>
 
@@ -246,9 +315,6 @@
                         </Flex>
 
                     </Flex>
-                    <Flex gap="md" align="center">
-                        <Button icon={Plus} variant="outline" href="/suggest">Je ne trouve pas ma filière</Button>
-                    </Flex>
 
                     <Flex gap="xs" direction="column" wrap={false}>
                         <Flex gap="xs" align="baseline" wrap={false}>
@@ -259,11 +325,26 @@
                             <Info size="10px"/>
                             <span>L'année universitaire débute en septembre.</span>
                         </Flex>
+                        {#if isCreating}
+                            <Flex gap="xs" align="baseline" wrap={false}>
+                                <TriangleAlert size="10px" color="red"/>
+                                <span>Attention, vous êtes sur le point de crée une nouvelle catégorie.</span>
+                            </Flex>
+                        {/if}
                     </Flex>
 
                     <Flex gap="xs" style="flex-grow: 1" justify='right'>
                         <Button variant="outline" href={StoragePaths.DEFAULT_PAGE_LOCATION}>Retour</Button>
-                        <Button type="submit" icon={Check} class="success" name="Success" disabled={isSending}>Ajouter</Button>
+                        <Button 
+                            type="button" 
+                            icon={Check} 
+                            class="success" 
+                            name="Success" 
+                            disabled={isSending || isCountingDown} 
+                            onclick={sendFile}
+                        >
+                            Ajouter
+                        </Button>
                     </Flex>
                 </Flex>
             </form>

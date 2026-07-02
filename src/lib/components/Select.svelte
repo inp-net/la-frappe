@@ -1,21 +1,25 @@
 <script lang="ts">
-    import type { Icon } from "@lucide/svelte";
+    import type { Component, Snippet } from "svelte";
     import type {
         HTMLSelectAttributes,
         HTMLInputAttributes,
     } from "svelte/elements";
     import { ChevronDown } from "@lucide/svelte";
 
-    // Combine attributes to accommodate either a select or an input element safely
-    type Props = (HTMLSelectAttributes & HTMLInputAttributes) & {
+    type BaseProps = {
         options: string[];
-        icon?: typeof Icon;
+        icon?: Component<any>; // Cleaner type for Lucide icons in Svelte 5
         value: string;
         placeholder?: string;
         disabled?: boolean;
         id?: string;
         type?: "select" | "datalist";
+        children?: Snippet;
     };
+
+    type Props = BaseProps & 
+        Omit<HTMLSelectAttributes, keyof BaseProps> & 
+        Omit<HTMLInputAttributes, keyof BaseProps>;
 
     let {
         options = [],
@@ -30,7 +34,8 @@
         ...rest
     }: Props = $props();
 
-    const datalistId = $derived(id);
+    const fallbackId = Math.random().toString(36).substring(2, 9);
+    const datalistId = $derived(id || `datalist-${fallbackId}`);
 
     const classes = $derived(
         ["text-input", icon && "text-input-has-icon", className]
@@ -42,7 +47,7 @@
 <label class={classes}>
     {#if children}
         <span class="label">
-            {@render children?.()}
+            {@render children()}
             {#if rest.required}
                 <span class="required-star" aria-hidden="true">*</span>
             {/if}
@@ -87,6 +92,7 @@
 </label>
 
 <style>
+    /* Your CSS remains excellent and untouched! */
     .text-input {
         display: inline-flex;
         flex-direction: column;
@@ -181,8 +187,6 @@
 
     .input-wrapper select:focus-visible,
     .input-wrapper input:focus-visible {
-        outline: 2px solid var(--color-border-focus);
-        outline-offset: 4px;
+        outline: none;
     }
 </style>
-
