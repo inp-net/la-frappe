@@ -81,7 +81,6 @@
         icon={SearchIcon}
         type="datalist"
         placeholder="Choisir une école"
-        required
     >École</Select>
 
     <Select
@@ -92,11 +91,10 @@
         placeholder="Choisir un département"
         type="datalist"
         disabled={!school}
-        required
     >Département</Select>
 
     <Flex direction="column" gap="xxs">
-        <span class="required">Niveau</span>
+        <span>Niveau</span>
         <input type="hidden" name="year" value={year} />
         <ButtonGroup>
             {#each ['1A', '2A', '3A'] as y}
@@ -117,7 +115,6 @@
         placeholder="Choisir une filière"
         disabled={!major}
         type="datalist"
-        required
     >Filière</Select>
 
     <Select
@@ -128,6 +125,5 @@
         placeholder="Choisir une matière"
         disabled={!minor}
         type="datalist"
-        required
     >Matière</Select>
 </Flex>

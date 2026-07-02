@@ -30,25 +30,21 @@
 
     $effect(() => {
         if (activeError) {
-            const initialValues: Record<string, any> = {};
+            const initialSetup: Record<string, any> = {};
             activeError.inputNames.forEach((name, i) => {
                 if (activeError.inputTypes[i] === ErrorInputType.PATH) {
-                    initialValues[name + '_school'] = "";
-                    initialValues[name + '_major'] = "";
-                    initialValues[name + '_year'] = "1A";
-                    initialValues[name + '_minor'] = "";
-                    initialValues[name + '_course'] = "";
+                    initialSetup[name] = { school: "", major: "", year: "1A", minor: "", course: "" };
                 } else {
-                    initialValues[name] = "";
+                    initialSetup[name] = "";
                 }
             });
-            dynamicFormValues = initialValues;
+            dynamicFormValues = initialSetup;
         } else {
             dynamicFormValues = {};
         }
     });
 
-    async function handleValidé(event: Event) {
+    async function handleSend(event: Event) {
         event.preventDefault();
 
         if (!errorType) {
@@ -62,22 +58,8 @@
         try {
             const payload = {
                 errorType,
-                details: {} as Record<string, any>
+                details: dynamicFormValues
             };
-
-            activeError?.inputNames.forEach((name, i) => {
-                if (activeError.inputTypes[i] === ErrorInputType.PATH) {
-                    payload.details[name] = {
-                        school: dynamicFormValues[name + '_school'] || "",
-                        major: dynamicFormValues[name + '_major'] || "",
-                        year: dynamicFormValues[name + '_year'] || "1A",
-                        minor: dynamicFormValues[name + '_minor'] || "",
-                        course: dynamicFormValues[name + '_course'] || ""
-                    };
-                } else {
-                    payload.details[name] = dynamicFormValues[name] || "";
-                }
-            });
 
             const response = await fetch('?/report-error', {
                 method: 'POST',
@@ -98,11 +80,11 @@
                 setTimeout(async () => {
                     await invalidateAll();
                     goto(StoragePaths.DEFAULT_PAGE_LOCATION); 
-                }, 1000);
+                }, 2000);
             }
         } catch {
             toast.dismiss(loadingToastId);
-            toast.error("Une erreur réseau est survenue.");
+            toast.error("Une erreur est survenue.");
         } finally {
             isSending = false;
         }
@@ -124,9 +106,10 @@
 
     <Stack>
         <Frame>
-            <form onsubmit={handleValidé}>
+            <form onsubmit={handleSend}>
                 <Flex direction="column" gap="lg">
                     <h4>Erreur de catégories</h4>
+
                     <Select
                         placeholder="Doublon, mauvais nom, ..."
                         bind:value={errorType}
@@ -144,11 +127,11 @@
                                         {#if activeError.inputTypes[i] === ErrorInputType.PATH}
                                             <Frame border={true}>
                                                 <PathInput 
-                                                    bind:school={dynamicFormValues[name + '_school']}
-                                                    bind:major={dynamicFormValues[name + '_major']}
-                                                    bind:year={dynamicFormValues[name + '_year']}
-                                                    bind:minor={dynamicFormValues[name + '_minor']}
-                                                    bind:course={dynamicFormValues[name + '_course']}
+                                                    bind:school={dynamicFormValues[name].school}
+                                                    bind:major={dynamicFormValues[name].major}
+                                                    bind:year={dynamicFormValues[name].year}
+                                                    bind:minor={dynamicFormValues[name].minor}
+                                                    bind:course={dynamicFormValues[name].course}
                                                 />
                                             </Frame>
                                         {:else if activeError.inputTypes[i] === ErrorInputType.NAME}
@@ -164,11 +147,10 @@
                         {/if}
                     </Flex>
 
-                    <Flex gap="xs" justify="right" style="margin-top: var(--space-md)">
+                    <Flex gap="xs" style="flex-grow: 1" justify='right'>
                         <Button 
                             variant="outline" 
-                            disabled={isSending}
-                            href={StoragePaths.DEFAULT_PAGE_LOCATION}
+                            href='/add'
                         >
                             Retour
                         </Button>
