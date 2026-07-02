@@ -14,6 +14,7 @@ export function NewLog(data: string, category: LogCategory) {
     }
 
     const logPath = resolve(logDir, 'log.txt');
-    const logValue = `[${category}] ${data}\n`
+    const timestamp = new Date().toISOString();
+    const logValue = `[${timestamp}] [${category}] ${data}\n`
     appendFileSync(logPath, logValue);
 }

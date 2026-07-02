@@ -9,7 +9,7 @@
 
     import { Button, Flex, Stack, ButtonGroup, Frame, Switch, TextInput } from 'azucar-ui';
 
-    import { TriangleAlert, SearchIcon, Check, Info } from '@lucide/svelte';
+    import { TriangleAlert, SearchIcon, Check, Info, Bug } from '@lucide/svelte';
 
     let { data }: { data: PageData } = $props();
 
@@ -235,7 +235,9 @@
                             options={schoolList}
                             bind:value={selectedSchool}
                             icon={SearchIcon}
+                            type="datalist"
                             placeholder="Choisir une école"
+                            id="3"
                             required
                         >École</Select>
 
@@ -245,6 +247,8 @@
                             bind:value={selectedMajor}
                             icon={SearchIcon}
                             placeholder="Choisir un département"
+                            type="datalist"
+                            id="4"
                             disabled={!selectedSchool}
                             required
                         >Département</Select>
@@ -331,6 +335,10 @@
                                 <span>Attention, vous êtes sur le point de crée une nouvelle catégorie.</span>
                             </Flex>
                         {/if}
+                    </Flex>
+
+                    <Flex>
+                        <Button icon={Bug} variant="outline" href='/suggest'>Signaler une erreur</Button>
                     </Flex>
 
                     <Flex gap="xs" style="flex-grow: 1" justify='right'>

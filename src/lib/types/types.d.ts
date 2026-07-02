@@ -45,3 +45,16 @@ export type DocumentInfo = {
     hasCorrection: 'true' | 'false';
     author?: string;
 };
+
+/** Inputs possibles pour traiter une erreur d'arborescence. */
+export enum ErrorInputType {
+    PATH,
+    NAME
+}
+
+/** Données nécéssaires pour traiter une erreur dans l'arborescence. */
+export type ErrorData = {
+    name: string;
+    inputNames: string[];
+    inputTypes: ErrorInputType[];
+}
