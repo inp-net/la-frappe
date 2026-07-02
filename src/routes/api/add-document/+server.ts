@@ -15,35 +15,32 @@ const BASE_DIR = resolve(StoragePaths.DEFAULT_DB_LOCATION);
  * @param fields : DocumentInfo données du formulaires.
  * @throw error 400 si invalide.
  */
-function validateMetadata(fields: DocumentInfo) {
-    const validated = {} as Record<string, string>;
-    
-    for (const [key, value] of Object.entries(fields)) {
-        if (!value || typeof value !== 'string') {
-            error(400, `Missing or invalid ${key}`);
+function validateMetadata(fields: any, author: string): DocumentInfo {
+    const requiredKeys = ['school', 'major', 'year', 'minor', 'course', 'documentType', 'date', 'hasCorrection'];
+
+    for (const key of requiredKeys) {
+        if (typeof fields[key] !== 'string' || !fields[key].trim()) {
+            error(400, `Missing or invalid field: ${key}`);
         }
-        
-        // TODO faire la sécurité
-        const safe = securePath(value);
-        if (!safe) {
-            error(400, `Invalid characters in ${key}`);
-        }
-        
-        validated[key] = safe;
     }
 
-    console.log(validated);
-
-    // Valider les catégories séparéments car c'est un enum
     const documentTypes = Object.values(DocumentTypes) as string[];
-    console.log(documentTypes);
-    console.log(validated.category);
-    if (!documentTypes.includes(validated.category)) {
-        error(400, "Invalid category");
+    if (!documentTypes.includes(fields.documentType)) {
+        error(400, "Invalid document type");
     }
 
-    return validated as unknown as DocumentInfo;
-};
+    return {
+        school: securePath(fields.school) || error(400, "Invalid characters in school"),
+        major: securePath(fields.major) || error(400, "Invalid characters in major"),
+        year: securePath(fields.year) || error(400, "Invalid characters in year"),
+        minor: securePath(fields.minor) || error(400, "Invalid characters in minor"),
+        course: securePath(fields.course) || error(400, "Invalid characters in course"),
+        documentType: fields.documentType, 
+        date: securePath(fields.date) || error(400, "Invalid characters in date"),
+        hasCorrection: fields.hasCorrection === 'true',
+        author: author
+    } as unknown as DocumentInfo;
+}
 
 /** Fonction qui vérifie que le fichier en input est un pdf.
  * Vérifie la taille, l'extension et la signature du fichier.
@@ -73,16 +70,16 @@ async function checkFileIntegrity(file : File | null) {
  * @param metadonnés.
  * @return chemin (ex: ENSEEIHT/1A/SN/Reseau/)
  */
-function generatePath(metadata : DocumentInfo) {
-    const { school, year, filière, subject, category } = metadata;
+function generatePath(metadata: DocumentInfo) {
+    const { school, year, major, minor, course } = metadata;
 
-    const relativePath = join(school, year, filière, subject);
+    const relativePath = join(school, major, year, minor, course);
     const fullPath = resolve(BASE_DIR, relativePath);
-    
+
     if (!fullPath.startsWith(BASE_DIR)) {
         error(403, "Access Denied.");
     }
-    
+
     return fullPath;
 }
 
@@ -93,12 +90,12 @@ function generatePath(metadata : DocumentInfo) {
  * @return String nom du fichier.
  */
 function generateName(metadata: DocumentInfo) {
-    const { category, date, corrige } = metadata;
+    const { documentType, date, hasCorrection } = metadata;
     
-    let baseName = `${category} - ${date}`;
+    let baseName = `${documentType} - ${date}`;
     baseName = baseName.replace(/[\/\\]/g, '_');
     
-    if (corrige === 'true') {
+    if (hasCorrection) {
         baseName = baseName + ' + corrige';
     }
     
@@ -130,7 +127,9 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
     try {
         mkdirSync(dirPath, { recursive: true });
         writeFileSync(fullPath, Buffer.from(buffer), { mode: 0o644 });
-
+        if (!existsSync(fullPath)) {
+            throw error(500, "Erreur d'écriture du fichier");
+        }
         NewLog(`Document '${fileName}' dans '${fullPath}' ajouté par ${metadata.author}`, LogCategory.DOCUMENT_ADD);
     } catch (err) {
         console.error(err)
@@ -141,39 +140,33 @@ function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
 export const POST: RequestHandler = async ({ request, locals }) => {
     // Authentification
     const session = await locals.auth();
-    if (!session || !session.user) {
-        return json({ 
-            error: 'Unauthorized', 
-            message: 'Vous devez être connecté' 
-        }, { status: 401 });
+    if (!session || !session.user || !session.user.name) {
+        return json({ error: 'Unauthorized', message: 'Vous devez être connecté' }, { status: 401 });
     }
 
-    if (!session && !session.user && IsBan(session.user.name)) {
+    if (IsBan(session.user.name)) {
         return json({ 
-            error: 'Fobidden', 
-            message: "Vous devez banni de La-Frappe. Si vous pensez que c'est une erreur, contactez net7"
-        }, { status: 401 });
+            error: 'Forbidden', 
+            message: "Vous êtes banni de La-Frappe. Si vous pensez que c'est une erreur, contactez net7"
+        }, { status: 403 });
     }
 
     const data = await request.formData();
-
-    const file = data.get('file');
+    const file = data.get('document');
     if (!(file instanceof File)) {
         error(400, "Fichier manquant ou invalide.");
     }
 
     const fileContent = await checkFileIntegrity(file);
+    const rawFields = Object.fromEntries(data.entries()) as unknown as DocumentInfo;
 
-    const rawFields = Object.fromEntries(data.entries()) as DocumentInfo;
-    // Ajout de l'auteur du fichier coté serveur
-    rawFields.author = session.user.name;
-    // On supprime le fichier car c'est pas une métadonnée du form
-    delete rawFields.file;
     try {
-        const metadata = validateMetadata(rawFields);
+        const metadata = validateMetadata(rawFields, session.user.name);
         saveFile(fileContent, metadata);
         return json({ message: 'Fichier ajouté avec succès' }, { status: 201 });
-    } catch (err) {
-        return json({message: err});
+    } catch (err: any) {
+        const status = err.status || 500;
+        const message = err.body?.message || "Une erreur interne est survenue.";
+        return json({ message }, { status });
     }
 };

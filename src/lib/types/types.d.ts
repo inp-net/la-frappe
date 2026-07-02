@@ -34,13 +34,14 @@ export type FileData = {
 
 /** Informations nécéssaires pour l'ajout d'un document. */
 export type DocumentInfo = {
-    file: string;
+    document: File;
     school: string;
+    major: string;
     year: string;
-    filière: string;
-    subject: string;
-    category: string;
+    minor: string;
+    course: string;
+    documentType: string;
     date: string;
-    corrige: string;
+    hasCorrection: 'true' | 'false';
     author?: string;
 };

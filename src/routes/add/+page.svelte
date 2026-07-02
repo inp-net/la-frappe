@@ -17,7 +17,7 @@
 
     // Element séléctionné par l'utilisateur
 
-    let fileList = $state<FileList | undefined>(undefined);
+    let fileList = $state<File | undefined>(undefined);
     let selectedSchool = $state("");    // ENSEEIHT
     let selectedMajor = $state("");     // SN, MFEE, ...
     let selectedYear = $state("1A");    // 1A, 2A, 3A
