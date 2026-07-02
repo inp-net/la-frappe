@@ -148,8 +148,8 @@
 
     <Stack>
         <Frame>
-            <Flex gap="md" direction="column">
-                <form method="POST" action="?/add" enctype="multipart/form-data" use:enhance={handleSubmit}>
+            <form method="POST" action="?/add" enctype="multipart/form-data" use:enhance={handleSubmit}>
+                <Flex gap="md" direction="column">
                     
                     <Flex gap="md" align="center">
                         <span>Ajouter un fichier :</span>
@@ -261,8 +261,8 @@
                         <Button variant="outline" href={StoragePaths.DEFAULT_PAGE_LOCATION}>Retour</Button>
                         <Button type="submit" icon={Check} class="success" name="Success" disabled={isSending}>Ajouter</Button>
                     </Flex>
-                </form>
-            </Flex>
+                </Flex>
+            </form>
         </Frame>
     </Stack>
 
