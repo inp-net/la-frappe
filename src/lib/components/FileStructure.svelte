@@ -5,7 +5,8 @@
     import Filters from '$lib/components/Filters.svelte';
     import File from "./File.svelte";
     import { type FileData, DocumentTypes } from '$lib/types/types.d';
-    import { Flex } from "azucar-ui"
+    import { Flex, Frame, Button, Badge } from "azucar-ui";
+    import { Plus } from '@lucide/svelte';
 
     interface Props {
         fileItems?: FileData[];

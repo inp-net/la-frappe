@@ -11,7 +11,7 @@
 
     import { Button, Flex, Stack, ButtonGroup, Frame, Switch, TextInput } from 'azucar-ui';
 
-    import { SearchIcon, Check, Info } from '@lucide/svelte';
+    import { Plus, SearchIcon, Check, Info } from '@lucide/svelte';
 
     let { data }: { data: PageData } = $props();
 
@@ -149,7 +149,7 @@
     <Stack>
         <Frame>
             <form method="POST" action="?/add" enctype="multipart/form-data" use:enhance={handleSubmit}>
-                <Flex gap="md" direction="column">
+                <Flex gap="lg" direction="column">
                     
                     <Flex gap="md" align="center">
                         <span>Ajouter un fichier :</span>
@@ -244,6 +244,10 @@
                             <input type="hidden" name="hasCorrection" value={hasCorrection ? "true" : "false"} />
                             <Switch bind:checked={hasCorrection}/>
                         </Flex>
+
+                    </Flex>
+                    <Flex gap="md" align="center">
+                        <Button icon={Plus} variant="outline" href="/suggest">Je ne trouve pas ma filière</Button>
                     </Flex>
 
                     <Flex gap="xs" direction="column" wrap={false}>
