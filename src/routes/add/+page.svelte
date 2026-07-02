@@ -4,24 +4,14 @@
     import Select from '$lib/components/Select.svelte';
     import type { PageData } from './$types';
     import { goto } from '$app/navigation';
+    import { invalidateAll } from '$app/navigation';
     import { untrack } from 'svelte';
+    import { enhance } from '$app/forms';
     import { Toaster, toast } from 'svelte-sonner';
 
-    import {
-        Button,
-        Flex,
-        Stack,
-        ButtonGroup,
-        Frame,
-        Switch,
-        TextInput
-    } from 'azucar-ui';
+    import { Button, Flex, Stack, ButtonGroup, Frame, Switch, TextInput } from 'azucar-ui';
 
-    import {
-        SearchIcon,
-        Check,
-        Info
-    } from '@lucide/svelte';
+    import { SearchIcon, Check, Info } from '@lucide/svelte';
 
     let { data }: { data: PageData } = $props();
 
@@ -35,16 +25,44 @@
     let selectedCourse = $state("");    // TOB, PIM, Architecture
     let selectedDocumentType = $state("");
     let selectedDate = $state(new Date().getFullYear());
-    let haveCorrige = $state(false);
+    let hasCorrection = $state(false);
 
     // Liste des éléments qui peuvent être séléctionné
 
     let fileToUpload = $derived(fileList?.[0]);
     let schoolList = $derived(data.schoolNames);
-    let minorList = $state<string[]>([]);
+    let documentTypes: string[] = $derived([...Object.values(DocumentTypes)]);
+
     let majorList = $state<string[]>([]);
     let courseList = $state<string[]>([]);
-    let documentTypes: string[] = $derived([...Object.values(DocumentTypes)]);
+    let minorList = $state<string[]>([]);
+
+    const dependencyGraph = [
+        {
+            get value() { return selectedMajor; },
+            get options() { return majorList; },
+            set options(val) { majorList = val; },
+            get keys() { return [selectedSchool]; },
+            path: (deps: string[]) => `${deps[0]}`,
+            reset: () => selectedMajor = ""
+        },
+        {
+            get value() { return selectedMinor; },
+            get options() { return minorList; },
+            set options(val) { minorList = val; },
+            get keys() { return [selectedSchool, selectedMajor, selectedYear]; },
+            path: (deps: string[]) => `${deps[0]}/${deps[1]}/${deps[2]}`,
+            reset: () => selectedMinor = ""
+        },
+        {
+            get value() { return selectedCourse; },
+            get options() { return courseList; },
+            set options(val) { courseList = val; },
+            get keys() { return [selectedSchool, selectedMajor, selectedYear, selectedMinor]; },
+            path: (deps: string[]) => `${deps[0]}/${deps[1]}/${deps[2]}/${deps[3]}`,
+            reset: () => selectedCourse = ""
+        }
+    ];
 
     /** Fonction qui récupère une liste des noms de fichiers à partir du chemin
      * relatif dans la DB. Utilise l'api get-files-at.
@@ -52,46 +70,34 @@
      * @return string[] liste des noms des fichiers contenues à cet endroit.
      * @throws Error si le chemin n'existe pas.
      */
-    async function getNextSelection(selected : string) {
-        if (!selected) {
-            return [];
-        }
+    async function fetchSelectionOptions(subPath: string): Promise<string[]> {
         try {
-            const pathParam = `${StoragePaths.DEFAULT_DB_LOCATION}/${selected}/`;
+            const pathParam = `${StoragePaths.DEFAULT_DB_LOCATION}/${subPath}/`;
             const response = await fetch(`/api/get-files-at?path=${encodeURIComponent(pathParam)}`);
-            if (!response.ok) throw new Error('Impossible de récupérer la séléction suivante');
-            const data: { name: string; isDirectory: boolean }[] = await response.json();
-            const listName = data.map(item => item.name);
-            return listName;
-        } catch (error) {
+            if (!response.ok) return [];
+            const files: { name: string; isDirectory: boolean }[] = await response.json();
+            return files.map(item => item.name);
+        } catch {
             return [];
         }
     }
 
     // Met à jour la séléction possible matières/filières en temps réel en
     // fonction de la séléction précédentes.
-    // TODO rendre plus intelligent au lieu de hard code
     $effect(() => {
-        const school = selectedSchool;
-        const year = selectedYear;
-        const filière = selectedMajor;
-
-        if (school && year) {
-            getNextSelection(`${school}/${year}`).then(list => {
-                minorList = list;
+        for (const node of dependencyGraph) {
+            const currentDeps = node.keys;
+            if (currentDeps.some(dep => !dep)) {
+                node.options = [];
+                node.reset();
+                continue;
+            }
+            const computedPath = node.path(currentDeps);
+            fetchSelectionOptions(computedPath).then(list => {
+                node.options = list;
                 untrack(() => {
-                    if (!list.includes(selectedMajor)) {
-                        selectedMajor = "";
-                    }
-                });
-            });
-        }
-        if (school && year && filière) {
-            getNextSelection(`${school}/${year}/${filière}`).then(list => {
-                courseList = list;
-                untrack(() => {
-                    if (!list.includes(selectedCourse)) {
-                        selectedCourse = "";
+                    if (node.value && !list.includes(node.value)) {
+                        node.reset();
                     }
                 });
             });
@@ -100,62 +106,37 @@
 
     let isSending = $state(false);
 
-    /** Fonction qui envoie le form au serveur. */
-    async function sendFile() {
-        if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedMajor) {
+    function handleSubmit() {
+        if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedMajor || !selectedMinor || !selectedDocumentType) {
             toast.error("Formulaire incomplet.");
-            console.error("Formulaire incomplet");
-            return;
+            return ({ cancel }) => cancel();
         }
-        
-        let formData = new FormData();
-        formData.append('file', fileToUpload);
-        formData.append('school', selectedSchool);
-        formData.append('year', selectedYear);
-        formData.append('subject', selectedCourse);
-        formData.append('filière', selectedMajor);
-        formData.append('category', selectedDocumentType);
-        formData.append('date', selectedDate.toString());
-        formData.append('corrige', haveCorrige.toString());
-        
-        try {
-            toast("Envoie du formulaire en cours.");
-            isSending = true;
-            const response = await fetch('/api/add-document', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-SvelteKit-Action': 'true'
-                }
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                toast.success("Formulaire envoyé avec succès. Redirection en cours ...");
-                setTimeout(() => {
-                    goto(StoragePaths.DEFAULT_PAGE_LOCATION);
-                }, 2000);
-            } else {
-                // Utiliser data.message ici
-                toast.error("Erreur : " + (data.message || data.error || 'Erreur inconnue'));
-                console.error("Erreur détaillée :", data);
-            }
-        } catch (err) {
-            toast.error("Erreur lors de l'envoi du formulaire : " + err);
-            console.error("Erreur lors de l'envoi du form : ", err);
-        } finally {
+        isSending = true;
+        const toastId = toast.loading("Envoi du formulaire en cours...");
+        return async ({ result }) => {
             isSending = false;
-        }
+            toast.dismiss(toastId);
+            if (result.type === 'failure') {
+                toast.error("Erreur : " + (result.data?.message || 'Erreur inconnue'));
+            } 
+            if (result.type === 'redirect') {
+                toast.success("Formulaire envoyé avec succès. Redirection en cours...");
+                setTimeout(async () => {
+                    await invalidateAll();
+                }, 1500);
+            }
+            if (result.type === 'error') {
+                toast.error(`Erreur critique : ${result.error.message}`);
+            }
+        };
     }
 
 </script>
 
 <svelte:head>
-    <title>
-        La Frappe · Dépôt de documents
-    </title>
+    <title>La Frappe · Dépôt de documents</title>
 </svelte:head>
+
 <Flex direction="column" gap="xxl" margin="lg">
 
     <Stack>
@@ -167,106 +148,123 @@
 
     <Stack>
         <Frame>
-        <Flex gap="md" direction="column">
-            <!-- fichier -->
-            <Flex gap="md" align="center">
-                <span>Ajouter un fichier :</span>
-                <Flex gap="xs" align="center">
-                    <input
-                        type="file"
-                        id="document"
-                        name="document"
-                        accept="image/*,.pdf"
-                        bind:files={fileList}
-                    />
-                    <!-- <Button variant="outline" icon={Paperclip}>Ouvrir</Button> -->
-                    <!-- <span>Nom_Fichier.pdf</span> -->
-                </Flex>
+            <Flex gap="md" direction="column">
+                <form method="POST" action="?/add" enctype="multipart/form-data" use:enhance={handleSubmit}>
+                    
+                    <Flex gap="md" align="center">
+                        <span>Ajouter un fichier :</span>
+                        <Flex gap="xs" align="center">
+                            <input
+                                type="file"
+                                id="document"
+                                name="document"
+                                accept="image/*,.pdf"
+                                bind:files={fileList}
+                            />
+                        </Flex>
+                    </Flex>
+
+                    <Flex gap="md" align="center">
+                        <Select
+                            name="school"
+                            options={schoolList}
+                            bind:value={selectedSchool}
+                            icon={SearchIcon}
+                            placeholder="Choisir une école"
+                            required
+                        >École</Select>
+
+                        <Select
+                            name="major"
+                            options={majorList}
+                            bind:value={selectedMajor}
+                            icon={SearchIcon}
+                            placeholder="Choisir un département"
+                            disabled={!selectedSchool}
+                            required
+                        >Département</Select>
+
+                        <Flex direction="column" gap="xxs">
+                            <span class="required">Niveau</span>
+                            <input type="hidden" name="year" value={selectedYear} />
+                            <ButtonGroup>
+                                <Button
+                                    type="button"
+                                    variant={selectedYear === "1A" ? 'default' : 'outline'}
+                                    onclick={() => selectedYear = "1A"}
+                                >1A</Button>
+                                <Button
+                                    type="button"
+                                    variant={selectedYear === "2A" ? 'default' : 'outline'}
+                                    onclick={() => selectedYear = "2A"}
+                                >2A</Button>
+                                <Button
+                                    type="button"
+                                    variant={selectedYear === "3A" ? 'default' : 'outline'}
+                                    onclick={() => selectedYear = "3A"}
+                                >3A</Button>
+                            </ButtonGroup>
+                        </Flex>
+
+                        <Select
+                            name="minor"
+                            options={minorList}
+                            bind:value={selectedMinor}
+                            icon={SearchIcon}
+                            placeholder="Choisir une filière"
+                            disabled={!selectedMajor}
+                            required
+                        >Filière</Select>
+
+                        <Select
+                            name="course"
+                            options={courseList}
+                            bind:value={selectedCourse}
+                            icon={SearchIcon}
+                            placeholder="Choisir une matière"
+                            disabled={!selectedMinor}
+                            required
+                        >Matière</Select>
+
+                        <Select
+                            name="documentType"
+                            options={documentTypes}
+                            bind:value={selectedDocumentType}
+                            icon={SearchIcon}
+                            placeholder="Choisir type doc"
+                            required
+                        >Type de document</Select>
+
+                        <Flex direction="column" gap="xxs">
+                            <TextInput name="date" type="number" bind:value={selectedDate} placeholder="2026-2027" min="1900" max="2100" step="1">Année universitaire</TextInput>
+                        </Flex>
+
+                        <Flex direction="column" gap="xxs">
+                            <span>Contient corrigé ?</span>
+                            <input type="hidden" name="hasCorrection" value={hasCorrection ? "true" : "false"} />
+                            <Switch bind:checked={hasCorrection}/>
+                        </Flex>
+                    </Flex>
+
+                    <Flex gap="xs" direction="column" wrap={false}>
+                        <Flex gap="xs" align="baseline" wrap={false}>
+                            <Info size="10px"/>
+                            <span>Le corrigé (si disponible) doit être fusionné avec le sujet.</span>
+                        </Flex>
+                        <Flex gap="xs" align="baseline" wrap={false}>
+                            <Info size="10px"/>
+                            <span>L'année universitaire débute en septembre.</span>
+                        </Flex>
+                    </Flex>
+
+                    <Flex gap="xs" style="flex-grow: 1" justify='right'>
+                        <Button variant="outline" href={StoragePaths.DEFAULT_PAGE_LOCATION}>Retour</Button>
+                        <Button type="submit" icon={Check} class="success" name="Success" disabled={isSending}>Ajouter</Button>
+                    </Flex>
+                </form>
             </Flex>
-            <!-- inputs -->
-            <Flex gap="md" align="center">
-                <Select
-                    options={schoolList}
-                    bind:value={selectedSchool}
-                    icon={SearchIcon}
-                    placeholder="Choisir une école"
-                    required
-                >École</Select>
-                <Select
-                    options={majorList}
-                    bind:value={selectedMajor}
-                    icon={SearchIcon}
-                    placeholder="Choisir un département"
-                    disabled={!selectedSchool}
-                    required
-                >Département</Select>
-                <Flex direction="column" gap="xxs">
-                    <span class="required">Niveau</span>
-                    <ButtonGroup>
-                        <Button
-                            variant={selectedYear === "1A" ? 'default' : 'outline'}
-                            onclick={() => selectedYear = "1A"}
-                        >1A</Button>
-                        <Button
-                            variant={selectedYear === "2A" ? 'default' : 'outline'}
-                            onclick={() => selectedYear = "2A"}
-                        >2A</Button>
-                        <Button
-                            variant={selectedYear === "3A" ? 'default' : 'outline'}
-                            onclick={() => selectedYear = "3A"}
-                        >3A</Button>
-                    </ButtonGroup>
-                </Flex>
-                <Select
-                    options={minorList}
-                    bind:value={selectedMinor}
-                    icon={SearchIcon}
-                    placeholder="Choisir une filière"
-                    disabled={!selectedMajor}
-                    required
-                >Filière</Select>
-                <Select
-                    options={courseList}
-                    bind:value={selectedCourse}
-                    icon={SearchIcon}
-                    placeholder="Choisir une matière"
-                    disabled={!selectedMajor}
-                    required
-                >Matière</Select>
-                <Select
-                    options={documentTypes}
-                    bind:value={selectedDocumentType}
-                    icon={SearchIcon}
-                    placeholder="Choisir type doc"
-                    required
-                >Type de document</Select>
-                <Flex direction="column" gap="xxs">
-                    <TextInput type="number" bind:value={selectedDate} placeholder="2026-2027" min="1900" max="2100" step="1">Année universitaire</TextInput>
-                </Flex>
-                <Flex direction="column" gap="xxs">
-                    <span>Contient corrigé ?</span>
-                    <Switch bind:checked={haveCorrige}/>
-                </Flex>
-            </Flex>
-            <Flex gap="xs" direction="column" wrap={false}>
-                <Flex gap="xs" align="baseline" wrap={false}>
-                    <Info size="10px"/>
-                    <span>Le corrigé (si disponible) doit être fusionné avec le sujet.</span>
-                </Flex>
-                <Flex gap="xs" align="baseline" wrap={false}>
-                    <Info size="10px"/>
-                    <span>L'année universitaire débute en septembre.</span>
-                </Flex>
-            </Flex>
-            <!-- bouton-ajouter -->
-            <Flex gap="xs" style="flex-grow: 1" justify='right'>
-                <Button variant="outline" href={StoragePaths.DEFAULT_PAGE_LOCATION}>Retour</Button>
-                <Button icon={Check} class="success" name="Success" onclick={sendFile} disabled={isSending}>Ajouter</Button>
-            </Flex>
-        </Flex>
         </Frame>
     </Stack>
 
-    <Toaster  richColors />
-
+    <Toaster richColors />
 </Flex>
