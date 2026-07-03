@@ -10,11 +10,11 @@
     let errorType = $state("");
     let isSending = $state(false);
     
-    const errorTypeList = ["Doublon", "Nom incorrect"];
+    const errorTypeList = ["Fusion", "Nom incorrect"];
 
     const errorData: ErrorData[] = [
         {
-            name: "Doublon",
+            name: "Fusion",
             inputNames: ["Chemin 1", "Chemin 2"],
             inputTypes: [ErrorInputType.PATH, ErrorInputType.PATH]
         },
@@ -26,7 +26,7 @@
     ];
 
     let activeError = $derived(errorData.find(e => e.name === errorType));
-    let dynamicFormValues = $state<Record<string, any>>({});
+    let dynamicFormValues = $state({});
 
     $effect(() => {
         if (activeError) {
@@ -108,10 +108,10 @@
         <Frame>
             <form onsubmit={handleSend}>
                 <Flex direction="column" gap="lg">
-                    <h4>Erreur de catégories</h4>
+                    <h4>Résolution de l'erreur</h4>
 
                     <Select
-                        placeholder="Doublon, mauvais nom, ..."
+                        placeholder="Fusion, mauvais nom, ..."
                         bind:value={errorType}
                         options={errorTypeList}
                         required
@@ -124,7 +124,8 @@
                                     <Flex direction="column" gap="xs">
                                         <h5>{name}</h5>
                                         
-                                        {#if activeError.inputTypes[i] === ErrorInputType.PATH}
+                                        {@const isDefined = dynamicFormValues && dynamicFormValues[name]}
+                                        {#if isDefined && activeError.inputTypes[i] === ErrorInputType.PATH}
                                             <Frame border={true}>
                                                 <PathInput 
                                                     bind:school={dynamicFormValues[name].school}
@@ -134,7 +135,7 @@
                                                     bind:course={dynamicFormValues[name].course}
                                                 />
                                             </Frame>
-                                        {:else if activeError.inputTypes[i] === ErrorInputType.NAME}
+                                        {:else if dynamicFormValues && activeError.inputTypes[i] === ErrorInputType.NAME}
                                             <TextInput 
                                                 placeholder="Saisir le nom corrigé..." 
                                                 bind:value={dynamicFormValues[name]} 
