@@ -58,3 +58,8 @@ export type ErrorData = {
     inputNames: string[];
     inputTypes: ErrorInputType[];
 }
+
+export type SubjectData = {
+    files: FileData[];  // Fichiers dans l'UE
+    paths: string[];    // Pointeurs de l'UE
+}

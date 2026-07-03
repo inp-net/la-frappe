@@ -1,6 +1,6 @@
 <script lang='ts'>
 
-    import { DocumentTypes, StoragePaths } from '$lib/types/types.d';
+    import { DocumentTypes, StoragePaths, type SubjectData } from '$lib/types/types.d';
     import Select from '$lib/components/Select.svelte';
     import type { PageData } from './$types';
     import { goto } from '$app/navigation';
@@ -80,21 +80,46 @@
         }
     }
 
+    /** Fonction qui récupère les fichiers en fonction du nom de l'UE.
+     * Le nom d'un UE est unique et sont stockés dans /uploads.
+     * Utilisé pour vérifié que le nom est pas déjà pris.
+     * @param name : string nom de l'UE.
+     * @return string[] : chemins qui pointent à l'UE.
+     * @throws Error si l'UE n'existe pas ou n'a pas de chemins.
+     */
+    async function fetchCourse(name: string): Promise<SubjectData> {
+        const response = await fetch(`/api/get-course?name=${encodeURIComponent(name)}`);
+        if (!response.ok) throw new error(400, 'UE introuvable');
+        const data = await response.json();
+        return data as SubjectData;
+    }
+
     // Met à jour la séléction possible matières/filières en temps réel en
     // fonction de la séléction précédentes.
     $effect(() => {
-        for (const node of dependencyGraph) {
-            const currentDeps = node.keys; 
-            if (currentDeps.some(dep => !dep)) {
-                node.options = [];
-                node.reset();
-                continue;
+        const _trigger = [selectedSchool, selectedMajor, selectedYear, selectedMinor];
+
+        const timer = setTimeout(() => {
+            for (const node of dependencyGraph) {
+                const currentDeps = node.keys; 
+                if (currentDeps.some(dep => !dep)) {
+                    node.options = [];
+                    node.reset();
+                    continue;
+                }
+                const computedPath = node.path(currentDeps);
+                const closurePath = computedPath; 
+                fetchSelectionOptions(computedPath).then(list => {
+                    if (node.path(node.keys) === closurePath) {
+                        node.options = list;
+                    }
+                });
             }
-            const computedPath = node.path(currentDeps);
-            fetchSelectionOptions(computedPath).then(list => {
-                node.options = list;
-            });
-        }
+        }, 350);
+
+        return () => {
+            clearTimeout(timer);
+        };
     });
 
     let isSending = $state(false);
@@ -195,6 +220,48 @@
         (selectedMinor.length > 0 && !minorList.includes(selectedMinor)) ||
         (selectedMajor.length > 0 && !majorList.includes(selectedMajor))
     );
+
+    let alreadyExists = $state(false);
+    let pathsToSubject : string[] = $state([]);
+
+    $effect(() => {
+        if (!selectedCourse) {
+            alreadyExists = false;
+            return;
+        }
+
+        let active = true;
+        const coursePath = `${selectedSchool}/${selectedMajor}/${selectedYear}/${selectedMinor}/`;
+        console.log(coursePath);
+
+        const timer = setTimeout(() => {
+            fetchCourse(selectedCourse)
+                .then((resolvedData) => {
+                    if (!active || !resolvedData || resolvedData.paths.length === 0) {
+                        alreadyExists = false;
+                        return;
+                    }
+
+                    const hasNoFiles = resolvedData && Array.isArray(resolvedData) && resolvedData.files?.length === 0;
+                    const pathExists = resolvedData.paths?.includes(coursePath);
+                    pathsToSubject = resolvedData.paths;
+
+                    if (hasNoFiles || pathExists) {
+                        alreadyExists = false;
+                    } else {
+                        alreadyExists = true;
+                    }
+                })
+                .catch(() => {
+                    if (active) alreadyExists = false;
+                });
+        }, 350);
+
+        return () => {
+            active = false;
+            clearTimeout(timer);
+        };
+    });
 
 </script>
 
@@ -333,6 +400,18 @@
                             <Flex gap="xs" align="baseline" wrap={false}>
                                 <TriangleAlert size="10px" color="red"/>
                                 <span>Attention, vous êtes sur le point de crée une nouvelle catégorie.</span>
+                            </Flex>
+                        {/if}
+                        {#if alreadyExists}
+                            <Flex gap="xs" align="baseline" wrap={false}>
+                                <TriangleAlert size="10px" color="red"/>
+                                <Flex direction="column" gap="xxs">
+                                    <span>Attention, cette matière existe déjà. <b>Renommez</b> la matière ou cette dernière sera fusionée par défaut.</span>
+                                    <span>Confilt avec : </span>
+                                    {#each pathsToSubject as path}
+                                        <span>- {path}</span>
+                                    {/each}
+                                </Flex>
                             </Flex>
                         {/if}
                     </Flex>

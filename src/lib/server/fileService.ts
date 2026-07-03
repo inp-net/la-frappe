@@ -17,15 +17,22 @@ export function getFilesAt(relativePath: string): FileData[] {
         throw error(404, "Dossier introuvable");
     }
 
-    const files: FileData[] = readdirSync(relativePath).map(name => ({
-        name: name,
-        isDirectory: statSync(join(relativePath, name)).isDirectory(),
-        path: relativePath,
-        // Le nom du fichier définie son type, pas besoin de métadonnées
-        type: (Object.values(DocumentTypes).find(
-            type => type.toLowerCase() === name.split(" - ")[0].toLowerCase()
-        ) ?? DocumentTypes.AUTRE) as DocumentTypes
-    }));
+    const files: FileData[] = readdirSync(relativePath).map(name => {
+        const firstPart = name.split(" - ")[0];
+        
+        const detectedType = DocumentTypes 
+            ? (Object.values(DocumentTypes).find(
+                type => type.toLowerCase() === firstPart.toLowerCase()
+              ) ?? DocumentTypes.AUTRE)
+            : "AUTRE";
+
+        return {
+            name: name,
+            isDirectory: statSync(join(relativePath, name)).isDirectory(),
+            path: relativePath,
+            type: detectedType as DocumentTypes
+        };
+    });
 
     return files;
 }
