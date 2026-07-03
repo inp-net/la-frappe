@@ -10,7 +10,7 @@
     let errorType = $state("");
     let isSending = $state(false);
     
-    const errorTypeList = ["Fusion", "Nom incorrect"];
+    const errorTypeList = ["Fusion", "Renommage"];
 
     const errorData: ErrorData[] = [
         {
@@ -19,7 +19,7 @@
             inputTypes: [ErrorInputType.PATH, ErrorInputType.PATH]
         },
         {
-            name: "Nom incorrect",
+            name: "Renommage",
             inputNames: ["Chemin", "Nouveau nom"],
             inputTypes: [ErrorInputType.PATH, ErrorInputType.NAME]
         }
@@ -111,11 +111,11 @@
                     <h4>Résolution de l'erreur</h4>
 
                     <Select
-                        placeholder="Fusion, mauvais nom, ..."
+                        placeholder="Fusion, renommage, ..."
                         bind:value={errorType}
                         options={errorTypeList}
                         required
-                    >Type d'erreur</Select>
+                    >Requête pour correction</Select>
 
                     <Flex>
                         {#if activeError && Object.keys(dynamicFormValues).length > 0}

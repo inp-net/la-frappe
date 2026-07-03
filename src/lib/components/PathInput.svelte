@@ -4,6 +4,15 @@
     import Select from '$lib/components/Select.svelte';
     import { StoragePaths } from '$lib/types/types.d';
 
+    interface Props {
+        school?: string;
+        major?: string;
+        year?: string;
+        minor?: string;
+        course?: string;
+        initialSchoolList: string[];
+    }
+
     let {
         school = $bindable(''),
         major = $bindable(''),
@@ -11,7 +20,7 @@
         minor = $bindable(''),
         course = $bindable(''),
         initialSchoolList = []
-    } = $props();
+    } : Props = $props();
 
     let schoolList = $state<string[]>(initialSchoolList);
     let majorList = $state<string[]>([]);
