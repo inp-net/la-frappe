@@ -18,7 +18,7 @@ async function createSubject(name: string, paths: string[]) {
         writePath = paths;
     }
 
-    writeFileSync(metadataPath, JSON.stringify(writePath));
+    writeFileSync(metadataPath, JSON.stringify({ paths: writePath }));
 }
 
 function generateHierarchy() {
@@ -98,7 +98,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         const paths = body.paths ?? [];
 
         await createSubject(safeName, paths);
-        generateHierarchy();
         return json({ message: 'UE crée avec succès' }, { status: 201 });
     } catch (err: any) {
         console.error("FS Error:", err);
