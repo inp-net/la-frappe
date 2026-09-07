@@ -1,28 +1,26 @@
 <script lang='ts'>
 
-    import { DocumentTypes, StoragePaths } from '$lib/types/types.d';
+    import { DocumentTypes, StoragePaths, type SubjectData } from '$lib/types/types.d';
     import Select from '$lib/components/Select.svelte';
     import type { PageData } from './$types';
     import { goto } from '$app/navigation';
     import { invalidateAll } from '$app/navigation';
-    import { untrack } from 'svelte';
-    import { enhance } from '$app/forms';
     import { Toaster, toast } from 'svelte-sonner';
 
     import { Button, Flex, Stack, ButtonGroup, Frame, Switch, TextInput } from 'azucar-ui';
 
-    import { SearchIcon, Check, Info } from '@lucide/svelte';
+    import { TriangleAlert, SearchIcon, Check, Info, Bug } from '@lucide/svelte';
 
     let { data }: { data: PageData } = $props();
 
     // Element séléctionné par l'utilisateur
 
-    let fileList = $state<File | undefined>(undefined);
-    let selectedSchool = $state("");    // ENSEEIHT
-    let selectedMajor = $state("");     // SN, MFEE, ...
-    let selectedYear = $state("1A");    // 1A, 2A, 3A
-    let selectedMinor = $state("");     // Logiciel, ASR
-    let selectedCourse = $state("");    // TOB, PIM, Architecture
+    let fileList = $state<FileList | undefined>(undefined);
+    let selectedSchool = $state("");
+    let selectedMajor = $state("");
+    let selectedYear = $state("1A");
+    let selectedMinor = $state("");
+    let selectedCourse = $state("");
     let selectedDocumentType = $state("");
     let selectedDate = $state(new Date().getFullYear());
     let hasCorrection = $state(false);
@@ -82,54 +80,188 @@
         }
     }
 
+    /** Fonction qui récupère les fichiers en fonction du nom de l'UE.
+     * Le nom d'un UE est unique et sont stockés dans /uploads.
+     * Utilisé pour vérifié que le nom est pas déjà pris.
+     * @param name : string nom de l'UE.
+     * @return string[] : chemins qui pointent à l'UE.
+     * @throws Error si l'UE n'existe pas ou n'a pas de chemins.
+     */
+    async function fetchCourse(name: string): Promise<SubjectData> {
+        const response = await fetch(`/api/get-course?name=${encodeURIComponent(name)}`);
+        if (!response.ok) throw new error(400, 'UE introuvable');
+        const data = await response.json();
+        return data as SubjectData;
+    }
+
     // Met à jour la séléction possible matières/filières en temps réel en
     // fonction de la séléction précédentes.
     $effect(() => {
-        for (const node of dependencyGraph) {
-            const currentDeps = node.keys;
-            if (currentDeps.some(dep => !dep)) {
-                node.options = [];
-                node.reset();
-                continue;
-            }
-            const computedPath = node.path(currentDeps);
-            fetchSelectionOptions(computedPath).then(list => {
-                node.options = list;
-                untrack(() => {
-                    if (node.value && !list.includes(node.value)) {
-                        node.reset();
+        const _trigger = [selectedSchool, selectedMajor, selectedYear, selectedMinor];
+
+        const timer = setTimeout(() => {
+            for (const node of dependencyGraph) {
+                const currentDeps = node.keys; 
+                if (currentDeps.some(dep => !dep)) {
+                    node.options = [];
+                    node.reset();
+                    continue;
+                }
+                const computedPath = node.path(currentDeps);
+                const closurePath = computedPath; 
+                fetchSelectionOptions(computedPath).then(list => {
+                    if (node.path(node.keys) === closurePath) {
+                        node.options = list;
                     }
                 });
-            });
-        }
+            }
+        }, 350);
+
+        return () => {
+            clearTimeout(timer);
+        };
     });
 
     let isSending = $state(false);
+    let isCountingDown = $state(false);
+    let countdownTimer: ReturnType<typeof setTimeout> | undefined;
+    let currentToastId: string | number | undefined = undefined;
 
-    function handleSubmit() {
-        if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedMajor || !selectedMinor || !selectedDocumentType) {
-            toast.error("Formulaire incomplet.");
-            return ({ cancel }) => cancel();
-        }
+    /** Gère l'upload du form. */
+    async function executeUpload() {
         isSending = true;
-        const toastId = toast.loading("Envoi du formulaire en cours...");
-        return async ({ result }) => {
-            isSending = false;
-            toast.dismiss(toastId);
+        const loadingToastId = toast.loading("Envoi du formulaire en cours...");
+
+        try {
+            const formData = new FormData();
+            formData.append('document', fileToUpload as File);
+            formData.append('school', selectedSchool);
+            formData.append('major', selectedMajor);
+            formData.append('year', selectedYear);
+            formData.append('minor', selectedMinor);
+            formData.append('course', selectedCourse);
+            formData.append('documentType', selectedDocumentType);
+            formData.append('date', selectedDate.toString());
+            formData.append('hasCorrection', hasCorrection ? "true" : "false");
+
+            const response = await fetch('?/add', {
+                method: 'POST',
+                body: formData,
+                headers: { 'x-sveltekit-action': 'true' }
+            });
+
+            const result = await response.json();
+            toast.dismiss(loadingToastId);
+
             if (result.type === 'failure') {
                 toast.error("Erreur : " + (result.data?.message || 'Erreur inconnue'));
-            } 
-            if (result.type === 'redirect') {
-                toast.success("Formulaire envoyé avec succès. Redirection en cours...");
+            } else if (result.type === 'redirect' || response.redirected) {
+                toast.success("Formulaire envoyé avec succès !");
                 setTimeout(async () => {
                     await invalidateAll();
-                }, 1500);
-            }
-            if (result.type === 'error') {
+                    goto(StoragePaths.DEFAULT_PAGE_LOCATION); 
+                }, 1000);
+            } else if (result.type === 'error') {
                 toast.error(`Erreur critique : ${result.error.message}`);
             }
-        };
+        } catch {
+            toast.dismiss(loadingToastId);
+            toast.error("Une erreur réseau est survenue.");
+        } finally {
+            isSending = false;
+        }
     }
+
+    /** Evenement lors du clique de Ajouter. */
+    function sendFile(event: Event) {
+        event.preventDefault();
+
+        if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedMajor || !selectedMinor || !selectedDocumentType) {
+            toast.error("Formulaire incomplet.");
+            return;
+        }
+
+        isCountingDown = true;
+
+        currentToastId = toast('Document prêt', {
+            description: "Envoi automatique dans 3s...",
+            duration: 3000,
+            action: {
+                label: 'Valider',
+                onClick: () => {
+                    clearTimeout(countdownTimer);
+                    isCountingDown = false;
+                    executeUpload();
+                }
+            },
+            cancel: {
+                label: 'Annuler',
+                onClick: () => {
+                    clearTimeout(countdownTimer);
+                    isCountingDown = false;
+                    toast("Envoi annulé.");
+                }
+            },
+            onDismiss: () => {
+                clearTimeout(countdownTimer);
+                isCountingDown = false;
+            }
+        });
+
+        countdownTimer = setTimeout(() => {
+            isCountingDown = false;
+            toast.dismiss(currentToastId);
+            executeUpload();
+        }, 3000);
+    }
+
+    /** Trigger si l'utilisateur crée une catégorie inexistante. */
+    let isCreating: boolean = $derived(
+        (selectedMinor.length > 0 && !minorList.includes(selectedMinor)) ||
+        (selectedMajor.length > 0 && !majorList.includes(selectedMajor))
+    );
+
+    let alreadyExists = $state(false);
+    let pathsToSubject : string[] = $state([]);
+
+    $effect(() => {
+        if (!selectedCourse) {
+            alreadyExists = false;
+            return;
+        }
+
+        let active = true;
+        const coursePath = `${selectedSchool}/${selectedMajor}/${selectedYear}/${selectedMinor}/`;
+        console.log(coursePath);
+
+        const timer = setTimeout(() => {
+            fetchCourse(selectedCourse)
+                .then((resolvedData) => {
+                    if (!active || !resolvedData || resolvedData.paths.length === 0) {
+                        alreadyExists = false;
+                        return;
+                    }
+
+                    const hasNoFiles = resolvedData && Array.isArray(resolvedData) && resolvedData.files?.length === 0;
+                    const pathExists = resolvedData.paths?.includes(coursePath);
+                    pathsToSubject = resolvedData.paths;
+
+                    if (hasNoFiles || pathExists) {
+                        alreadyExists = false;
+                    } else {
+                        alreadyExists = true;
+                    }
+                })
+                .catch(() => {
+                    if (active) alreadyExists = false;
+                });
+        }, 350);
+
+        return () => {
+            active = false;
+            clearTimeout(timer);
+        };
+    });
 
 </script>
 
@@ -148,8 +280,8 @@
 
     <Stack>
         <Frame>
-            <form method="POST" action="?/add" enctype="multipart/form-data" use:enhance={handleSubmit}>
-                <Flex gap="md" direction="column">
+            <form>
+                <Flex gap="lg" direction="column">
                     
                     <Flex gap="md" align="center">
                         <span>Ajouter un fichier :</span>
@@ -170,7 +302,9 @@
                             options={schoolList}
                             bind:value={selectedSchool}
                             icon={SearchIcon}
+                            type="datalist"
                             placeholder="Choisir une école"
+                            id="3"
                             required
                         >École</Select>
 
@@ -180,6 +314,8 @@
                             bind:value={selectedMajor}
                             icon={SearchIcon}
                             placeholder="Choisir un département"
+                            type="datalist"
+                            id="4"
                             disabled={!selectedSchool}
                             required
                         >Département</Select>
@@ -213,6 +349,8 @@
                             icon={SearchIcon}
                             placeholder="Choisir une filière"
                             disabled={!selectedMajor}
+                            type="datalist"
+                            id="1"
                             required
                         >Filière</Select>
 
@@ -223,6 +361,8 @@
                             icon={SearchIcon}
                             placeholder="Choisir une matière"
                             disabled={!selectedMinor}
+                            type="datalist"
+                            id="2"
                             required
                         >Matière</Select>
 
@@ -244,6 +384,7 @@
                             <input type="hidden" name="hasCorrection" value={hasCorrection ? "true" : "false"} />
                             <Switch bind:checked={hasCorrection}/>
                         </Flex>
+
                     </Flex>
 
                     <Flex gap="xs" direction="column" wrap={false}>
@@ -255,11 +396,42 @@
                             <Info size="10px"/>
                             <span>L'année universitaire débute en septembre.</span>
                         </Flex>
+                        {#if isCreating}
+                            <Flex gap="xs" align="baseline" wrap={false}>
+                                <TriangleAlert size="10px" color="red"/>
+                                <span>Attention, vous êtes sur le point de crée une nouvelle catégorie.</span>
+                            </Flex>
+                        {/if}
+                        {#if alreadyExists}
+                            <Flex gap="xs" align="baseline" wrap={false}>
+                                <TriangleAlert size="10px" color="red"/>
+                                <Flex direction="column" gap="xxs">
+                                    <span>Attention, cette matière existe déjà. <b>Renommez</b> la matière ou cette dernière sera fusionée par défaut.</span>
+                                    <span>Confilt avec : </span>
+                                    {#each pathsToSubject as path}
+                                        <span>- {path}</span>
+                                    {/each}
+                                </Flex>
+                            </Flex>
+                        {/if}
+                    </Flex>
+
+                    <Flex>
+                        <Button icon={Bug} variant="outline" href='/suggest'>Signaler une erreur</Button>
                     </Flex>
 
                     <Flex gap="xs" style="flex-grow: 1" justify='right'>
                         <Button variant="outline" href={StoragePaths.DEFAULT_PAGE_LOCATION}>Retour</Button>
-                        <Button type="submit" icon={Check} class="success" name="Success" disabled={isSending}>Ajouter</Button>
+                        <Button 
+                            type="button" 
+                            icon={Check} 
+                            class="success" 
+                            name="Success" 
+                            disabled={isSending || isCountingDown} 
+                            onclick={sendFile}
+                        >
+                            Ajouter
+                        </Button>
                     </Flex>
                 </Flex>
             </form>

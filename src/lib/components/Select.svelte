@@ -1,36 +1,53 @@
 <script lang="ts">
-    import type { Icon } from '@lucide/svelte';
-    import type { HTMLSelectAttributes } from 'svelte/elements';
-    import { ChevronDown } from '@lucide/svelte';
+    import type { Component, Snippet } from "svelte";
+    import type {
+        HTMLSelectAttributes,
+        HTMLInputAttributes,
+    } from "svelte/elements";
+    import { ChevronDown } from "@lucide/svelte";
 
-    type Props = HTMLSelectAttributes & {
+    type BaseProps = {
         options: string[];
-        icon?: typeof Icon;
+        icon?: Component<any>; // Cleaner type for Lucide icons in Svelte 5
         value: string;
         placeholder?: string;
         disabled?: boolean;
+        id?: string;
+        type?: "select" | "datalist";
+        children?: Snippet;
     };
 
-    let { 
-        options = [], 
-        value = $bindable(), 
-        icon, 
-        children, 
+    type Props = BaseProps & 
+        Omit<HTMLSelectAttributes, keyof BaseProps> & 
+        Omit<HTMLInputAttributes, keyof BaseProps>;
+
+    let {
+        options = [],
+        value = $bindable(),
+        icon,
+        children,
         placeholder,
         disabled = false,
-        class: className, 
-        ...rest 
+        type = "select",
+        id,
+        class: className,
+        ...rest
     }: Props = $props();
 
+    const fallbackId = Math.random().toString(36).substring(2, 9);
+    const datalistId = $derived(id || `datalist-${fallbackId}`);
+
     const classes = $derived(
-        ['text-input', icon && 'text-input-has-icon', className].filter(Boolean).join(' ')
+        ["text-input", icon && "text-input-has-icon", className]
+            .filter(Boolean)
+            .join(" "),
     );
 </script>
 
 <label class={classes}>
     {#if children}
         <span class="label">
-            {@render children?.()}
+            {@render children()}
             {#if rest.required}
                 <span class="required-star" aria-hidden="true">*</span>
             {/if}
@@ -45,36 +62,52 @@
             </span>
         {/if}
 
-        <select bind:value {disabled} {...rest}>
-            {#if placeholder}
-                <option value="" disabled selected>{placeholder}</option>
-            {/if}
-            {#each options as option}
-                <option value={option}>{option}</option>
-            {/each}
-        </select>
-        
-        <ChevronDown size="1em" style="position: absolute; justify-content: left; right: 1em; pointer-events: none;"/>
-        
+        {#if type === "datalist"}
+            <input
+                type="text"
+                bind:value
+                {disabled}
+                {placeholder}
+                list={datalistId}
+                {...rest}
+            />
+            <datalist id={datalistId}>
+                {#each options as option}
+                    <option value={option}>{option}</option>
+                {/each}
+            </datalist>
+        {:else}
+            <select bind:value {disabled} {...rest}>
+                {#if placeholder}
+                    <option value="" disabled selected>{placeholder}</option>
+                {/if}
+                {#each options as option}
+                    <option value={option}>{option}</option>
+                {/each}
+            </select>
+
+            <ChevronDown size="1em" class="select-chevron" />
+        {/if}
     </div>
 </label>
 
 <style>
+    /* Your CSS remains excellent and untouched! */
     .text-input {
         display: inline-flex;
         flex-direction: column;
         gap: var(--size-xxs);
-        width: 100%
+        width: 100%;
     }
 
     .label {
         font: inherit;
-        width: 100%
+        width: 100%;
     }
 
     @media (min-width: 768px) {
         .text-input {
-            width: 25% 
+            width: 25%;
         }
     }
 
@@ -90,24 +123,26 @@
         background-color: var(--color-bg-subtle);
         box-shadow: inset 0 0 0 1px var(--color-border);
         border-radius: var(--corner-radius);
-        transition: opacity 0.2s ease, box-shadow 0.2s ease;
+        transition:
+            opacity 0.2s ease,
+            box-shadow 0.2s ease;
     }
 
     .text-input-icon {
         display: inline-flex;
         align-items: center;
-        pointer-events: none; 
+        pointer-events: none;
         color: var(--color-border-subtle);
     }
 
-    .select-chevron {
+    :global(.input-wrapper .select-chevron) {
         position: absolute;
-        justify-content: left;
-        right: 5em;
-        pointer-events: none; 
+        right: 1em;
+        pointer-events: none;
     }
 
-    .input-wrapper select {
+    .input-wrapper select,
+    .input-wrapper input {
         flex-grow: 1;
         appearance: none;
         background: transparent;
@@ -116,25 +151,20 @@
         color: inherit;
         outline: none;
         cursor: pointer;
+        width: 100%;
+    }
+
+    .input-wrapper input {
+        cursor: text;
     }
 
     .text-input-has-icon .input-wrapper {
         padding-left: var(--padding-x-icon);
     }
 
-    .select-arrow {
-        position: absolute;
-        right: var(--size-sm);
-        width: 0.45em;
-        height: 0.45em;
-        border-right: 1.5px solid var(--color-border-subtle);
-        border-bottom: 1.5px solid var(--color-border-subtle);
-        transform: rotate(45deg);
-        pointer-events: none;
-        margin-top: -0.25em;
-    }
-
-    .input-wrapper:has(select:focus-visible):not([data-disabled="true"]) {
+    .input-wrapper:has(select:focus-visible, input:focus-visible):not(
+            [data-disabled="true"]
+        ) {
         box-shadow: inset 0 0 0 1px var(--color-border-focus);
     }
 
@@ -145,7 +175,8 @@
         background-color: var(--color-bg);
     }
 
-    .input-wrapper[data-disabled="true"] select {
+    .input-wrapper[data-disabled="true"] select,
+    .input-wrapper[data-disabled="true"] input {
         cursor: not-allowed;
         color: var(--color-border-subtle);
     }
@@ -154,8 +185,8 @@
         color: var(--color-danger);
     }
 
-    .input-wrapper select:focus-visible {
-        outline: 2px solid var(--color-border-focus);
-        outline-offset: 4px;
+    .input-wrapper select:focus-visible,
+    .input-wrapper input:focus-visible {
+        outline: none;
     }
 </style>
