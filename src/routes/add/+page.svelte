@@ -16,11 +16,11 @@
     // Element séléctionné par l'utilisateur
 
     let fileList = $state<FileList | undefined>(undefined);
-    let selectedSchool = $state("");    // ENSEEIHT
-    let selectedMajor = $state("");     // SN, MFEE, ...
-    let selectedYear = $state("1A");    // 1A, 2A, 3A
-    let selectedMinor = $state("");     // Logiciel, ASR
-    let selectedCourse = $state("");    // TOB, PIM, Architecture
+    let selectedSchool = $state("");
+    let selectedMajor = $state("");
+    let selectedYear = $state("1A");
+    let selectedMinor = $state("");
+    let selectedCourse = $state("");
     let selectedDocumentType = $state("");
     let selectedDate = $state(new Date().getFullYear());
     let hasCorrection = $state(false);
