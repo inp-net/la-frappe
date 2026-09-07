@@ -26,4 +26,3 @@ vite.config.ts.timestamp-*
 *.pdf
 static/frappe_tree
 data/*
-!data/uploads

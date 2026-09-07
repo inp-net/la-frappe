@@ -1,28 +1,36 @@
 import type { Actions } from './$types';
+import { fail } from '@sveltejs/kit';
 
 export const actions = {
     addSubjects: async ({ request, fetch }) => {
         const formData = await request.formData();
-        const documentFile : File = formData.get('subjects');
-        if (documentFile.size == 0) {
+        const documentFile = formData.get('subjects');
+        
+        if (!documentFile || !(documentFile instanceof File) || documentFile.size === 0) {
             return fail(400, {
                 message: 'Le fichier est manquant ou invalide.'
             });
         }
 
         try {
-            const response = await fetch('/api/make-subject', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-SvelteKit-Action': 'true'
-                }
-            });
-            const data = await response.json();
-            if (!response.ok) {
-                return fail(response.status, {
-                    message: data.message || data.error || 'Erreur lors de la sauvegarde.'
+            const fileContent = await documentFile.text();
+            const doc = JSON.parse(fileContent);
+
+            for (const ue of doc) {
+                const response = await fetch('/api/make-subject', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: ue.name,
+                        paths: ue.paths
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 });
+
+                if (!response.ok) {
+                    console.error(`Impossible de crée (make-subject) : ${ue.name}`);
+                }
             }
         } catch (err) {
             console.error("Erreur lors du transfert vers l'API :", err);
@@ -30,6 +38,5 @@ export const actions = {
                 message: "Impossible de joindre le serveur d'API."
             });
         }
-        throw redirect(303, '/browse'); 
     }
 } satisfies Actions;

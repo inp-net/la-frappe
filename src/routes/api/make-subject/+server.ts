@@ -1,29 +1,84 @@
-import { DEFAULT_SUBJECT_LOCATION } from '$lib/types/types.d';
-import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { StoragePaths } from '$lib/types/types.d';
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { mkdirSync, existsSync, readFileSync, writeFileSync, symlinkSync, readdirSync, lstatSync, rmSync } from 'fs';
+import { join, resolve, dirname, relative } from 'path';
 import { IsBan } from '$lib/server/authService';
 
 async function createSubject(name: string, paths: string[]) {
-    const path: string = join(DEFAULT_SUBJECT_LOCATION, name);
-    const metadataPath = join(path, 'metadata.json');
+    const targetPath: string = resolve(StoragePaths.DEFAULT_SUBJECT_LOCATION, name);
+    const metadataPath = join(targetPath, 'metadata.json');
 
     let writePath: string[];
 
-    if (existsSync(path) && existsSync(metadataPath)) {
-        // si l'UE existe déjà, on merge
-        const existingPaths = JSON.parse(readFileSync(metadataPath));
+    if (existsSync(targetPath) && existsSync(metadataPath)) {
+        const existingPaths = JSON.parse(readFileSync(metadataPath, 'utf-8'));
         writePath = existingPaths.concat(paths);
     } else {
-        mkdirSync(matadataPath, { recursive: true });
+        mkdirSync(targetPath, { recursive: true });
         writePath = paths;
     }
 
     writeFileSync(metadataPath, JSON.stringify(writePath));
 }
 
-/** Crée une UE dans le dossier flat. */
+function generateHierarchy() {
+    console.log("Début de la génération de l'arborescence...");
+    const uploadsRoot = resolve(StoragePaths.DEFAULT_SUBJECT_LOCATION);
+
+    if (existsSync(StoragePaths.DEFAULT_DB_LOCATION)) {
+        const items = readdirSync(StoragePaths.DEFAULT_DB_LOCATION);
+        for (const item of items) {
+            const itemPath = join(StoragePaths.DEFAULT_DB_LOCATION, item);
+            rmSync(itemPath, { recursive: true, force: true });
+        }
+        console.log("Contenu de frappe_tree nettoyé.");
+    } else {
+        mkdirSync(StoragePaths.DEFAULT_DB_LOCATION, { recursive: true });
+    }
+
+    if (!existsSync(uploadsRoot)) {
+        console.log("Dossier uploads introuvable.");
+        return;
+    }
+
+    const subjects = readdirSync(uploadsRoot).filter(f =>
+        lstatSync(join(uploadsRoot, f)).isDirectory()
+    );
+
+    for (const subject of subjects) {
+        const subjectPath = join(uploadsRoot, subject);
+        const metaPath = join(subjectPath, 'metadata.json');
+
+        if (!existsSync(metaPath)) continue;
+
+        try {
+            const metadata = JSON.parse(readFileSync(metaPath, 'utf-8'));
+            const paths = Array.isArray(metadata.paths) ? metadata.paths : (Array.isArray(metadata) ? metadata : []);
+
+            for (const virtualPath of paths) {
+                if (!virtualPath || virtualPath === '.' || virtualPath === '..') continue;
+                const targetDir = join(StoragePaths.DEFAULT_DB_LOCATION, virtualPath);
+
+                mkdirSync(targetDir, { recursive: true });
+
+                const linkName = join(targetDir, subject);
+                
+                if (!existsSync(linkName)) {
+                    const relativeTarget = relative(dirname(linkName), subjectPath);
+                    symlinkSync(relativeTarget, linkName, 'dir');
+                    
+                    console.log(`Link créé : ${virtualPath} -> ${subject} (relatif: ${relativeTarget})`);
+                }
+            }
+        } catch (err: any) {
+            console.error(`Erreur de la matière ${subject}:`, err.message);
+        }
+    }
+
+    console.log("Arborescence générée avec succès !");
+}
+
 export const POST: RequestHandler = async ({ request, locals }) => {
-    // Authentification
     const session = await locals.auth();
     if (!session || !session.user || !session.user.name) {
         return json({ error: 'Unauthorized', message: 'Vous devez être connecté' }, { status: 401 });
@@ -32,20 +87,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     if (IsBan(session.user.name)) {
         return json({ 
             error: 'Forbidden', 
-            message: "Vous êtes banni de La-Frappe. Si vous pensez que c'est une erreur, contactez net7"
+            message: "Vous êtes banni."
         }, { status: 403 });
     }
 
-    const data = await request.formData();
-    const name: string = data.get('name');
-    const paths: string[] = data.get('paths');
-
     try {
-        await createSubject(name, paths);
+        const body = await request.json();
+        const name = body.name ?? '';
+        const safeName = name.replace(/[/\\?%*:|"<>]/g, '-');
+        const paths = body.paths ?? [];
+
+        await createSubject(safeName, paths);
+        generateHierarchy();
         return json({ message: 'UE crée avec succès' }, { status: 201 });
     } catch (err: any) {
+        console.error("FS Error:", err);
         const status = err.status || 500;
-        const message = err.body?.message || "Une erreur interne est survenue.";
+        const message = err.message || "Une erreur interne est survenue.";
         return json({ message }, { status });
     }
 };

@@ -10,7 +10,7 @@
     <Frame>
         <Stack gap="lg">
             <h4>Importer UE</h4>
-            <form method="POST" action="?/addSubjects">
+            <form method="POST" action="?/addSubjects" enctype="multipart/form-data">
                 <input
                     type="file"
                     id="subjects"
