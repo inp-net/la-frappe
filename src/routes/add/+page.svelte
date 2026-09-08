@@ -16,13 +16,24 @@
     // Element séléctionné par l'utilisateur
 
     let fileList = $state<FileList | undefined>(undefined);
+
+    // ENSEEIHT, ...
     let selectedSchool = $state("");
+    // Département (SN, 3EA, MF2E)
     let selectedMajor = $state("");
+    // FISE / FISA
+    let selectedTrack = $state("");
+    // Année
     let selectedYear = $state("1A");
+    // UE
     let selectedMinor = $state("");
+    // Matière (optionel par exemple quand UE = Matière)
     let selectedCourse = $state("");
+    // Partiel, Cours, ...
     let selectedDocumentType = $state("");
+    // Année du document
     let selectedDate = $state(new Date().getFullYear());
+    // As le corrigé
     let hasCorrection = $state(false);
 
     // Liste des éléments qui peuvent être séléctionné
@@ -32,6 +43,7 @@
     let documentTypes: string[] = $derived([...Object.values(DocumentTypes)]);
 
     let majorList = $state<string[]>([]);
+    let trackList = $state<string[]>([]);
     let courseList = $state<string[]>([]);
     let minorList = $state<string[]>([]);
 
@@ -45,19 +57,30 @@
             reset: () => selectedMajor = ""
         },
         {
+            get value() { return selectedTrack; },
+            get options() { return trackList; },
+            set options(val) { trackList = val; },
+            get keys() { return [selectedSchool, selectedMajor]; },
+            path: (deps: string[]) => `${deps[0]}/${deps[1]}`,
+            reset: () => selectedTrack = ""
+        },
+        {
             get value() { return selectedMinor; },
             get options() { return minorList; },
             set options(val) { minorList = val; },
-            get keys() { return [selectedSchool, selectedMajor, selectedYear]; },
-            path: (deps: string[]) => `${deps[0]}/${deps[1]}/${deps[2]}`,
+            get keys() { return [selectedSchool, selectedMajor, selectedTrack, selectedYear]; },
+            path: (deps: string[]) => `${deps[0]}/${deps[1]}/${deps[2]}/${deps[3]}`,
             reset: () => selectedMinor = ""
         },
         {
             get value() { return selectedCourse; },
             get options() { return courseList; },
             set options(val) { courseList = val; },
-            get keys() { return [selectedSchool, selectedMajor, selectedYear, selectedMinor]; },
-            path: (deps: string[]) => `${deps[0]}/${deps[1]}/${deps[2]}/${deps[3]}`,
+            get keys() { return selectedMinor ?
+                [selectedSchool, selectedMajor, selectedTrack, selectedYear, selectedMinor] :
+                [selectedSchool, selectedMajor, selectedTrack, selectedYear];
+            },
+            path: (deps: string[]) => selectedMinor ? `${deps[0]}/${deps[1]}/${deps[2]}/${deps[3]}/${deps[4]}` : `${deps[0]}/${deps[1]}/${deps[2]}/${deps[3]}`,
             reset: () => selectedCourse = ""
         }
     ];
@@ -97,7 +120,7 @@
     // Met à jour la séléction possible matières/filières en temps réel en
     // fonction de la séléction précédentes.
     $effect(() => {
-        const _trigger = [selectedSchool, selectedMajor, selectedYear, selectedMinor];
+        const _trigger = [selectedSchool, selectedMajor, selectedTrack, selectedYear, selectedMinor];
 
         const timer = setTimeout(() => {
             for (const node of dependencyGraph) {
@@ -137,6 +160,7 @@
             formData.append('document', fileToUpload as File);
             formData.append('school', selectedSchool);
             formData.append('major', selectedMajor);
+            formData.append('track', selectedTrack);
             formData.append('year', selectedYear);
             formData.append('minor', selectedMinor);
             formData.append('course', selectedCourse);
@@ -304,7 +328,7 @@
                             icon={SearchIcon}
                             type="datalist"
                             placeholder="Choisir une école"
-                            id="3"
+                            id="1"
                             required
                         >École</Select>
 
@@ -315,10 +339,22 @@
                             icon={SearchIcon}
                             placeholder="Choisir un département"
                             type="datalist"
-                            id="4"
+                            id="2"
                             disabled={!selectedSchool}
                             required
                         >Département</Select>
+
+                        <Select
+                            name="track"
+                            options={trackList}
+                            bind:value={selectedTrack}
+                            icon={SearchIcon}
+                            placeholder="FISE / FISA"
+                            type="datalist"
+                            id="3"
+                            disabled={!selectedMajor}
+                            required
+                        >Status étudiant</Select>
 
                         <Flex direction="column" gap="xxs">
                             <span class="required">Niveau</span>
@@ -342,17 +378,19 @@
                             </ButtonGroup>
                         </Flex>
 
-                        <Select
-                            name="minor"
-                            options={minorList}
-                            bind:value={selectedMinor}
-                            icon={SearchIcon}
-                            placeholder="Choisir une filière"
-                            disabled={!selectedMajor}
-                            type="datalist"
-                            id="1"
-                            required
-                        >Filière</Select>
+                        {#if selectedYear !== "1A"}
+                            <Select
+                                name="minor"
+                                options={minorList}
+                                bind:value={selectedMinor}
+                                icon={SearchIcon}
+                                placeholder="Choisir une filière"
+                                disabled={!selectedMajor}
+                                type="datalist"
+                                id="4"
+                                required
+                            >Filière</Select>
+                        {/if}
 
                         <Select
                             name="course"
@@ -360,10 +398,9 @@
                             bind:value={selectedCourse}
                             icon={SearchIcon}
                             placeholder="Choisir une matière"
-                            disabled={!selectedMinor}
+                            disabled={!selectedMinor && !(selectedYear == '1A' && selectedTrack)}
                             type="datalist"
-                            id="2"
-                            required
+                            id="5"
                         >Matière</Select>
 
                         <Select
