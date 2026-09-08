@@ -1,7 +1,7 @@
 import { StoragePaths } from '$lib/types/types.d';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { mkdirSync, existsSync, readFileSync, writeFileSync, symlinkSync, readdirSync, lstatSync, rmSync } from 'fs';
-import { join, resolve, dirname, relative } from 'path';
+import { join, resolve, dirname, relative, sep } from 'path';
 import { IsBan } from '$lib/server/authService';
 
 async function createSubject(name: string, paths: string[]) {
@@ -11,8 +11,9 @@ async function createSubject(name: string, paths: string[]) {
     let writePath: string[];
 
     if (existsSync(targetPath) && existsSync(metadataPath)) {
-        const existingPaths = JSON.parse(readFileSync(metadataPath, 'utf-8'));
-        writePath = existingPaths.concat(paths);
+        const parameters: string[] = targetPath.split(sep);
+        await createSubject(`${name}-${parameters[4]}`, paths);
+        return;
     } else {
         mkdirSync(targetPath, { recursive: true });
         writePath = paths;
