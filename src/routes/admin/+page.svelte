@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Check } from '@lucide/svelte';
+    import { Check, Trash } from '@lucide/svelte';
     import { Stack, Flex, Frame, Button } from 'azucar-ui';
 
     let file= $state<FileList | undefined>(undefined);
@@ -10,8 +10,6 @@
 
     <Frame border={true}>
         <Stack gap="lg">
-            <h4>Importer UE</h4>
-
             <p>
                 Importer des UEs sous forme de Json. Le Json doit être une
                 liste contenant au moins un attribut <strong>name:
@@ -29,7 +27,7 @@
                     />
                     <Flex gap="xs" style="flex-grow: 1" justify='right'>
                         <Button 
-                            type="button" 
+                            type="submit"
                             icon={Check} 
                             class="success" 
                             name="Success" 
@@ -40,5 +38,21 @@
                 </Stack>
             </form>
         </Stack>
+    </Frame>
+
+    <Frame border={true}>
+        <form method="POST" action="?/cleanup">
+            <Flex justify="space-between" align="center">
+                <p>Supprimer les UEs vides</p>
+                <Button 
+                    type="submit"
+                    icon={Trash} 
+                    class="danger" 
+                    name="whipe" 
+                >
+                    Supprimer
+                </Button>
+            </Flex>
+        </form>
     </Frame>
 </Stack>

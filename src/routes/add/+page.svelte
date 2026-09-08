@@ -76,11 +76,13 @@
             get value() { return selectedCourse; },
             get options() { return courseList; },
             set options(val) { courseList = val; },
-            get keys() { return selectedMinor ?
-                [selectedSchool, selectedMajor, selectedTrack, selectedYear, selectedMinor] :
-                [selectedSchool, selectedMajor, selectedTrack, selectedYear];
+            get keys() { return selectedYear === "1A" ?
+                [selectedSchool, selectedMajor, selectedTrack, selectedYear] :
+                [selectedSchool, selectedMajor, selectedTrack, selectedYear, selectedMinor];
             },
-            path: (deps: string[]) => selectedMinor ? `${deps[0]}/${deps[1]}/${deps[2]}/${deps[3]}/${deps[4]}` : `${deps[0]}/${deps[1]}/${deps[2]}/${deps[3]}`,
+            path: (deps: string[]) => selectedYear === "1A" ?
+                `${deps[0]}/${deps[1]}/${deps[2]}/${deps[3]}` :
+                `${deps[0]}/${deps[1]}/${deps[2]}/${deps[3]}/${deps[4]}`,
             reset: () => selectedCourse = ""
         }
     ];
@@ -200,7 +202,15 @@
     function sendFile(event: Event) {
         event.preventDefault();
 
-        if (!fileToUpload || !selectedSchool || !selectedCourse || !selectedMajor || !selectedMinor || !selectedDocumentType) {
+        const requiresMinor = selectedYear !== "1A";
+        if (
+            !fileToUpload ||
+            !selectedSchool ||
+            !selectedCourse ||
+            !selectedMajor ||
+            (requiresMinor && !selectedMinor) ||
+            !selectedDocumentType
+        ) {
             toast.error("Formulaire incomplet.");
             return;
         }
@@ -253,23 +263,25 @@
             alreadyExists = false;
             return;
         }
-
         let active = true;
-        const coursePath = `${selectedSchool}/${selectedMajor}/${selectedYear}/${selectedMinor}/`;
-        console.log(coursePath);
-
+        const segments = [selectedSchool, selectedMajor, selectedTrack, selectedYear];
+        if (selectedMinor) {
+            segments.push(selectedMinor);
+        }
+        const currentCoursePath = segments.join('/');
         const timer = setTimeout(() => {
             fetchCourse(selectedCourse)
                 .then((resolvedData) => {
-                    if (!active || !resolvedData || resolvedData.paths.length === 0) {
+                    if (!active || !resolvedData || !resolvedData.paths || resolvedData.paths.length === 0) {
                         alreadyExists = false;
                         return;
                     }
-
-                    const hasNoFiles = resolvedData && Array.isArray(resolvedData) && resolvedData.files?.length === 0;
-                    const pathExists = resolvedData.paths?.includes(coursePath);
+                    const hasNoFiles = resolvedData.files?.length === 0;
+                    const normalize = (p: string) => p.replace(/\/+$/, '');
+                    const pathExists = resolvedData.paths.some(
+                        path => normalize(path) === normalize(currentCoursePath)
+                    );
                     pathsToSubject = resolvedData.paths;
-
                     if (hasNoFiles || pathExists) {
                         alreadyExists = false;
                     } else {
@@ -286,6 +298,7 @@
             clearTimeout(timer);
         };
     });
+
 
 </script>
 

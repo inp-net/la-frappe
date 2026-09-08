@@ -1,4 +1,5 @@
 import type { Actions } from './$types';
+import { cleanup } from '$lib/server/dbService.ts';
 import { fail } from '@sveltejs/kit';
 
 export const actions = {
@@ -36,6 +37,18 @@ export const actions = {
             console.error("Erreur lors du transfert vers l'API :", err);
             return fail(500, {
                 message: "Impossible de joindre le serveur d'API."
+            });
+        }
+    },
+    cleanup: async () => {
+        try {
+            await cleanup();
+            return { success: true };
+        } catch (err) {
+            console.error('Failed to run cleanup:', err);
+            return fail(500, {
+                message: 'An error occurred during cleanup.',
+                error: err instanceof Error ? err.message : String(err)
             });
         }
     }
