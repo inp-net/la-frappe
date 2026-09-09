@@ -6,9 +6,9 @@
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { StoragePaths } from '$lib/types/types.d';
+    import Dropdown from '$lib/components/Dropdown.svelte';
 
     let cleanFolderList = $derived(page.params.path?.split('/').filter(Boolean) ?? []);
-    let isHovered = $state(false);
 
     let navigateBack = $derived.by(() => {
         const segments = (StoragePaths.DEFAULT_PAGE_LOCATION + (page.params.path ?? '')).split('/').filter(Boolean);
@@ -26,6 +26,12 @@
         goto(`/${targetPath}`);
     }
 
+    const menuItems = ['Ajouter un fichier', 'Ajouter un dossier'];
+
+    function handleAction(action: string) {
+        console.log('Clicked:', action);
+    }
+
 </script>
 
 <!--
@@ -35,7 +41,7 @@
 -->
 
 <Flex gap="md" align="stretch" wrap={false} style="max-width: 100%; min-width: 0; width: 100%;">
-    <Frame style="display: flex; align-items: center; flex-grow: 1; width: 100%; min-width: 0; overflow: hidden;">
+    <Frame style="display: flex; align-items: center; flex-grow: 1; width: 100%; min-width: 0;">
         <Flex gap="lg" wrap={false} style="width: 100%; min-width: 0; align-items: center;">
             <div id="back-button">
                 <Flex gap="md" align="center" style="flex-shrink: 0;">
@@ -45,25 +51,32 @@
 
             <div id="full">
                 <Breadcrumb file_list={cleanFolderList} onFolderClick={handleNavigation} />
+                <Dropdown items={menuItems} onselect={handleAction} align="right">
+                    <Button type="button" variant="ghost" icon={Plus}>
+                        <span class="label">Ajouter</span>
+                    </Button>
+                </Dropdown>
             </div>
         </Flex>
     </Frame>
 </Flex>
 
 <style>
-
     #full {
+        display: flex;
+        gap: var(--size-md);
         flex-grow: 1;
         min-width: 0;
-        overflow: hidden;
+        /* overflow: hidden; */
     }
 
     @media (max-width: 600px) {
+        .label {
+            display: none;
+        }
+
         #back-button {
             display: none;
         }
     }
-
-
 </style>
-
