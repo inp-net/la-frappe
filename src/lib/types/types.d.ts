@@ -63,3 +63,8 @@ export type SubjectData = {
     files: FileData[];  // Fichiers dans l'UE
     paths: string[];    // Pointeurs de l'UE
 }
+
+export interface SubjectMetadata {
+    paths?: string[];
+    [key: string]: unknown;
+}
