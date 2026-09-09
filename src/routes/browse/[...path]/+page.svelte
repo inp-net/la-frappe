@@ -18,10 +18,6 @@
 </svelte:head>
 
 <Flex direction="column" gap="xl" margin="lg">
-    <Stack>
-        <Logo />
-    </Stack>
-
     <Stack style="max-width: 100%; min-width: 0;">
         <FileStructure
             fileItems={files}

@@ -3,6 +3,7 @@
     import "azucar-ui/base.css"
     import { onMount } from 'svelte';
     import { signOut } from "@auth/sveltekit/client";
+    import Logo from '$lib/components/Logo.svelte';
 
     import {
         Sun,
@@ -88,7 +89,11 @@
             />
         </Flex>
     </div>
+
+    <Logo />
+
     {@render children()}
+
     <footer class="footer-container">
         <Flex align="center" justify="center" gap="md">
             <p>Made with Azucar-UI</p>
@@ -114,7 +119,7 @@
 
     /* center container */
     .container {
-        max-width: min(1000px, 100%);
+        /* max-width: min(1000px, 100%); */
         margin: 0 auto;
     }
 
