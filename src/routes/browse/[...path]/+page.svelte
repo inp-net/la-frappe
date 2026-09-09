@@ -3,7 +3,7 @@
     import type { PageData } from './$types';
     import type { FileData } from '$lib/types/types.d';
     import FileStructure from '$lib/components/FileStructure.svelte'
-    import Logo from '$lib/components/Logo.svelte';
+    import Details from '$lib/components/layouts/Details.svelte'
 
     let { data }: { data: PageData } = $props();
 
@@ -17,17 +17,64 @@
     </title>
 </svelte:head>
 
-<Flex direction="column" gap="xl" margin="lg">
-    <Stack style="max-width: 100%; min-width: 0;">
-        <FileStructure
-            fileItems={files}
-            current={currentPath}
-        />
-    </Stack>
+<Flex direction="column" gap="xl" margin="lg" style="margin-bottom: 10rem;">
+    <div class="browse-wrapper">
+        <aside id='grid-right'>
+            <Details>
+                Test
+            </Details>
+        </aside>
+        <div id="grid-main">
+            <FileStructure
+                fileItems={files}
+                current={currentPath}
+            />
+        </div>
+    </div>
 </Flex>
 
 <style>
     :global(.danger-text) {
         color: var(--color-error);
+    }
+
+    .browse-wrapper {
+        width: 100%;
+        max-width: min(100%, 2000px);
+        margin: 0 auto;
+
+        display: grid;
+        grid-template-columns: 320px 1fr 320px;
+        gap: 1.5rem;
+    }
+
+    #grid-main {
+        grid-row: 1;
+        grid-column: 2;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        min-width: 0;
+    }
+
+    #grid-right {
+        grid-row: 1;
+        grid-column: 3;
+    }
+
+    @media (max-width: 1024px) {
+        .browse-wrapper {
+            grid-template-columns: 1fr;
+        }
+
+        #grid-right {
+            grid-row: 1;
+            grid-column: 1;
+        }
+
+        #grid-main {
+            grid-row: 2;
+            grid-column: 1;
+        }
     }
 </style>

@@ -1,8 +1,7 @@
 <script lang="ts">
+    import { Frame, Flex } from 'azucar-ui';
     import type { HTMLAttributes } from 'svelte/elements';
     import { ChevronDown } from '@lucide/svelte';
-    import Frame from '../Frame.svelte';
-    import Flex from './Flex.svelte';
 
     type Props = HTMLAttributes<HTMLElement> & {
         summary?: string;
@@ -71,6 +70,19 @@
         border-color: var(--color-border);
         background-color: var(--color-fg-high);
         border-bottom: 0;
+    }
+
+    summary {
+        list-style: none;
+        cursor: pointer;
+        font-family: Space Grotesk, sans-serif;
+        font-weight: 700;
+    }
+    summary::-webkit-details-marker {
+        display: none;
+    }
+    summary::marker {
+        display: none;
     }
 
 </style>
