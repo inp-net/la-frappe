@@ -1,170 +1,126 @@
-<!-- Ce composant à été réalisé par IA par contrainte de temps. Il sera entièrement -->
-<!-- refait lors de l'update Azucar. -->
-
 <script lang="ts">
+    import { Frame, Stack } from 'azucar-ui';
     import type { HTMLAttributes } from 'svelte/elements';
-    import type { Snippet } from 'svelte';
 
-    type Props = Omit<HTMLAttributes<HTMLDivElement>, 'onselect'> & {
-        items: string[];
-        onselect: (item: string) => void;
-        children: Snippet;
-        align?: 'left' | 'right';
-        position?: 'bottom' | 'top';
+    type Props = HTMLAttributes<HTMLElement> & {
+        menu?: string[];
+        align?: 'center' | 'left' | 'right';
+        eventAction?: (value: string) => void;
+        id?: string;
     };
 
     let {
-        items,
-        onselect,
+        menu = [],
+        align = 'center',
+        eventAction,
+        id = 'mainpopover',
         children,
-        align = 'left',
-        position = 'bottom',
-        class: className = '',
         ...rest
     }: Props = $props();
 
-    let isOpen = $state(false);
-    let rootEl: HTMLDivElement | undefined = $state();
-
-    function toggle(e: MouseEvent) {
-        // Prevent the click from propagating to the document listener in the same tick
-        e.stopPropagation();
-        isOpen = !isOpen;
-    }
-
-    function handleSelect(item: string) {
-        onselect(item);
-        isOpen = false;
-    }
-
-    function handleWindowClick(e: MouseEvent) {
-        if (isOpen && rootEl && !rootEl.contains(e.target as Node)) {
-            isOpen = false;
+    let flexName = (s: string) => {
+        if (s === 'center') {
+            return 'center';
+        } else if (s === 'left') {
+            return 'flex-start';
+        } else {
+            return 'flex-end';
         }
-    }
+    };
 
-    function handleWindowKeydown(e: KeyboardEvent) {
-        if (e.key === 'Escape' && isOpen) {
-            isOpen = false;
-        }
+    let mainpopover: HTMLElement | null = $state(null);
+
+    function handleClick(action: string) {
+        if (eventAction) eventAction(action);
+
+        if (mainpopover) mainpopover.hidePopover();
     }
 </script>
 
-<svelte:window onclick={handleWindowClick} onkeydown={handleWindowKeydown} />
+{#if children}
+    {@render children()}
+{/if}
 
-<div bind:this={rootEl} class="dropdown-root" {...rest}>
-    <!-- Captures the click bubbling up from <Button> and toggles -->
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="dropdown-trigger" onclick={toggle}>
-        {@render children()}
-    </div>
-
-    {#if isOpen}
-        <ul
-            class={`dropdown-menu dropdown-${position} dropdown-align-${align} ${className}`}
-            role="menu"
-        >
-            {#each items as item}
-                <li role="none">
-                    <button
-                        type="button"
-                        role="menuitem"
-                        class="dropdown-item"
-                        onclick={() => handleSelect(item)}
-                    >
-                        {item}
-                    </button>
-                </li>
+<div
+    bind:this={mainpopover}
+    class="frame"
+    popover="auto"
+    {id}
+    style={`
+        justify-content: ${align};
+        align-items: ${flexName(align)};
+    `}
+>
+    <Frame
+        border={true}
+        transparent={true}
+        style="padding: 1px; border-radius: calc(var(--corner-radius) / 2);"
+    >
+        <Stack gap="zero">
+            {#each menu as item}
+                <button class="dropdown-item" onclick={() => handleClick(item)}>
+                    {item}
+                </button>
             {/each}
-        </ul>
-    {/if}
+        </Stack>
+    </Frame>
 </div>
 
 <style>
-    .dropdown-root {
-        position: relative;
-        display: inline-flex;
-        vertical-align: middle;
-    }
-
-    .dropdown-trigger {
-        display: inline-flex;
-        cursor: pointer;
-    }
-
-    .dropdown-menu {
-        position: absolute;
-        z-index: 1000;
-        display: flex;
-        flex-direction: column;
-        min-width: 10rem;
-        max-width: 18rem;
-        width: max-content;
+    .frame {
+        position-anchor: auto;
+        top: anchor(bottom);
+        left: anchor(center);
+        justify-self: anchor-center;
+        translate: -50% 4px;
+        border: none;
+        background: transparent;
+        padding: 0;
+        width: fit-content;
+        min-width: 5vw;
         margin: 0;
-        padding: var(--size-xs, 0.25rem);
-        list-style: none;
-        background: var(--color-bg, #ffffff);
-        color: var(--color-fg-high, #1a1a1a);
-        border: 1px solid var(--color-border, #e5e7eb);
-        border-radius: var(--corner-radius, 0.5rem);
-        box-shadow:
-            0 4px 6px -1px rgba(0, 0, 0, 0.08),
-            0 10px 15px -3px rgba(0, 0, 0, 0.08);
+        filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.15));
         transition:
             opacity 120ms ease,
             transform 120ms ease;
     }
 
-    /* Vertical placements */
-    .dropdown-bottom {
-        top: calc(100% + 0.35rem);
-    }
-
-    .dropdown-top {
-        bottom: calc(100% + 0.35rem);
-    }
-
-    /* Horizontal alignments */
-    .dropdown-align-left {
-        left: 0;
-    }
-
-    .dropdown-align-right {
-        right: 0;
-    }
-
-    /* Entry animation */
     @starting-style {
-        .dropdown-bottom {
+        .frame {
             opacity: 0;
             transform: translateY(-4px);
         }
-        .dropdown-top {
-            opacity: 0;
-            transform: translateY(4px);
-        }
+    }
+
+    .frame:popover-open {
+        display: flex;
+        flex-direction: column;
     }
 
     .dropdown-item {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        padding: 0.5rem 0.75rem;
-        font: inherit;
-        font-size: 0.875rem;
+        padding: var(--size-xs) var(--size-md);
         text-align: left;
-        color: inherit;
-        background: transparent;
-        border: none;
-        border-radius: calc(var(--corner-radius, 0.5rem) - 2px);
-        cursor: pointer;
-        white-space: nowrap;
+        color: var(--color-fg-low);
+        border-radius: calc(var(--corner-radius) / 2);
     }
 
-    .dropdown-item:hover,
-    .dropdown-item:focus-visible {
-        background-color: var(--color-bg-hover, #f3f4f6);
-        outline: none;
+    .dropdown-item:hover {
+        background-color: var(--color-bg-hover);
+    }
+
+    
+    button {
+        border: none;
+        margin: 0;
+        padding: 0;
+        width: auto;
+        overflow: visible;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        line-height: normal;
+        -webkit-font-smoothing: inherit;
+        -moz-osx-font-smoothing: inherit;
+        -webkit-appearance: none;
     }
 </style>

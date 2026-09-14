@@ -4,7 +4,6 @@
     import { Button, Stack, Flex } from 'azucar-ui';
     import { CircleArrowRight } from '@lucide/svelte';
     import type { PageData } from './$types';
-    import Logo from '$lib/components/Logo.svelte';
 
     interface Props {
         data: PageData;

@@ -51,8 +51,8 @@
 
             <div id="full">
                 <Breadcrumb file_list={cleanFolderList} onFolderClick={handleNavigation} />
-                <Dropdown items={menuItems} onselect={handleAction} align="right">
-                    <Button type="button" variant="ghost" icon={Plus}>
+                <Dropdown id="add-doc" menu={menuItems} eventAction={handleAction} align="right">
+                    <Button type="button" variant="ghost" icon={Plus} popovertarget='add-doc'>
                         <span class="label">Ajouter</span>
                     </Button>
                 </Dropdown>
