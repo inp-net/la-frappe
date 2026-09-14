@@ -1,6 +1,13 @@
 import type { Actions } from './$types';
 import { cleanup } from '$lib/server/dbService.ts';
-import { fail } from '@sveltejs/kit';
+import { fail, error } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async ({ locals }) => {
+    if (!locals.isAdmin) {
+        throw error(403, 'Access denied');
+    }
+};
 
 export const actions = {
     addSubjects: async ({ request, fetch }) => {

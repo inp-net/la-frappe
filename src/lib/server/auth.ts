@@ -5,16 +5,28 @@ import { env } from '$env/dynamic/private';
 const providers = [
     Authentik({
         clientId: env.AUTHENTIK_ID,
-        issuer: env.AUTHENTIK_ISSUER,
         clientSecret: env.AUTHENTIK_SECRET,
-        authorization: env.AUTHORIZE_URL,
-        token: env.TOKEN_URL,
-        userinfo: env.USER_INFO_URL,
+        issuer: env.AUTHENTIK_ISSUER,
     }),
 ];
 
 export const { handle, signIn, signOut } = SvelteKitAuth({
-    secret: env.BETTER_AUTH_SECRET,
+    secret: env.AUTH_SECRET,
     providers,
+    callbacks: {
+        async jwt({ token, profile }) {
+            // Récupère les groupes dans le LDAP
+            if (profile && 'groups' in profile) {
+                token.groups = profile.groups;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (token.groups && session.user) {
+                (session.user as any).groups = token.groups;
+            }
+            return session;
+        },
+    },
     trustHost: true,
 });

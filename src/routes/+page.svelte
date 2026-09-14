@@ -4,7 +4,6 @@
     import { Button, Stack, Flex } from 'azucar-ui';
     import { CircleArrowRight } from '@lucide/svelte';
     import type { PageData } from './$types';
-    import Logo from '$lib/components/Logo.svelte';
 
     interface Props {
         data: PageData;
@@ -20,9 +19,6 @@
     </title>
 </svelte:head>
 <Flex direction="column" gap="xl" margin="lg" align="center" style="max-width: 500px; margin: auto; margin-top: 5rem;">
-    <Stack>
-        <Logo />
-    </Stack>
     <Stack>
         <Flex>
             <Button icon={CircleArrowRight} onclick={() => signIn("authentik", { redirectTo: "/browse" })}>

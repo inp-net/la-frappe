@@ -5,7 +5,7 @@
     let file= $state<FileList | undefined>(undefined);
 </script>
 
-<Stack gap="xxl" style="padding: var(--size-md);">
+<Stack gap="xxl" style="padding: var(--size-md); max-width: min(100%, 800px); margin: 0 auto;">
     <h2>Admin board</h2>
 
     <Frame border={true}>
