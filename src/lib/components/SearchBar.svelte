@@ -5,5 +5,6 @@
 
 </script>
 
-<TextInput icon={SearchIcon} placeholder="Rechercher..."></TextInput>
-
+<Flex>
+    <TextInput icon={SearchIcon} placeholder="Rechercher..."></TextInput>
+</Flex>
