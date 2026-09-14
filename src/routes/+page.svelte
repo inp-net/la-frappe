@@ -18,6 +18,12 @@
         La Frappe · Connexion
     </title>
 </svelte:head>
+
+<!--
+    Page de login.
+    La page de navigation se trouve dans /browse
+-->
+
 <Flex direction="column" gap="xl" margin="lg" align="center" style="max-width: 500px; margin: auto; margin-top: 5rem;">
     <Stack>
         <Flex>

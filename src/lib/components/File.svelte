@@ -2,7 +2,7 @@
 
     import type { HTMLAttributes } from 'svelte/elements';
     import { StoragePaths, type FileData } from '$lib/types/types.d';
-    import { Flex, Frame, Button, Badge } from "azucar-ui";
+    import { Flex, Frame, Button, Scroll } from "azucar-ui";
     import { Folder, File } from '@lucide/svelte';
 
     let isHovered = $state(false);
@@ -46,7 +46,7 @@
     onmouseleave={() => isHovered = false}
     style="padding: 0; margin: 0; max-width: 100%;"
 >
-<Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1; overflow: scroll; -webkit-overflow-scrolling: touch;">
+<Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1;">
     <Flex align="center" wrap={false}>
         <Flex wrap={false}>
             {#if fileItem.isDirectory}
