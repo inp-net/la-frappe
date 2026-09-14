@@ -6,9 +6,10 @@ import { handle as authjsHandle } from "$lib/server/auth";
 const fakeAuthHandle: Handle = async ({ event, resolve }) => {
     if (env.DEV_FAKE_AUTH === "true") {
         event.locals.auth = async () => ({
-            user: { name: "Utilisateur Test", groups: ["admin"] },
+            user: { name: "Utilisateur Test" },
+            expires: new Date(Date.now() + 86400000).toISOString(),
         });
-        return resolve(event);
+        event.locals.isAdmin = true;
     }
     return resolve(event);
 };
@@ -18,7 +19,17 @@ const realAuthHandle: Handle = async ({ event, resolve }) => {
         return resolve(event);
     }
     
-    return authjsHandle({ event, resolve });
+    return authjsHandle({ 
+        event, 
+        resolve: async (event) => {
+            const session = await event.locals.auth();
+            const groups = (session?.user as any)?.groups || [];
+            
+            event.locals.isAdmin = groups.includes('root-inp');
+            
+            return resolve(event);
+        } 
+    });
 };
 
 export const handle = sequence(fakeAuthHandle, realAuthHandle);
