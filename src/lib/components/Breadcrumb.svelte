@@ -20,7 +20,7 @@
 
 <div class="breadcrum">
     <Flex align="center" gap="xxs">
-        <Scroll>
+        <Scroll gap="zero">
             <div class="fixed-root">
                 <Button variant="ghost" onclick={() => onFolderClick?.(-1)}>
                     <h4 id="root">/</h4>
