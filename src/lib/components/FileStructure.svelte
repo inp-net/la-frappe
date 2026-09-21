@@ -42,11 +42,9 @@
         <Flex direction="column" gap="sm" style="max-width: 100%; overflow: hidden;">
             {#key current.join('/')}
                 {#each filteredFiles as file}
-                    {#if file.isDirectory}
-                        <File
-                            fileItem={file}
-                        />
-                    {/if}
+                    <File
+                        fileItem={file}
+                    />
                 {/each}
             {/key}
             <span style="height: 100px;"></span>
