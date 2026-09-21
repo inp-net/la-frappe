@@ -28,7 +28,7 @@ export const actions = {
                 const response = await fetch('/api/make-subject', {
                     method: 'POST',
                     body: JSON.stringify({
-                        name: ue.name,
+                        name: ue.slug,
                         paths: ue.paths
                     }),
                     headers: {
