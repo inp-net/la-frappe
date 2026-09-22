@@ -1,7 +1,7 @@
 import { StoragePaths } from '$lib/types/types.d';
-import { normalizePath } from '$lib/server/fileService';
+import { normalizePath, securePath } from '$lib/server/fileService';
 import { existsSync, mkdirSync, rmSync, readdirSync, readFileSync, writeFileSync } from 'fs';
-import { access, mkdir, readdir, readFile, rm, symlink } from 'node:fs/promises';
+import { access, mkdir, readdir, readFile, rm, symlink, rename } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 
@@ -115,4 +115,39 @@ export function createSubject(name: string, paths: string[], merge: boolean = fa
 
     mkdirSync(targetPath, { recursive: true });
     writeFileSync(metadataPath, JSON.stringify({ paths: finalPaths }, null, 2), 'utf-8');
+}
+
+export async function renameSubject(oldName: string, newName: string) {
+    const oldSafePath = securePath(join(StoragePaths.DEFAULT_SUBJECT_LOCATION, oldName));
+    const newSafePath = securePath(join(StoragePaths.DEFAULT_SUBJECT_LOCATION, newName));
+
+    if (!oldSafePath || !newSafePath) {
+        console.error('Erreur chemin non autorisé ou invalide');
+        return;
+    }
+
+    try {
+        await access(oldSafePath, constants.F_OK);
+    } catch {
+        console.error("Erreur dossier d'origine n'existe pas");
+        return;
+    }
+
+    if (oldName !== newName) {
+        const destinationExists = await access(newSafePath, constants.F_OK)
+            .then(() => true)
+            .catch(() => false);
+
+        if (destinationExists) {
+            console.error("Le dossier d'arrivé existe déjà");
+            return;
+        }
+
+        try {
+            await rename(oldSafePath, newSafePath);
+        } catch (err) {
+            console.error("Erreur en renommant le dossier ", err);
+            return;
+        }
+    }
 }

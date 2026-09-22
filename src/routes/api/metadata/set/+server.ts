@@ -4,6 +4,7 @@ import type { RequestHandler } from './$types';
 import { StoragePaths } from '$lib/types/types.d';
 import { json } from '@sveltejs/kit';
 import { securePath } from '$lib/server/fileService';
+import { renameSubject } from '$lib/server/dbService';
 import { join } from 'node:path';
 import { access, rename, writeFile } from 'node:fs/promises';
 import { constants } from 'node:fs';
@@ -48,50 +49,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         );
     }
 
-    const oldSafePath = securePath(join(StoragePaths.DEFAULT_SUBJECT_LOCATION, oldName));
-    const newSafePath = securePath(join(StoragePaths.DEFAULT_SUBJECT_LOCATION, newName));
-
-    if (!oldSafePath || !newSafePath) {
-        return json({ error: 'Invalid path', message: 'Chemin non autorisé ou invalide.' }, { status: 400 });
-    }
-
-    try {
-        await access(oldSafePath, constants.F_OK);
-    } catch {
-        return json(
-            { error: 'Not Found', message: `Le dossier d'origine "${oldName}" n'existe pas.` },
-            { status: 404 }
-        );
-    }
-
-    let finalFolderPath = oldSafePath;
-
-    if (oldName !== newName) {
-        const destinationExists = await access(newSafePath, constants.F_OK)
-            .then(() => true)
-            .catch(() => false);
-
-        if (destinationExists) {
-            return json(
-                { error: 'Conflict', message: `Un dossier nommé "${newName}" existe déjà.` },
-                { status: 409 }
-            );
-        }
-
-        try {
-            await rename(oldSafePath, newSafePath);
-            finalFolderPath = newSafePath;
-        } catch (err) {
-            console.error('Error renaming directory:', err);
-            return json(
-                { error: 'Internal Server Error', message: 'Impossible de renommer le dossier.' },
-                { status: 500 }
-            );
-        }
-    }
-
     // Ecrire les métadonnées
-    const metadataPath = join(finalFolderPath, 'metadata.json');
+    const safePath = securePath(join(StoragePaths.DEFAULT_SUBJECT_LOCATION, oldName)) ?? '';
+    const metadataPath = join(safePath, 'metadata.json');
 
     try {
         await writeFile(metadataPath, JSON.stringify(metadata, null, 2), 'utf-8');
@@ -102,6 +62,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             { status: 500 }
         );
     }
+
+    await renameSubject(oldName, newName);
 
     return json({ success: true, name: newName, metadata });
 };
