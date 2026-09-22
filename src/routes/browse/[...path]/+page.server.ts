@@ -16,8 +16,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     const fullPath: string = join(process.cwd(), StoragePaths.DEFAULT_DB_LOCATION, currentPath);
     const files: FileData[] = getFilesAt(fullPath);
 
-    console.log(files);
-
     return {
         files,
         currentPath,

@@ -9,6 +9,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         return json({ error: 'Unauthorized', message: 'Vous devez être connecté' }, { status: 401 });
     }
 
+    if (!locals.isAdmin) {
+        return json({ error: 'Unauthorized', message: 'Vous devez être admin' }, { status: 403 });
+    }
+
     if (IsBan(session.user.name)) {
         return json({ 
             error: 'Forbidden', 
@@ -18,11 +22,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     try {
         const body = await request.json();
+        console.log(body);
         const name = body.name ?? '';
         const safeName = name.replace(/[/\\?%*:|"<>]/g, '-');
         const paths = body.paths ?? [];
+        const merge = body.merge ?? false;
 
-        await createSubject(safeName, paths);
+        await createSubject(safeName, paths, merge);
         await constructTree();
         return json({ message: 'UE crée avec succès' }, { status: 201 });
     } catch (err: any) {

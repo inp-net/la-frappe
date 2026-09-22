@@ -9,7 +9,8 @@
         Sun,
         Moon,
         Heart,
-        PowerOff
+        PowerOff,
+        Shield
     } from '@lucide/svelte';
 
     import {
@@ -21,6 +22,7 @@
 
     let isDarkTheme = $derived(data.theme === 'dark');
     let iconTheme = $derived(data.theme === 'dark' ? Sun : Moon);
+    const isAdmin = $derived(data.isAdmin);
 
     function setThemeCookie(value: boolean) {
         document.cookie = `theme=${value ? 'dark' : 'light'}; max-age=31536000; path=/; SameSite=Lax`;
@@ -43,12 +45,11 @@
 <div class="container">
     <div class ="sticky">
         <Flex style="position: absolute; right: 10px; z-index: 200;" gap="xs">
-            <Button icon={iconTheme} variant="outline" name="Move"
-                onclick={switchTheme}
-            />
-            <Button icon={PowerOff} name="Move"
-                onclick={() => signOut("authentik", { callbackUrl: "/" })}
-            />
+            {#if isAdmin}
+                <Button icon={Shield} variant="outline" href="/admin" />
+            {/if}
+            <Button icon={iconTheme} variant="outline" onclick={switchTheme} />
+            <Button icon={PowerOff} onclick={() => signOut("authentik", { callbackUrl: "/" })} />
         </Flex>
     </div>
 

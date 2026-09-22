@@ -79,19 +79,27 @@ export function constructTree(): void {
 }
 
 /** Crée une UE dans le flat à partir d'un nom d'UE et ses positions. */
-export function createSubject(name: string, paths: string[]): void {
+export function createSubject(name: string, paths: string[], merge: boolean = false): void {
     const targetPath = resolve(StoragePaths.DEFAULT_SUBJECT_LOCATION, name);
     const metadataPath = join(targetPath, 'metadata.json');
 
-    if (existsSync(targetPath) && existsSync(metadataPath)) {
-        const firstPath = paths[0] ?? '';
-        const parameters = firstPath.split(sep);
-        const suffix = parameters[4] ?? Date.now().toString();
+    const normalizedInput = Array.from(new Set(paths.map(p => normalize(resolve(p)))));
+    let finalPaths = normalizedInput;
 
-        createSubject(`${name}-${suffix}`, paths);
-        return;
+    if (existsSync(targetPath) && existsSync(metadataPath) && merge) {
+        try {
+            const raw = readFileSync(metadataPath, 'utf-8');
+            const data = JSON.parse(raw) as { paths?: string[] };
+            const existingPaths = Array.isArray(data.paths) 
+                ? data.paths.map(p => normalize(resolve(p))) 
+                : [];
+
+            finalPaths = Array.from(new Set([...existingPaths, ...normalizedInput]));
+        } catch {
+            console.error("Erreur lors de la lecture des métadonnées existantes");
+        }
     }
 
     mkdirSync(targetPath, { recursive: true });
-    writeFileSync(metadataPath, JSON.stringify({ paths }, null, 2), 'utf-8');
+    writeFileSync(metadataPath, JSON.stringify({ paths: finalPaths }, null, 2), 'utf-8');
 }

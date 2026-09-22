@@ -13,6 +13,7 @@ export const actions = {
     addSubjects: async ({ request, fetch }) => {
         const formData = await request.formData();
         const documentFile = formData.get('subjects');
+        const merge = formData.get('merge') === 'on';
         
         if (!documentFile || !(documentFile instanceof File) || documentFile.size === 0) {
             return fail(400, {
@@ -29,7 +30,8 @@ export const actions = {
                     method: 'POST',
                     body: JSON.stringify({
                         name: ue.slug,
-                        paths: ue.paths
+                        paths: ue.paths,
+                        merge: merge
                     }),
                     headers: {
                         'Content-Type': 'application/json'
@@ -37,7 +39,7 @@ export const actions = {
                 });
 
                 if (!response.ok) {
-                    console.error(`Impossible de crée (make-subject) : ${ue.name}`);
+                    // console.error(`Impossible de crée (make-subject) : ${ue.name}`);
                 }
             }
         } catch (err) {
