@@ -1,7 +1,7 @@
 <script lang="ts">
     import "azucar-ui/tokens.css"
     import "azucar-ui/base.css"
-    import { onMount } from 'svelte';
+    import type { LayoutProps } from './$types';
     import { signOut } from "@auth/sveltekit/client";
     import Logo from '$lib/components/Logo.svelte';
 
@@ -17,65 +17,27 @@
         Flex
     } from 'azucar-ui'
 
-    const DARK_PREFERENCE = '(prefers-color-scheme: dark)';
+    let { data, children }: LayoutProps = $props();
 
-    let isDarkTheme = $state(false);
-    let iconTheme = $state(Moon);
-
-    function getSystemPreference(): boolean {
-        if (typeof window === 'undefined') return false;
-        return window.matchMedia(DARK_PREFERENCE).matches;
-    }
-
-    function getThemeFromCookie(): boolean {
-        if (typeof document === 'undefined') return false;
-        const match = document.cookie.match(new RegExp('(^| )theme=([^;]+)'));
-        return match ? match[2] === 'dark' : false;
-    }
+    let isDarkTheme = $derived(data.theme === 'dark');
+    let iconTheme = $derived(data.theme === 'dark' ? Sun : Moon);
 
     function setThemeCookie(value: boolean) {
         document.cookie = `theme=${value ? 'dark' : 'light'}; max-age=31536000; path=/; SameSite=Lax`;
     }
 
     function applyTheme(dark: boolean) {
-        isDarkTheme = dark;
-        iconTheme = dark ? Sun : Moon;
         if (typeof document !== 'undefined') {
-            document.documentElement.style.setProperty('color-scheme', isDarkTheme ? 'dark' : 'light');
+            document.documentElement.style.setProperty('color-scheme', dark ? 'dark' : 'light');
         }
     }
-
-    onMount(() => {
-        const cookieTheme = getThemeFromCookie();
-        if (cookieTheme !== null) {
-            // cookie existe, l'utiliser
-            applyTheme(cookieTheme);
-        } else {
-            // pas de cookie, utiliser la préférence système
-            applyTheme(getSystemPreference());
-        }
-
-        // ecouter les changements de préférence système
-        const mediaQuery = window.matchMedia(DARK_PREFERENCE);
-        const handleChange = (e: MediaQueryListEvent) => {
-            // ne changer que si pas de cookie
-            if (getThemeFromCookie() === null) {
-                applyTheme(e.matches);
-            }
-        };
-
-        mediaQuery.addEventListener('change', handleChange);
-
-        return () => mediaQuery.removeEventListener('change', handleChange);
-    });
 
     function switchTheme() {
-        const newDark = !isDarkTheme;
-        applyTheme(newDark);
-        setThemeCookie(newDark);
+        isDarkTheme = !isDarkTheme;
+        setThemeCookie(isDarkTheme);
+        applyTheme(isDarkTheme);
+        data.theme = isDarkTheme ? 'dark' : 'light';
     }
-
-	let { children } = $props();
 </script>
 
 <div class="container">
