@@ -1,7 +1,7 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { LogCategory, DocumentTypes, StoragePaths, type DocumentInfo } from '$lib/types/types.d';
+import { LogCategory, DocumentType, StoragePaths, type DocumentInfo } from '$lib/types/types.d';
 import { NewLog } from '$lib/server/logService';
 import { IsBan } from '$lib/server/authService';
 import { securePath } from '$lib/server/fileService';
@@ -24,7 +24,7 @@ function validateMetadata(fields: any, author: string): DocumentInfo {
         }
     }
 
-    const documentTypes = Object.values(DocumentTypes) as string[];
+    const documentTypes = Object.values(DocumentType) as string[];
     if (!documentTypes.includes(fields.documentType)) {
         error(400, "Invalid document type");
     }

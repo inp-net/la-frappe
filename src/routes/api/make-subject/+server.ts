@@ -1,4 +1,3 @@
-import { StoragePaths } from '$lib/types/types.d';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { IsBan } from '$lib/server/authService';
 import { createSubject, constructTree } from '$lib/server/dbService';
@@ -28,7 +27,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         const paths = body.paths ?? [];
         const merge = body.merge ?? false;
 
-        await createSubject(safeName, paths, merge);
+        createSubject(safeName, paths, merge);
         await constructTree();
         return json({ message: 'UE crée avec succès' }, { status: 201 });
     } catch (err: any) {

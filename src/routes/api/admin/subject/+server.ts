@@ -1,4 +1,4 @@
-// import { DocumentTypes } from '$lib/types/types.d';
+// import { DocumentType } from '$lib/types/types.d';
 // import { normalizePath } from '$lib/server/fileService';
 // import { error, json, type RequestHandler } from '@sveltejs/kit';
 // import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -51,7 +51,7 @@
 // 		error(500, "Erreur lors de l'écriture du fichier metadata.");
 // 	}
 //
-// 	Object.values(DocumentTypes).forEach((category) => {
+// 	Object.values(DocumentType).forEach((category) => {
 // 		const categoryPath = join(storageDir, category);
 // 		try {
 // 			mkdirSync(categoryPath);
@@ -90,7 +90,7 @@
 // 		}
 // 	}
 //
-// 	Object.values(DocumentTypes).forEach((category) => {
+// 	Object.values(DocumentType).forEach((category) => {
 // 		const categoryPath = join(storageDir, category);
 // 		if (!existsSync(categoryPath)) {
 // 			try {

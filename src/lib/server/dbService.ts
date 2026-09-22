@@ -1,6 +1,9 @@
 import { StoragePaths } from '$lib/types/types.d';
-import { existsSync, mkdirSync, rmSync, readdirSync, readFileSync, writeFileSync, symlinkSync } from 'fs';
-import { join, resolve, dirname, relative, sep } from 'path';
+import { normalizePath } from '$lib/server/fileService';
+import { existsSync, mkdirSync, rmSync, readdirSync, readFileSync, writeFileSync } from 'fs';
+import { access, mkdir, readdir, readFile, rm, symlink } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import { dirname, join, relative, resolve } from 'node:path';
 
 export interface SubjectMetadata {
     paths?: string[];
@@ -24,26 +27,35 @@ export function cleanup(): void {
     }
 }
 
+async function pathExists(path: string): Promise<boolean> {
+    try {
+        await access(path, constants.F_OK);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 /** Crée l'arbre à partir du dossier flat (instantané). */
-export function constructTree(): void {
+export async function constructTree(): Promise<void> {
     const uploadsRoot = resolve(StoragePaths.DEFAULT_SUBJECT_LOCATION);
     const distRoot = resolve(StoragePaths.DEFAULT_DB_LOCATION);
 
     console.log("[constructTree] Début de la génération...");
 
-    // Nettoyage rapide du contenu de distRoot
-    if (existsSync(distRoot)) {
-        for (const item of readdirSync(distRoot)) {
-            rmSync(join(distRoot, item), { recursive: true, force: true });
-        }
+    if (await pathExists(distRoot)) {
+        const items = await readdir(distRoot);
+        await Promise.all(
+            items.map((item) => rm(join(distRoot, item), { recursive: true, force: true }))
+        );
     } else {
-        mkdirSync(distRoot, { recursive: true });
+        await mkdir(distRoot, { recursive: true });
     }
 
-    if (!existsSync(uploadsRoot)) return;
+    if (!(await pathExists(uploadsRoot))) return;
 
-    // Récupération directe des dossiers sans ré-appeler stat
-    const subjects = readdirSync(uploadsRoot, { withFileTypes: true })
+    const entries = await readdir(uploadsRoot, { withFileTypes: true });
+    const subjects = entries
         .filter((dirent) => dirent.isDirectory())
         .map((dirent) => dirent.name);
 
@@ -53,20 +65,21 @@ export function constructTree(): void {
         const subjectPath = join(uploadsRoot, subject);
         const metaPath = join(subjectPath, 'metadata.json');
 
-        if (!existsSync(metaPath)) continue;
+        if (!(await pathExists(metaPath))) continue;
 
         try {
-            const metadata: SubjectMetadata = JSON.parse(readFileSync(metaPath, 'utf-8'));
+            const raw = await readFile(metaPath, 'utf-8');
+            const metadata: SubjectMetadata = JSON.parse(raw);
             const paths = metadata.paths ?? [];
 
             for (const virtualPath of paths) {
                 const targetDir = join(distRoot, virtualPath);
-                mkdirSync(targetDir, { recursive: true });
+                await mkdir(targetDir, { recursive: true });
 
                 const linkName = join(targetDir, subject);
                 const relativeTarget = relative(dirname(linkName), subjectPath);
 
-                symlinkSync(relativeTarget, linkName, 'dir');
+                await symlink(relativeTarget, linkName, 'dir');
                 linksCreated++;
             }
         } catch (err: unknown) {
@@ -83,7 +96,7 @@ export function createSubject(name: string, paths: string[], merge: boolean = fa
     const targetPath = resolve(StoragePaths.DEFAULT_SUBJECT_LOCATION, name);
     const metadataPath = join(targetPath, 'metadata.json');
 
-    const normalizedInput = Array.from(new Set(paths.map(p => normalize(resolve(p)))));
+    const normalizedInput = Array.from(new Set(paths.map(p => normalizePath(resolve(p)))));
     let finalPaths = normalizedInput;
 
     if (existsSync(targetPath) && existsSync(metadataPath) && merge) {
@@ -91,7 +104,7 @@ export function createSubject(name: string, paths: string[], merge: boolean = fa
             const raw = readFileSync(metadataPath, 'utf-8');
             const data = JSON.parse(raw) as { paths?: string[] };
             const existingPaths = Array.isArray(data.paths) 
-                ? data.paths.map(p => normalize(resolve(p))) 
+                ? data.paths.map(p => normalizePath(resolve(p))) 
                 : [];
 
             finalPaths = Array.from(new Set([...existingPaths, ...normalizedInput]));

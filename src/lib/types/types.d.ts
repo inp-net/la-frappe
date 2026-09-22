@@ -1,5 +1,5 @@
 /** Les types de documents acceptés. */
-export enum DocumentTypes {
+export enum DocumentType {
     PARTIEL = 'Partiel',
     FICHE = 'Fiche',
     TD = 'TD',

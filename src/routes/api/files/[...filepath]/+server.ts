@@ -1,5 +1,4 @@
-import { json } from '@sveltejs/kit';
-import { error } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { StoragePaths } from '$lib/types/types.d';
 import { securePath } from '$lib/server/fileService';
@@ -8,34 +7,50 @@ import path from 'path';
 
 function getMimeType(filePath: string): string {
     const ext = path.extname(filePath).toLowerCase();
-    if (ext === '.pdf') return 'application/pdf';
-    if (ext === '.json') return 'application/json';
-    if (ext === '.png') return 'image/png';
-    if (ext === '.jpg' || ext === '.jpeg') return 'image/jpeg';
-    return 'application/octet-stream';
+    switch (ext) {
+        case '.pdf': return 'application/pdf';
+        case '.json': return 'application/json';
+        case '.png': return 'image/png';
+        case '.jpg':
+        case '.jpeg': return 'image/jpeg';
+        default: return 'application/octet-stream';
+    }
 }
 
-/** Récupère les PDFs */
+/** Récupère les fichiers/PDFs */
 export const GET: RequestHandler = async ({ params, locals }) => {
-
     const session = await locals.auth();
     if (!session) {
-        return json({ 
-            error: 'Unauthorized', 
-            message: 'Vous devez être connecté' 
-        }, { status: 401 });
+        return json(
+            {
+                error: 'Unauthorized',
+                message: 'Vous devez être connecté'
+            },
+            { status: 401 }
+        );
+    }
+
+    const rawFilepath = params.filepath || '';
+
+    const sanitizedRelativePath = securePath(rawFilepath);
+    if (!sanitizedRelativePath) {
+        throw error(400, 'Invalid file path');
     }
 
     const baseDir = path.resolve(StoragePaths.DEFAULT_DB_LOCATION);
-    const safePath = '/' + securePath(path.resolve(baseDir, params.filepath));
+    const absoluteFilePath = path.resolve(baseDir, sanitizedRelativePath);
 
-    if (!fs.existsSync(safePath) || fs.statSync(safePath).isDirectory()) {
+    if (!absoluteFilePath.startsWith(baseDir)) {
+        throw error(403, 'Forbidden access');
+    }
+
+    if (!fs.existsSync(absoluteFilePath) || fs.statSync(absoluteFilePath).isDirectory()) {
         throw error(404, 'File not found');
     }
 
-    const contentType = getMimeType(safePath);
-    const fileBuffer = fs.readFileSync(safePath);
-    
+    const contentType = getMimeType(absoluteFilePath);
+    const fileBuffer = fs.readFileSync(absoluteFilePath);
+
     return new Response(fileBuffer, {
         headers: {
             'Content-Type': contentType,
