@@ -1,7 +1,7 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { LogCategory, DocumentType, StoragePaths, type DocumentInfo } from '$lib/types/types.d';
+import { LogCategory, DocumentType, StoragePaths, type DocumentInfo, type UploadDocument } from '$lib/types/types.d';
 import { NewLog } from '$lib/server/logService';
 import { IsBan } from '$lib/server/authService';
 import { securePath } from '$lib/server/fileService';
@@ -152,6 +152,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     }
 
     const data = await request.formData();
+
+    const form: UploadDocument = {
+        document: data.get('document') as File,
+        path: data.get('path') as string,
+        date: data.get('date') as string,
+        correction: data.get('correction') === 'true',
+        type: data.get('type') as DocumentType
+    };
+
     const file = data.get('document');
     if (!(file instanceof File)) {
         error(400, "Fichier manquant ou invalide.");

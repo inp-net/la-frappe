@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { join } from 'path';
 import { redirect, fail } from '@sveltejs/kit';
-import { type FileData, StoragePaths } from '$lib/types/types.d';
+import { type FileData, StoragePaths, type UploadDocument } from '$lib/types/types.d';
 import { getFilesAt, type ValidatedPath } from '$lib/server/fileService';
 import type { Actions } from './$types';
 

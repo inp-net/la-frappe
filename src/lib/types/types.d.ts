@@ -32,7 +32,7 @@ export type FileData = {
     type?: DocumentType;
 };
 
-/** Informations nécéssaires pour l'ajout d'un document. */
+/** @depreacted Informations nécéssaires pour l'ajout d'un document. */
 export type DocumentInfo = {
     document: File;
     school: string;
@@ -45,6 +45,15 @@ export type DocumentInfo = {
     hasCorrection: 'true' | 'false';
     author?: string;
 };
+
+/** Type utilisé pour upload un fichier dans la DB. */
+export type UploadDocument = {
+    document: File;
+    path: string;
+    date: string;
+    correction: boolean;
+    type: DocumentType;
+}
 
 /** Inputs possibles pour traiter une erreur d'arborescence. */
 export enum ErrorInputType {
