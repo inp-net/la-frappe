@@ -1,12 +1,11 @@
 <script lang="ts">
 
     import { ChevronLeft, Plus } from '@lucide/svelte';
-    import { Button, Flex, Frame } from 'azucar-ui';
+    import { Button, Flex, Frame, Dialog } from 'azucar-ui';
     import Breadcrumb from '$lib/components/Breadcrumb.svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { StoragePaths } from '$lib/types/types.d';
-    import Dropdown from '$lib/components/Dropdown.svelte';
 
     let cleanFolderList = $derived(page.params.path?.split('/').filter(Boolean) ?? []);
 
@@ -51,11 +50,6 @@
 
             <div id="full">
                 <Breadcrumb file_list={cleanFolderList} onFolderClick={handleNavigation} />
-                <Dropdown id="add-doc" menu={menuItems} eventAction={handleAction} align="right">
-                    <Button type="button" variant="ghost" icon={Plus} popovertarget='add-doc'>
-                        <span class="label">Ajouter</span>
-                    </Button>
-                </Dropdown>
             </div>
         </Flex>
     </Frame>
@@ -67,7 +61,6 @@
         gap: var(--size-md);
         flex-grow: 1;
         min-width: 0;
-        /* overflow: hidden; */
     }
 
     @media (max-width: 600px) {

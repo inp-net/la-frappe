@@ -1,8 +1,9 @@
 import type { PageServerLoad } from './$types';
 import { join } from 'path';
-import { redirect } from '@sveltejs/kit';
+import { redirect, fail } from '@sveltejs/kit';
 import { type FileData, StoragePaths } from '$lib/types/types.d';
-import { getFilesAt } from '$lib/server/fileService';
+import { getFilesAt, type ValidatedPath } from '$lib/server/fileService';
+import type { Actions } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 
@@ -13,7 +14,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     }
 
     const currentPath: string = params.path || "";
-    const fullPath: string = join(process.cwd(), StoragePaths.DEFAULT_DB_LOCATION, currentPath);
+    const fullPath: ValidatedPath = join(process.cwd(), StoragePaths.DEFAULT_DB_LOCATION, currentPath) as ValidatedPath;
     const files: FileData[] = getFilesAt(fullPath);
 
     return {
@@ -22,3 +23,36 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         user: session.user
     };
 };
+
+export const actions = {
+    addDocument: async({ request, fetch }) => {
+        const form = await request.formData();
+        const formDocument: File = form.get('document') as File;
+        if (formDocument.size == 0) {
+            return fail(400, {
+                message: 'Le fichier est manquant ou invalide.'
+            });
+        }
+
+        try {
+            const response = await fetch('/api/add-document', {
+                method: 'POST',
+                body: form,
+                headers: {
+                    'X-SvelteKit-Action': 'true'
+                }
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                return fail(response.status, {
+                    message: data.message || data.error || 'Erreur lors de la sauvegarde.'
+                });
+            }
+        } catch (err) {
+            console.error("Erreur lors du transfert vers l'API :", err);
+            return fail(500, {
+                message: "Impossible de joindre le serveur d'API."
+            });
+        }
+    }
+} satisfies Actions;

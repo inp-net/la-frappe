@@ -53,5 +53,35 @@ export const actions = {
             });
         }
         throw redirect(303, '/browse'); 
+    },
+    addDocument: async({ request, fetch }) => {
+        const form = await request.formData();
+        const formDocument: File = form.get('document') as File;
+        if (formDocument.size == 0) {
+            return fail(400, {
+                message: 'Le fichier est manquant ou invalide.'
+            });
+        }
+
+        try {
+            const response = await fetch('/api/add-document', {
+                method: 'POST',
+                body: form,
+                headers: {
+                    'X-SvelteKit-Action': 'true'
+                }
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                return fail(response.status, {
+                    message: data.message || data.error || 'Erreur lors de la sauvegarde.'
+                });
+            }
+        } catch (err) {
+            console.error("Erreur lors du transfert vers l'API :", err);
+            return fail(500, {
+                message: "Impossible de joindre le serveur d'API."
+            });
+        }
     }
 } satisfies Actions;
