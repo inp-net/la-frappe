@@ -50,7 +50,7 @@ export type DocumentInfo = {
 export type UploadDocument = {
     document: File;
     path: string;
-    date: string;
+    date: number;
     correction: boolean;
     type: DocumentType;
     author?: string;

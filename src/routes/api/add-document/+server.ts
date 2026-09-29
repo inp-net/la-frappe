@@ -15,32 +15,32 @@ const BASE_DIR = resolve(StoragePaths.DEFAULT_DB_LOCATION);
  * @param fields : DocumentInfo données du formulaires.
  * @throw error 400 si invalide.
  */
-function validateMetadata(fields: any, author: string): DocumentInfo {
-    const requiredKeys = ['school', 'major', 'year', 'minor', 'course', 'documentType', 'date', 'hasCorrection'];
-
-    for (const key of requiredKeys) {
-        if (typeof fields[key] !== 'string' || !fields[key].trim()) {
-            error(400, `Missing or invalid field: ${key}`);
-        }
-    }
-
-    const documentTypes = Object.values(DocumentType) as string[];
-    if (!documentTypes.includes(fields.documentType)) {
-        error(400, "Invalid document type");
-    }
-
-    return {
-        school: securePath(fields.school) || error(400, "Invalid characters in school"),
-        major: securePath(fields.major) || error(400, "Invalid characters in major"),
-        year: securePath(fields.year) || error(400, "Invalid characters in year"),
-        minor: securePath(fields.minor) || error(400, "Invalid characters in minor"),
-        course: securePath(fields.course) || error(400, "Invalid characters in course"),
-        documentType: fields.documentType, 
-        date: securePath(fields.date) || error(400, "Invalid characters in date"),
-        hasCorrection: fields.hasCorrection === 'true',
-        author: author
-    } as unknown as DocumentInfo;
-}
+// function validateMetadata(fields: any, author: string): UploadDocument {
+//     const requiredKeys = ['date', 'type'];
+//
+//     for (const key of requiredKeys) {
+//         if (typeof fields[key] !== 'string' || !fields[key].trim()) {
+//             error(400, `Missing or invalid field: ${key}`);
+//         }
+//     }
+//
+//     const documentTypes = Object.values(DocumentType) as string[];
+//     if (!documentTypes.includes(fields.documentType)) {
+//         error(400, "Invalid document type");
+//     }
+//
+//     return {
+//         school: securePath(fields.school) || error(400, "Invalid characters in school"),
+//         major: securePath(fields.major) || error(400, "Invalid characters in major"),
+//         year: securePath(fields.year) || error(400, "Invalid characters in year"),
+//         minor: securePath(fields.minor) || error(400, "Invalid characters in minor"),
+//         course: securePath(fields.course) || error(400, "Invalid characters in course"),
+//         documentType: fields.documentType, 
+//         date: securePath(fields.date) || error(400, "Invalid characters in date"),
+//         hasCorrection: fields.hasCorrection === 'true',
+//         author: author
+//     } as unknown as DocumentInfo;
+// }
 
 /** Fonction qui vérifie que le fichier en input est un pdf.
  * Vérifie la taille, l'extension et la signature du fichier.
@@ -133,7 +133,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const form: UploadDocument = {
         document: data.get('document') as File,
         path: data.get('path') as string,
-        date: data.get('date') as string,
+        date: parseInt(data.get('date') as string) ?? new Date().getFullYear,
         correction: data.get('correction') === 'true',
         type: data.get('type') as DocumentType,
         author: session.user.name
