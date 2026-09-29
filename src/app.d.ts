@@ -4,6 +4,7 @@ declare global {
 	namespace App {
         interface Locals {
             auth(): Promise<import("@auth/sveltekit").Session | null>;
+            isAdmin?: boolean;
         }
 		// interface Error {}
 		// interface Locals {}

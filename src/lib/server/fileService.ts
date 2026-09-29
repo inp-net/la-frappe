@@ -1,36 +1,41 @@
 import { readdirSync, statSync, existsSync } from 'fs';
 import { join } from 'path';
 import { error } from '@sveltejs/kit';
-import { type FileData, DocumentTypes } from '$lib/types/types.d';
+import { type FileData, DocumentType } from '$lib/types/types.d';
 
 //
 // Service server side pour la gestion de fichiers
 //
 
+// Typage fort, impossible de passer un string
+// https://medium.com/@gvelosa/branded-types-in-typescript-stronger-type-safety-for-your-codebase-3f2125c28b43
+export type ValidatedPath = string & { readonly __brand: unique symbol };
+
 /** Fonction qui récupère l'ensemble des noms des fichiers dans un chemin.
+ * ATTENTION: Cette fonction n'est pas sécurisé et ne doit pas être utilisé comme tel.
  * @param relativePath : string du chemin à vérifier.
  * @throws 404 error si le chemin n'existe pas.
  * @return liste items [name, isDirectory] des fichiers.
  */
-export function getFilesAt(relativePath: string): FileData[] {
-    if (!existsSync(relativePath)) {
+export function getFilesAt(safePath: ValidatedPath): FileData[] {
+    if (!existsSync(safePath)) {
         throw error(404, "Dossier introuvable");
     }
 
-    const files: FileData[] = readdirSync(relativePath).map(name => {
+    const pathSegments = safePath.split('/').filter(Boolean);
+
+    const files: FileData[] = readdirSync(safePath).map(name => {
         const firstPart = name.split(" - ")[0];
-        
-        const detectedType = DocumentTypes 
-            ? (Object.values(DocumentTypes).find(
-                type => type.toLowerCase() === firstPart.toLowerCase()
-              ) ?? DocumentTypes.AUTRE)
-            : "AUTRE";
+
+        const detectedType = Object.values(DocumentType).find(
+            type => type.toLowerCase() === firstPart
+        ) ?? DocumentType.AUTRE;
 
         return {
             name: name,
-            isDirectory: statSync(join(relativePath, name)).isDirectory(),
-            path: relativePath,
-            type: detectedType as DocumentTypes
+            isDirectory: statSync(join(safePath, name)).isDirectory(),
+            path: pathSegments,
+            type: detectedType
         };
     });
 
@@ -46,7 +51,7 @@ export const normalizePath = (s: string) => s.trim().toLowerCase().replaceAll(/[
  * @param segment String du chemin (ex: ENSEEIHT/1A/SN).
  * @return chemin sécurisé.
  */
-export function securePath(input: string): string | null {
+export function securePath(input: string): ValidatedPath | null {
     // Vérifie le type
     if (typeof input !== 'string' || !input || input.length > 500) return null;
 
@@ -93,5 +98,5 @@ export function securePath(input: string): string | null {
         if (segment.startsWith('.')) return null;
     }
 
-    return segments.join('/');
+    return segments.join('/') as ValidatedPath;
 }

@@ -1,6 +1,6 @@
 <script lang='ts'>
 
-    import { DocumentTypes, StoragePaths, type SubjectData } from '$lib/types/types.d';
+    import { DocumentType, StoragePaths, type SubjectData } from '$lib/types/types.d';
     import Select from '$lib/components/Select.svelte';
     import type { PageData } from './$types';
     import { goto } from '$app/navigation';
@@ -40,7 +40,7 @@
 
     let fileToUpload = $derived(fileList?.[0]);
     let schoolList = $derived(data.schoolNames);
-    let documentTypes: string[] = $derived([...Object.values(DocumentTypes)]);
+    let documentTypes: string[] = $derived([...Object.values(DocumentType)]);
 
     let majorList = $state<string[]>([]);
     let trackList = $state<string[]>([]);

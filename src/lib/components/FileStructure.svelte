@@ -1,8 +1,9 @@
 <script lang="ts">
 
+    // import SearchBar from "$lib/components/SearchBar.svelte";
     import ListNavigation from "$lib/components/ListNavigation.svelte";
-    import SearchBar from "$lib/components/SearchBar.svelte";
     import File from "./File.svelte";
+    import ActionAddDocument from '$lib/components/ActionAddDocument.svelte';
     import { type FileData } from '$lib/types/types.d';
     import { Flex, Stack } from "azucar-ui";
 
@@ -15,6 +16,10 @@
 
     let filteredFiles: FileData[] = $derived(
         fileItems.filter(file => file.name !== 'metadata.json')
+    );
+
+    const containsFolder: boolean = $derived(
+        !fileItems.every((f) => f.isDirectory)
     );
 
 </script>
@@ -33,22 +38,27 @@
             <Flex gap="md" direction="column" style="maxWidth: '100%', minWidth: 0">
                 <ListNavigation />
             </Flex>
-            <Flex>
-                <SearchBar />
-            </Flex>
+            <!-- <Flex> -->
+            <!--     <SearchBar /> -->
+            <!-- </Flex> -->
         </Stack>
 
         <!-- affiche l'arborescence courante dans FileStructure -->
-        <Flex direction="column" gap="sm" style="max-width: 100%; overflow: hidden;">
+        <Stack gap="md">
             {#key current.join('/')}
-                {#each filteredFiles as file}
-                    <File
-                        fileItem={file}
-                    />
-                {/each}
+                {#if containsFolder}
+                    <ActionAddDocument />
+                {/if}
+                <Stack gap="sm">
+                    {#each filteredFiles as file}
+                        <File
+                            fileItem={file}
+                        />
+                    {/each}
+                </Stack>
             {/key}
             <span style="height: 100px;"></span>
-        </Flex>
+        </Stack>
 
     </Flex>
 </div>

@@ -44,24 +44,23 @@
     variant="ghost"
     onmouseenter={() => isHovered = true} 
     onmouseleave={() => isHovered = false}
-    style="padding: 0; margin: 0; max-width: 100%;"
+    style="padding: 0; margin: 0; text-decoration: none;"
 >
-<Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1; padding: var(--size-sm) var(--size-lg);">
-    <Flex align="center" wrap={false}>
-        <Flex wrap={false}>
-            {#if fileItem.isDirectory}
-                <Folder size="1em"/>
-            {:else}
-                <File size="1em"/>
-            {/if}
+    <Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1; padding: var(--size-sm) var(--size-lg);">
+        <Flex align="center" wrap={false}>
+            <Flex wrap={false}>
+                {#if fileItem.isDirectory}
+                    <Folder size="1em"/>
+                {:else}
+                    <File size="1em"/>
+                {/if}
+            </Flex>
+            <h4 class="file-name">{fileItem.name}</h4>
         </Flex>
-        <h4 class="file-name">{fileItem.name}</h4>
-    </Flex>
-</Frame>
+    </Frame>
 </Button>
 
 <style>
-
     .file-name {
         text-decoration: none;
         text-transform: capitalize;
@@ -72,9 +71,4 @@
         flex-shrink: 1;
         font-size: 1em;
     }
-
-    ::-webkit-scrollbar {
-        display: none;
-    }
-
 </style>

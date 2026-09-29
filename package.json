@@ -3,7 +3,7 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
-	"packageManager": "pnpm@11.9.0",
+	"packageManager": "pnpm@12.6.0",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -32,7 +32,7 @@
 		"@auth/sveltekit": "^1.11.2",
 		"@lucide/svelte": "^1.20.0",
 		"auth": "^1.6.20",
-		"azucar-ui": "^0.0.7",
+		"azucar-ui": "^0.0.9",
 		"svelte-sonner": "^1.1.1"
 	}
 }
