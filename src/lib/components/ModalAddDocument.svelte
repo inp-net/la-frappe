@@ -14,6 +14,9 @@
         id = "add-file",
         path = ""
     }: Props = $props();
+
+    let thisYear: number = $state(new Date().getFullYear());
+    const univYear = $derived(`${thisYear} - ${thisYear + 1}`);
 </script>
 
 <!--
@@ -56,11 +59,11 @@
                         name="date"
                         id="date"
                         type="number"
-                        placeholder="2026"
+                        bind:value={thisYear}
                         min="1900"
                         max="2100"
                         step="1"
-                    >Année universitaire</TextInput>
+                    >Année universitaire : {univYear}</TextInput>
                 </Flex>
 
                 <Flex direction="column" gap="xxs">
