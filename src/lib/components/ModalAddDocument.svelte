@@ -43,6 +43,7 @@
                             id="document"
                             name="document"
                             accept=".pdf"
+                            required
                         />
                     </Flex>
                 </Flex>
@@ -63,6 +64,7 @@
                         min="1900"
                         max="2100"
                         step="1"
+                        required
                     >Année universitaire : {univYear}</TextInput>
                 </Flex>
 
