@@ -79,10 +79,6 @@
                         <Info size="10px"/>
                         <span>Le corrigé (si disponible) doit être fusionné avec le sujet.</span>
                     </Flex>
-                    <Flex gap="xs" align="baseline" wrap={false}>
-                        <Info size="10px"/>
-                        <span>L'année universitaire débute en septembre.</span>
-                    </Flex>
                 </Flex>
 
                 <!-- validation du modal -->

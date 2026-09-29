@@ -1,7 +1,7 @@
 <script lang="ts">
 
-    import { ChevronLeft, Plus } from '@lucide/svelte';
-    import { Button, Flex, Frame, Dialog } from 'azucar-ui';
+    import { ChevronLeft, MoveLeft } from '@lucide/svelte';
+    import { Button, Flex, Frame } from 'azucar-ui';
     import Breadcrumb from '$lib/components/Breadcrumb.svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
@@ -41,10 +41,10 @@
 
 <Flex gap="md" align="stretch" wrap={false} style="max-width: 100%; min-width: 0; width: 100%;">
     <Frame style="display: flex; align-items: center; flex-grow: 1; width: 100%; min-width: 0;">
-        <Flex gap="lg" wrap={false} style="width: 100%; min-width: 0; align-items: center;">
+        <Flex gap="md" wrap={false} style="width: 100%; min-width: 0; align-items: center;">
             <div id="back-button">
                 <Flex gap="md" align="center" style="flex-shrink: 0;">
-                        <Button icon={ChevronLeft} variant="ghost" href={navigateBack} />
+                    <Button icon={MoveLeft} variant="ghost" href={navigateBack} />
                 </Flex>
             </div>
 
