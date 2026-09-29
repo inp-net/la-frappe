@@ -53,6 +53,7 @@ export type UploadDocument = {
     date: string;
     correction: boolean;
     type: DocumentType;
+    author?: string;
 }
 
 /** Inputs possibles pour traiter une erreur d'arborescence. */

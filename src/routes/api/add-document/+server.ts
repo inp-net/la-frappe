@@ -50,7 +50,6 @@ function validateMetadata(fields: any, author: string): DocumentInfo {
 async function checkFileIntegrity(file : File | null) {
     if (!file) error(400, 'Fichier manquant.');
     if (file.size > MAX_FILE_SIZE) error(400, "Fichier trop volumineux.");
-    // TODO accepter aussi les png et les jpeg ?
     if (file.type !== 'application/pdf') error(400, "Le format est incorrect.");
 
     const arrayBuffer = await file.arrayBuffer();
@@ -65,41 +64,20 @@ async function checkFileIntegrity(file : File | null) {
     return uint8Array;
 }
 
-/** Fonction qui génère un chemin où enregistrer le fichier en fonction
- * des metadonnées.
- * @param metadonnés.
- * @return chemin (ex: ENSEEIHT/1A/SN/Reseau/)
- */
-function generatePath(metadata: DocumentInfo) {
-    const { school, year, major, minor, course } = metadata;
-
-    const relativePath = join(school, major, year, minor, course);
-    const fullPath = resolve(BASE_DIR, relativePath);
-
-    if (!fullPath.startsWith(BASE_DIR)) {
-        error(403, "Access Denied.");
-    }
-
-    return fullPath;
-}
-
 /** Fonction qui génère le nom du fichier en fonction des métadonnées.
  * Fix les doublons en ajoutant un counter.
  * Ex : TD 1.pdf
  * @param metadonnées
  * @return String nom du fichier.
  */
-function generateName(metadata: DocumentInfo) {
-    const { documentType, date, hasCorrection } = metadata;
+function generateName(metadata: UploadDocument) {
+    let baseName = `${metadata.type} - ${metadata.date}`;
     
-    let baseName = `${documentType} - ${date}`;
-    baseName = baseName.replace(/[\/\\]/g, '_');
-    
-    if (hasCorrection) {
-        baseName = baseName + ' + corrige';
+    if (metadata.correction) {
+        baseName = baseName + ' - solution';
     }
     
-    const filePath = generatePath(metadata);
+    const filePath = metadata.path;
     let finalName = baseName;
     let counter = 1;
 
@@ -113,19 +91,18 @@ function generateName(metadata: DocumentInfo) {
 
 /** Fonction qui sauvegarde le fichier.
  * @parma buffer: fichier dans un buffer Array 8 bits.
- * @param metadonnées
+ * @param path: string emplacement du fichier
  */
-function saveFile(buffer: Uint8Array, metadata: DocumentInfo) {
-    const dirPath = generatePath(metadata);
+function saveFile(buffer: Uint8Array, metadata: UploadDocument) {
     const fileName = generateName(metadata);
-    const fullPath = join(dirPath, fileName);
+    const fullPath = join(metadata.path, fileName);
 
     if (!fullPath.startsWith(BASE_DIR)) {
         error(403, "Access denied");
     }
 
     try {
-        mkdirSync(dirPath, { recursive: true });
+        mkdirSync(metadata.path, { recursive: true });
         writeFileSync(fullPath, Buffer.from(buffer), { mode: 0o644 });
         if (!existsSync(fullPath)) {
             throw error(500, "Erreur d'écriture du fichier");
@@ -158,20 +135,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         path: data.get('path') as string,
         date: data.get('date') as string,
         correction: data.get('correction') === 'true',
-        type: data.get('type') as DocumentType
+        type: data.get('type') as DocumentType,
+        author: session.user.name
     };
 
-    const file = data.get('document');
+    const file = form.document;
     if (!(file instanceof File)) {
         error(400, "Fichier manquant ou invalide.");
     }
 
     const fileContent = await checkFileIntegrity(file);
-    const rawFields = Object.fromEntries(data.entries()) as unknown as DocumentInfo;
 
     try {
-        const metadata = validateMetadata(rawFields, session.user.name);
-        saveFile(fileContent, metadata);
+        // const metadata = validateMetadata(rawFields, session.user.name);
+        saveFile(fileContent, form);
         return json({ message: 'Fichier ajouté avec succès' }, { status: 201 });
     } catch (err: any) {
         const status = err.status || 500;

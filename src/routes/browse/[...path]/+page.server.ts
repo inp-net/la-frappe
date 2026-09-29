@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { join } from 'path';
 import { redirect, fail } from '@sveltejs/kit';
-import { type FileData, StoragePaths, type UploadDocument } from '$lib/types/types.d';
+import { type FileData, StoragePaths, type UploadDocument, DocumentType } from '$lib/types/types.d';
 import { getFilesAt, type ValidatedPath } from '$lib/server/fileService';
 import type { Actions } from './$types';
 
@@ -25,7 +25,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 };
 
 export const actions = {
-    addDocument: async({ request, fetch }) => {
+    addDocument: async({ request, fetch, params }) => {
         const form = await request.formData();
         const formDocument: File = form.get('document') as File;
         if (formDocument.size == 0) {
@@ -33,6 +33,13 @@ export const actions = {
                 message: 'Le fichier est manquant ou invalide.'
             });
         }
+
+        const currentPath: string = params.path || "";
+        const fullPath: ValidatedPath = join(process.cwd(), StoragePaths.DEFAULT_DB_LOCATION, currentPath) as ValidatedPath;
+
+        console.log(fullPath);
+
+        form.append("path", fullPath);
 
         try {
             const response = await fetch('/api/add-document', {
