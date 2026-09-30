@@ -35,12 +35,5 @@
         "azucar-ui": "^0.0.9",
         "fs-xattr": "^0.4.0",
         "svelte-sonner": "^1.1.1"
-    },
-    "pnpm": {
-        "onlyBuiltDependencies": [
-            "esbuild",
-            "fs-xattr",
-            "lefthook"
-        ]
     }
 }
