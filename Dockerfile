@@ -35,7 +35,7 @@ FROM base
 
 COPY package.json /app
 COPY pnpm-lock.yaml /app
-RUN pnpm install --no-frozen-lockfile --prod
+RUN pnpm install --no-frozen-lockfile --prod --config.only-built-dependencies=esbuild,fs-xattr,lefthook
 
 # On récupère le build
 COPY --from=builder /app/build /app/build
