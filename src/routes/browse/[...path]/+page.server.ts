@@ -4,11 +4,12 @@ import { redirect, fail } from '@sveltejs/kit';
 import { type FileData, StoragePaths, type UploadDocument, DocumentType } from '$lib/types/types.d';
 import { getFilesAt, type ValidatedPath } from '$lib/server/fileService';
 import type { Actions } from './$types';
-import { getAttribute } from 'fs-xattr';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 
     const session = await locals.auth();
+
+    console.log(session);
 
     if (!session) {
         throw redirect(303, '/');
@@ -37,8 +38,6 @@ export const actions = {
 
         const currentPath: string = params.path || "";
         const fullPath: ValidatedPath = join(process.cwd(), StoragePaths.DEFAULT_DB_LOCATION, currentPath) as ValidatedPath;
-
-        console.log(fullPath);
 
         form.append("path", fullPath);
 

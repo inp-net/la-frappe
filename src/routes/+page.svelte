@@ -31,7 +31,7 @@
                 {#if data.isFakeAuth}
                     Se connecter (Mode Test Local)
                 {:else}
-                    Se connecter avec Authentik
+                    Se connecter avec INP-net
                 {/if}
             </Button>
         </Flex>
