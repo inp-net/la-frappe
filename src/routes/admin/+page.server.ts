@@ -29,7 +29,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions = {
-    addSubjects: async ({ request, fetch }) => {
+    addSubjects: async ({ request, fetch, locals }) => {
+        if (!locals.isAdmin) {
+            return fail(403, { message: 'Accès refusé.' });
+        }
+
         const formData = await request.formData();
         const documentFile = formData.get('subjects');
         const merge = formData.get('merge') === 'on';
@@ -68,9 +72,12 @@ export const actions = {
             });
         }
     },
-    editMetadata: async ({ request, fetch }) => {
-        const formData = await request.formData();
+    editMetadata: async ({ request, fetch, locals }) => {
+        if (!locals.isAdmin) {
+            return fail(403, { message: 'Accès refusé.' });
+        }
 
+        const formData = await request.formData();
         const originalName = formData.get('originalName')?.toString().trim();
         const newName = formData.get('newName')?.toString().trim();
 
@@ -122,13 +129,21 @@ export const actions = {
             });
         }
     },
-    ban: async ({ request }) => {
+    ban: async ({ request, locals }) => {
+        if (!locals.isAdmin) {
+            return fail(403, { message: 'Accès refusé.' });
+        }
+
         const formData = await request.formData();
         const name: string = formData.get('name') as string;
         if (name)
             ban(name);
     },
-    unban: async ({ request }) => {
+    unban: async ({ request, locals }) => {
+        if (!locals.isAdmin) {
+            return fail(403, { message: 'Accès refusé.' });
+        }
+
         const formData = await request.formData();
         const name: string = formData.get('name') as string;
         if (name)

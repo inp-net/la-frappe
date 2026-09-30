@@ -16,16 +16,18 @@
     </title>
 </svelte:head>
 
-<Flex direction="column" gap="xl" margin="lg" style="margin-bottom: 10rem;">
-    <div class="browse-wrapper">
-        <div id="grid-main">
-            <FileStructure
-                fileItems={files}
-                current={currentPath}
-            />
+<div class="maxwidth">
+    <Flex direction="column" gap="xl" margin="lg" style="margin-bottom: 10rem;">
+        <div class="browse-wrapper">
+            <div id="grid-main">
+                <FileStructure
+                    fileItems={files}
+                    current={currentPath}
+                />
+            </div>
         </div>
-    </div>
-</Flex>
+    </Flex>
+</div>
 
 <style>
     :global(.danger-text) {
@@ -56,9 +58,14 @@
         grid-column: 3;
     }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 1524px) {
         .browse-wrapper {
             grid-template-columns: 1fr;
+        }
+
+        .maxwidth {
+            max-width: min(1000px, 100%);
+            margin: 0 auto;
         }
 
         #grid-right {

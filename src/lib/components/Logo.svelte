@@ -53,11 +53,11 @@
 
     <Flex direction="column" gap="xxs">
         <Flex gap="xs" align="baseline">
-            <h1 onclick={handleClick} role="presentation">La Frappe</h1>
+            <h2 class="title" onclick={handleClick} role="presentation">La Frappe</h2>
             {#key funWord}
-                <h1 in:fly={{ y: 20, duration: 400 }} id="italic">
+                <h2 in:fly={{ y: 20, duration: 400 }} id="italic">
                     {funWord}
-                </h1>
+                </h2>
             {/key}
         </Flex>
         
@@ -68,11 +68,5 @@
 <style>
     #italic {
         font-style: italic;
-    }
-
-    @media (max-width: 600px) {
-        #icon {
-            display: none;
-        }
     }
 </style>

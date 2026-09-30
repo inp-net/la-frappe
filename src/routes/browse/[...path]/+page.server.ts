@@ -1,27 +1,29 @@
 import type { PageServerLoad } from './$types';
 import { join } from 'path';
-import { redirect, fail } from '@sveltejs/kit';
+import { redirect, fail, error } from '@sveltejs/kit';
 import { type FileData, StoragePaths, type UploadDocument, DocumentType } from '$lib/types/types.d';
-import { getFilesAt, type ValidatedPath } from '$lib/server/fileService';
+import { getFilesAt, securePath, type ValidatedPath } from '$lib/server/fileService';
 import type { Actions } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-
     const session = await locals.auth();
-
-    console.log(session);
-
     if (!session) {
         throw redirect(303, '/');
     }
 
-    const currentPath: string = params.path || "";
-    const fullPath: ValidatedPath = join(process.cwd(), StoragePaths.DEFAULT_DB_LOCATION, currentPath) as ValidatedPath;
+    const rawPath = params.path || "";
+    const safeRelativePath = securePath(rawPath);
+
+    if (rawPath !== "" && !safeRelativePath) {
+        throw error(400, "Invalid file path");
+    }
+
+    const fullPath = join(process.cwd(), StoragePaths.DEFAULT_DB_LOCATION, safeRelativePath || "") as ValidatedPath;
     const files: FileData[] = getFilesAt(fullPath);
 
     return {
         files,
-        currentPath,
+        currentPath: safeRelativePath || "",
         user: session.user
     };
 };
