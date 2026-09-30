@@ -1,6 +1,4 @@
 <script lang="ts">
-
-    // import SearchBar from "$lib/components/SearchBar.svelte";
     import ListNavigation from "$lib/components/ListNavigation.svelte";
     import File from "./File.svelte";
     import ActionAddDocument from '$lib/components/ActionAddDocument.svelte';
@@ -10,9 +8,10 @@
     interface Props {
         fileItems?: FileData[];
         current?: string[]; 
+        admin: boolean;
     };
 
-    let { fileItems = [], current = $bindable([]) }: Props = $props();
+    let { fileItems = [], current = $bindable([]), admin = false }: Props = $props();
 
     let filteredFiles: FileData[] = $derived(
         fileItems.filter(file => file.name !== 'metadata.json')
@@ -21,7 +20,6 @@
     const containsFolder: boolean = $derived(
         !fileItems.every((f) => f.isDirectory)
     );
-
 </script>
 
 <!--
@@ -53,6 +51,7 @@
                     {#each filteredFiles as file}
                         <File
                             fileItem={file}
+                            showCross={admin}
                         />
                     {/each}
                 </Stack>

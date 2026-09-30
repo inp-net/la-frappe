@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 import { join } from 'path';
 import { redirect, fail, error } from '@sveltejs/kit';
 import { type FileData, StoragePaths, type UploadDocument, DocumentType } from '$lib/types/types.d';
-import { getFilesAt, securePath, type ValidatedPath } from '$lib/server/fileService';
+import { getFilesAt, securePath, deleteFile, type ValidatedPath } from '$lib/server/fileService';
 import type { Actions } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -24,7 +24,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     return {
         files,
         currentPath: safeRelativePath || "",
-        user: session.user
+        user: session.user,
+        admin: locals.isAdmin
     };
 };
 
@@ -63,5 +64,15 @@ export const actions = {
                 message: "Impossible de joindre le serveur d'API."
             });
         }
+    },
+    delete: async({ request, locals }) => {
+        if (!locals.isAdmin) {
+            return fail(403, { message: 'Accès refusé.' });
+        }
+
+        const formData = await request.formData();
+        const path: string | null = join(StoragePaths.DEFAULT_DB_LOCATION, formData.get('path') as string);
+        if (path)
+            deleteFile(path);
     }
 } satisfies Actions;

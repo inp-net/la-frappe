@@ -1,4 +1,4 @@
-import { readdirSync, statSync, existsSync } from 'fs';
+import { readdirSync, statSync, existsSync, rmSync } from 'fs';
 import { join } from 'path';
 import { error } from '@sveltejs/kit';
 import { type FileData, DocumentType } from '$lib/types/types.d';
@@ -114,4 +114,22 @@ export function securePath(input: string): ValidatedPath | null {
     }
 
     return segments.join('/') as ValidatedPath;
+}
+
+/** Fonction pour supprimer un fichier. Comme c'est une fonction admin, la validation est optionnel.
+ * @param path : chemin à supprimer
+ * @throws 404 error si le chemin n'existe pas.
+ * @throws 400 error si la suppression échoue.
+ */
+export function deleteFile(path: string) {
+    if (!existsSync(path)) {
+        throw error(404, "Fichier ou dossier introuvable");
+    }
+
+    try {
+        // Supprime un fichier ou un dossier (récursivement et de force)
+        rmSync(path, { recursive: true, force: true });
+    } catch (err) {
+        throw error(400, "Impossible de supprimer le fichier ou le dossier");
+    }
 }
