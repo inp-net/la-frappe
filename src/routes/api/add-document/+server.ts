@@ -5,6 +5,7 @@ import { LogCategory, DocumentType, StoragePaths, type DocumentInfo, type Upload
 import { NewLog } from '$lib/server/logService';
 import { IsBan } from '$lib/server/authService';
 import { securePath } from '$lib/server/fileService';
+import { setAttribute } from 'fs-xattr';
 
 /** Taille maximale du fichier 10mo */
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -104,6 +105,8 @@ function saveFile(buffer: Uint8Array, metadata: UploadDocument) {
     try {
         mkdirSync(metadata.path, { recursive: true });
         writeFileSync(fullPath, Buffer.from(buffer), { mode: 0o644 });
+        if (metadata.author)
+            setAttribute(fullPath, 'author', metadata.author);
         if (!existsSync(fullPath)) {
             throw error(500, "Erreur d'écriture du fichier");
         }
