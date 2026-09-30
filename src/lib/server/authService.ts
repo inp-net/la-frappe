@@ -2,19 +2,24 @@ import { StoragePaths } from '$lib/types/types.d';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
 import { dirname } from 'path';
 
-export function IsBan(name: string) : boolean {
+/** Génère le fichier banlist.json si il n'existe pas.
+ * @return balistPath: string position du fichier.
+ */
+export function verifyPath() {
     const banlistPath = StoragePaths.DEFAULT_BANLIST_FILE;
 
     const dir = dirname(banlistPath);
     if (!existsSync(dir)) {
         mkdirSync(dir, { recursive: true });
-    }
-
-    if (!existsSync(banlistPath)) {
         const initialData: string[] = [];
         writeFileSync(banlistPath, JSON.stringify(initialData, null, 2), 'utf8');
-        return false;
     }
+
+    return banlistPath;
+}
+
+export function IsBan(name: string): boolean {
+    const banlistPath = verifyPath()
 
     try {
         const fileContent = readFileSync(banlistPath, 'utf8');
@@ -25,5 +30,48 @@ export function IsBan(name: string) : boolean {
         );
     } catch (error) {
         return false;
+    }
+}
+
+export function ban(name: string) {
+    const banlistPath = verifyPath()
+
+    try {
+        const fileContent = readFileSync(banlistPath, 'utf8');
+        const bannedNames: string[] = JSON.parse(fileContent);
+        if (!bannedNames.includes(name)) {
+            bannedNames.push(name);
+            writeFileSync(banlistPath, JSON.stringify(bannedNames))
+        }
+    } catch (error) {
+        return false;
+    }
+}
+
+export function unban(name: string) {
+    const banlistPath = verifyPath()
+
+    try {
+        const fileContent = readFileSync(banlistPath, 'utf8');
+        const bannedNames: string[] = JSON.parse(fileContent);
+        console.log(bannedNames);
+        if (bannedNames.includes(name)) {
+            const newlist = bannedNames.filter(n => n !== name);
+            writeFileSync(banlistPath, JSON.stringify(newlist))
+        }
+    } catch (error) {
+        return false;
+    }
+}
+
+export function getBanList(): string[] {
+    const banlistPath = verifyPath()
+
+    try {
+        const fileContent = readFileSync(banlistPath, 'utf8');
+        const bannedNames: string[] = JSON.parse(fileContent);
+        return bannedNames;
+    } catch (error) {
+        return [];
     }
 }
