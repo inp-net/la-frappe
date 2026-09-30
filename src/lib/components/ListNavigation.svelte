@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    import { ChevronLeft, MoveLeft } from '@lucide/svelte';
+    import { MoveLeft } from '@lucide/svelte';
     import { Button, Flex, Frame } from 'azucar-ui';
     import Breadcrumb from '$lib/components/Breadcrumb.svelte';
     import { page } from '$app/state';
@@ -23,12 +23,6 @@
         const segments = (StoragePaths.DEFAULT_PAGE_LOCATION + (page.params.path ?? '')).split('/').filter(Boolean);
         const targetPath = segments.slice(0, index + 2).join('/');
         goto(`/${targetPath}`);
-    }
-
-    const menuItems = ['Ajouter un fichier', 'Ajouter un dossier'];
-
-    function handleAction(action: string) {
-        console.log('Clicked:', action);
     }
 
 </script>
@@ -64,10 +58,6 @@
     }
 
     @media (max-width: 600px) {
-        .label {
-            display: none;
-        }
-
         #back-button {
             display: none;
         }

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Toaster } from 'svelte-sonner';
     import { Flex } from 'azucar-ui';
     import type { PageData } from './$types';
     import type { FileData } from '$lib/types/types.d';
@@ -8,6 +9,7 @@
 
     let files: FileData[] = $derived(data.files);
     const currentPath: string[] = $derived(data.currentPath.split("/"));
+    const isAdmin: boolean = $derived(data.admin ?? false);
 </script>
 
 <svelte:head>
@@ -23,11 +25,14 @@
                 <FileStructure
                     fileItems={files}
                     current={currentPath}
+                    admin={isAdmin}
                 />
             </div>
         </div>
     </Flex>
 </div>
+
+<Toaster />
 
 <style>
     :global(.danger-text) {
