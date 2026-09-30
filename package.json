@@ -1,39 +1,46 @@
 {
-	"name": "la-frappe",
-	"private": true,
-	"version": "0.0.1",
-	"type": "module",
-	"packageManager": "pnpm@12.6.0",
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier --check .",
-		"format": "prettier --write .",
-		"generate": "npx tsx generate-structure.ts"
-	},
-	"devDependencies": {
-		"@sveltejs/adapter-auto": "^7.0.0",
-		"@sveltejs/adapter-node": "5.5.4",
-		"@sveltejs/kit": "^2.50.2",
-		"@sveltejs/vite-plugin-svelte": "^6.2.4",
-		"@types/node": "^25.5.2",
-		"prettier": "^3.8.1",
-		"prettier-plugin-svelte": "^3.4.1",
-		"svelte": "^5.54.0",
-		"svelte-check": "^4.4.2",
-		"typescript": "^5.9.3",
-		"vite": "^7.3.1"
-	},
-	"dependencies": {
-		"@auth/sveltekit": "^1.11.2",
-		"@lucide/svelte": "^1.20.0",
-		"auth": "^1.6.20",
-		"azucar-ui": "^0.0.9",
-		"fs-xattr": "^0.4.0",
-		"svelte-sonner": "^1.1.1"
-	}
+    "name": "la-frappe",
+    "private": true,
+    "version": "0.0.1",
+    "type": "module",
+    "packageManager": "pnpm@12.6.0",
+    "scripts": {
+        "dev": "vite dev",
+        "build": "vite build",
+        "preview": "vite preview",
+        "prepare": "svelte-kit sync || echo ''",
+        "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+        "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+        "lint": "prettier --check .",
+        "format": "prettier --write .",
+        "generate": "npx tsx generate-structure.ts"
+    },
+    "devDependencies": {
+        "@sveltejs/adapter-auto": "^7.0.0",
+        "@sveltejs/adapter-node": "5.5.4",
+        "@sveltejs/kit": "^2.50.2",
+        "@sveltejs/vite-plugin-svelte": "^6.2.4",
+        "@types/node": "^25.5.2",
+        "prettier": "^3.8.1",
+        "prettier-plugin-svelte": "^3.4.1",
+        "svelte": "^5.54.0",
+        "svelte-check": "^4.4.2",
+        "typescript": "^5.9.3",
+        "vite": "^7.3.1"
+    },
+    "dependencies": {
+        "@auth/sveltekit": "^1.11.2",
+        "@lucide/svelte": "^1.20.0",
+        "auth": "^1.6.20",
+        "azucar-ui": "^0.0.9",
+        "fs-xattr": "^0.4.0",
+        "svelte-sonner": "^1.1.1"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "esbuild",
+            "fs-xattr",
+            "lefthook"
+        ]
+    }
 }
