@@ -15,15 +15,16 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
     providers,
     callbacks: {
         async jwt({ token, profile }) {
-            // Récupère les groupes dans le LDAP
-            if (profile && 'groups' in profile) {
-                token.groups = profile.groups;
+            if (profile) {
+                if ('nickname' in profile) token.nickname = profile.nickname;
+                if ('groups' in profile) token.groups = profile.groups;
             }
             return token;
         },
         async session({ session, token }) {
-            if (token.groups && session.user) {
-                (session.user as any).groups = token.groups;
+            if (session.user) {
+                if (token.nickname) (session.user as any).nickname = token.nickname;
+                if (token.groups) (session.user as any).groups = token.groups;
             }
             return session;
         },

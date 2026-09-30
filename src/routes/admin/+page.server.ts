@@ -1,29 +1,39 @@
 import type { Actions } from './$types';
-import { cleanup } from '$lib/server/dbService';
 import { getFilesAt, securePath, type ValidatedPath } from '$lib/server/fileService';
 import { constructTree } from '$lib/server/dbService';
 import { StoragePaths } from '$lib/types/types.d';
 import { fail, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { getBanList, ban, unban } from '$lib/server/authService';
 
 export const load: PageServerLoad = async ({ locals }) => {
     if (!locals.isAdmin) {
         throw error(403, 'Access denied');
     }
 
+    // récupérer les UEs
     const uePath: ValidatedPath | null = securePath(StoragePaths.DEFAULT_SUBJECT_LOCATION);
     let ue;
     if (uePath) {
         ue = getFilesAt(uePath);
     }
 
+    // récupérer les identifiants des bannies
+    const bans: string[] = getBanList();
+
+
     return {
-        ue: ue
+        ue: ue,
+        bans: bans
     };
 };
 
 export const actions = {
-    addSubjects: async ({ request, fetch }) => {
+    addSubjects: async ({ request, fetch, locals }) => {
+        if (!locals.isAdmin) {
+            return fail(403, { message: 'Accès refusé.' });
+        }
+
         const formData = await request.formData();
         const documentFile = formData.get('subjects');
         const merge = formData.get('merge') === 'on';
@@ -62,21 +72,12 @@ export const actions = {
             });
         }
     },
-    cleanup: async () => {
-        try {
-            await cleanup();
-            return { success: true };
-        } catch (err) {
-            console.error('Failed to run cleanup:', err);
-            return fail(500, {
-                message: 'An error occurred during cleanup.',
-                error: err instanceof Error ? err.message : String(err)
-            });
+    editMetadata: async ({ request, fetch, locals }) => {
+        if (!locals.isAdmin) {
+            return fail(403, { message: 'Accès refusé.' });
         }
-    },
-    editMetadata: async ({ request, fetch }) => {
-        const formData = await request.formData();
 
+        const formData = await request.formData();
         const originalName = formData.get('originalName')?.toString().trim();
         const newName = formData.get('newName')?.toString().trim();
 
@@ -127,5 +128,25 @@ export const actions = {
                 message: "Impossible de joindre l'API de métadonnées."
             });
         }
+    },
+    ban: async ({ request, locals }) => {
+        if (!locals.isAdmin) {
+            return fail(403, { message: 'Accès refusé.' });
+        }
+
+        const formData = await request.formData();
+        const name: string = formData.get('name') as string;
+        if (name)
+            ban(name);
+    },
+    unban: async ({ request, locals }) => {
+        if (!locals.isAdmin) {
+            return fail(403, { message: 'Accès refusé.' });
+        }
+
+        const formData = await request.formData();
+        const name: string = formData.get('name') as string;
+        if (name)
+            unban(name);
     }
 } satisfies Actions;

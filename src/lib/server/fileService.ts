@@ -2,6 +2,7 @@ import { readdirSync, statSync, existsSync } from 'fs';
 import { join } from 'path';
 import { error } from '@sveltejs/kit';
 import { type FileData, DocumentType } from '$lib/types/types.d';
+import { getAttributeSync } from 'fs-xattr';
 
 //
 // Service server side pour la gestion de fichiers
@@ -25,17 +26,31 @@ export function getFilesAt(safePath: ValidatedPath): FileData[] {
     const pathSegments = safePath.split('/').filter(Boolean);
 
     const files: FileData[] = readdirSync(safePath).map(name => {
-        const firstPart = name.split(" - ")[0];
+        const filename = join(safePath, name);
+        
+        let type = '';
+        let author = '';
+        let date = '';
 
-        const detectedType = Object.values(DocumentType).find(
-            type => type.toLowerCase() === firstPart
-        ) ?? DocumentType.AUTRE;
+        try {
+            type = getAttributeSync(filename, 'user.type')?.toString() || '';
+        } catch {}
+
+        try {
+            author = getAttributeSync(filename, 'user.author')?.toString() || '';
+        } catch {}
+
+        try {
+            date = getAttributeSync(filename, 'user.date')?.toString() || '';
+        } catch {}
 
         return {
             name: name,
-            isDirectory: statSync(join(safePath, name)).isDirectory(),
+            isDirectory: statSync(filename).isDirectory(),
             path: pathSegments,
-            type: detectedType
+            type: type as DocumentType,
+            author: author,
+            date: date
         };
     });
 
@@ -94,7 +109,8 @@ export function securePath(input: string): ValidatedPath | null {
     for (const segment of segments) {
         if (!segment || segment === '.' || segment === '..') return null;
         if (segment.length > 255) return null;
-        if (!/^[a-zA-Z0-9\-_ a-zA-Z0-9À-ÿ.+]+$/.test(segment)) return null;
+        // Added , & ( ) ' to the allowed character set
+        if (!/^[a-zA-Z0-9\-_ a-zA-Z0-9À-ÿ.,&()']+$/.test(segment)) return null;
         if (segment.startsWith('.')) return null;
     }
 
