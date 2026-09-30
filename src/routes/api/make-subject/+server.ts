@@ -1,5 +1,5 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { IsBan } from '$lib/server/authService';
+import { isBan } from '$lib/server/authService';
 import { createSubject, constructTree } from '$lib/server/dbService';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         return json({ error: 'Unauthorized', message: 'Vous devez être admin' }, { status: 403 });
     }
 
-    if (IsBan(session.user.name)) {
+    if (isBan(session.user)) {
         return json({ 
             error: 'Forbidden', 
             message: "Vous êtes banni."

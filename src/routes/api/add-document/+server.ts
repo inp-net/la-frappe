@@ -3,7 +3,7 @@ import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
 import { LogCategory, DocumentType, StoragePaths, type DocumentInfo, type UploadDocument } from '$lib/types/types.d';
 import { NewLog } from '$lib/server/logService';
-import { IsBan } from '$lib/server/authService';
+import { isBan } from '$lib/server/authService';
 import { securePath } from '$lib/server/fileService';
 import { setAttributeSync } from 'fs-xattr';
 
@@ -139,7 +139,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         return json({ error: 'Unauthorized', message: 'Vous devez être connecté' }, { status: 401 });
     }
 
-    if (IsBan(session.user.name)) {
+    if (isBan(session.user)) {
         return json({ 
             error: 'Forbidden', 
             message: "Vous êtes banni de La-Frappe. Si vous pensez que c'est une erreur, contactez net7"

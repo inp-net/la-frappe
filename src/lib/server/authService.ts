@@ -1,4 +1,5 @@
 import { StoragePaths } from '$lib/types/types.d';
+import type { User } from '@auth/sveltekit';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
 import { dirname } from 'path';
 
@@ -18,7 +19,7 @@ export function verifyPath() {
     return banlistPath;
 }
 
-export function IsBan(name: string): boolean {
+export function isBan(user: User): boolean {
     const banlistPath = verifyPath()
 
     try {
@@ -26,7 +27,7 @@ export function IsBan(name: string): boolean {
         const bannedNames: string[] = JSON.parse(fileContent);
 
         return bannedNames.some(
-            bannedName => bannedName.toLowerCase() === name.toLowerCase()
+            bannedName => bannedName.toLowerCase() === user.nickname?.toLowerCase()
         );
     } catch (error) {
         return false;
