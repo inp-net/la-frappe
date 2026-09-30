@@ -109,7 +109,6 @@ export function securePath(input: string): ValidatedPath | null {
     for (const segment of segments) {
         if (!segment || segment === '.' || segment === '..') return null;
         if (segment.length > 255) return null;
-        // Added , & ( ) ' to the allowed character set
         if (!/^[a-zA-Z0-9\-_ a-zA-Z0-9À-ÿ.,&()']+$/.test(segment)) return null;
         if (segment.startsWith('.')) return null;
     }
