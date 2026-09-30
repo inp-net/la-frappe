@@ -4,6 +4,7 @@ import { redirect, fail } from '@sveltejs/kit';
 import { type FileData, StoragePaths, type UploadDocument, DocumentType } from '$lib/types/types.d';
 import { getFilesAt, type ValidatedPath } from '$lib/server/fileService';
 import type { Actions } from './$types';
+import { getAttribute } from 'fs-xattr';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 

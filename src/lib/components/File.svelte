@@ -55,7 +55,7 @@
                     <File size="1em"/>
                 {/if}
             </Flex>
-            <h4 class="file-name">{fileItem.name}</h4>
+            <abbr class="file-name" title={fileItem.type && fileItem.date && fileItem.author ? `${fileItem.type} - ${fileItem.date} - ${fileItem.author}` : ``}>{fileItem.name}</abbr>
         </Flex>
     </Frame>
 </Button>

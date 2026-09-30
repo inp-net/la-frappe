@@ -30,6 +30,8 @@ export type FileData = {
     isDirectory: boolean;
     path?: string[]; // la liste des fichiers chemins
     type?: DocumentType;
+    author?: string;
+    date?: string;
 };
 
 /** @depreacted Informations nécéssaires pour l'ajout d'un document. */
