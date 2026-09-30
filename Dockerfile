@@ -14,6 +14,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN corepack enable
 
+# Approuver les scripts de build pour pnpm
+RUN echo "only-built-dependencies[]=esbuild" >> .npmrc && \
+    echo "only-built-dependencies[]=fs-xattr" >> .npmrc && \
+    echo "only-built-dependencies[]=lefthook" >> .npmrc
+
 # Récupérer les dépendances de prod
 FROM base AS prod
 COPY package.json pnpm-lock.yaml /app/
