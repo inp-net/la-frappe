@@ -52,6 +52,7 @@
         });
     }
 
+    const formattedName = $derived((fileItem?.name || '').replace(/-/g, ' '));
     let formElement: HTMLFormElement;
 </script>
 
@@ -84,7 +85,7 @@
                 
                 <div class="native-scroll-wrapper">
                     <abbr class="file-name" title={fileItem.type && fileItem.date && fileItem.author ? `${fileItem.type} - ${fileItem.date} -${fileItem.author}` : ``}>
-                        {fileItem.name}
+                        {formattedName}
                     </abbr>
                 </div>
             </Flex>
