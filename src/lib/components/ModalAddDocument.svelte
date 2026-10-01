@@ -70,8 +70,7 @@
 
                 <Flex direction="column" gap="xxs">
                     <span>Contient corrigé ?</span>
-                    <input type="hidden" id="correction" name="correction" />
-                    <Switch />
+                    <Switch id="correction" name="correction" />
                 </Flex>
 
                 <!-- informations complémentaires -->
