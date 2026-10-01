@@ -2,7 +2,7 @@
     import { toast } from 'svelte-sonner';
     import type { HTMLAttributes } from 'svelte/elements';
     import { StoragePaths, type FileData } from '$lib/types/types.d';
-    import { Flex, Frame, Button } from "azucar-ui";
+    import { Flex, Frame, Button, Scroll } from "azucar-ui";
     import { Folder, File, X, SkullIcon } from '@lucide/svelte';
 
     let isHovered = $state(false);
@@ -60,30 +60,39 @@
     Composant bouton fichier. Permet de naviguer dans l'arborescence.
 -->
 
-<Flex wrap={false} justify="end" align="center" gap="xs">
+<Flex wrap={false} justify="end" align="center" gap="xs" style="width: 100%; max-width: 100%; min-width: 0;">
     <Button
         href={fileItem.isDirectory ? href : filePath}
         target={fileItem.isDirectory ? '' : '_blank'}
         variant="ghost"
         onmouseenter={() => isHovered = true} 
         onmouseleave={() => isHovered = false}
-        style="padding: 0; margin: 0; text-decoration: none; flex-grow: 1;"
+        style="padding: 0; margin: 0; text-decoration: none; flex: 1 1 0; min-width: 0; display: flex; width: 100%;"
     >
-        <Frame transparent={false} border={isHovered} shadow={isHovered} style="flex-grow: 1; padding: var(--size-sm) var(--size-lg);">
-            <Flex wrap={false} align="center">
-                <Flex wrap={false}>
-                    {#if fileItem.isDirectory}
-                        <Folder size="1em"/>
-                    {:else}
-                        <File size="1em"/>
-                    {/if}
-                    <abbr class="file-name" title={fileItem.type && fileItem.date && fileItem.author ? `${fileItem.type} - ${fileItem.date} - ${fileItem.author}` : ``}>{fileItem.name}</abbr>
-                </Flex>
+        <Frame 
+            transparent={false} 
+            border={isHovered} 
+            shadow={isHovered} 
+            style="flex: 1 1 0; min-width: 0; width: 100%; max-width: 100%; padding: var(--size-sm) var(--size-lg); box-sizing: border-box; display: flex;"
+        >
+            <Flex wrap={false} align="center" style="min-width: 0; width: 100%;">
+                {#if fileItem.isDirectory}
+                    <Folder size="1em" />
+                {:else}
+                    <File size="1em" />
+                {/if}
+                
+                <div class="native-scroll-wrapper">
+                    <abbr class="file-name" title={fileItem.type && fileItem.date && fileItem.author ? `${fileItem.type} - ${fileItem.date} -${fileItem.author}` : ``}>
+                        {fileItem.name}
+                    </abbr>
+                </div>
             </Flex>
         </Frame>
     </Button>
+    
     {#if !fileItem.isDirectory && showCross}
-        <form bind:this={formElement} method="POST" action="?/delete">
+        <form bind:this={formElement} method="POST" action="?/delete" style="flex-shrink: 0;">
             <input type="hidden" name="path" value={realPath} />
             <Button 
                 variant='outline'
@@ -96,14 +105,26 @@
 </Flex>
 
 <style>
+    .native-scroll-wrapper {
+        flex: 1 1 0;
+        min-width: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
+        margin-left: var(--size-xs, 8px);
+    }
+
+    .native-scroll-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
     .file-name {
+        display: inline-block;
         text-decoration: none;
         text-transform: capitalize;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        min-width: 0;
-        flex-shrink: 1;
         font-size: 1em;
     }
 </style>

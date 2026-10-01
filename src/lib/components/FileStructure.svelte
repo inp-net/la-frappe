@@ -47,7 +47,7 @@
                 {#if containsFolder}
                     <ActionAddDocument />
                 {/if}
-                <Stack gap="sm">
+                <Stack gap="sm" style="width: 100%; max-width: 100%;">
                     {#each filteredFiles as file}
                         <File
                             fileItem={file}
