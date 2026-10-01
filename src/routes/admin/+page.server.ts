@@ -72,6 +72,13 @@ export const actions = {
             });
         }
     },
+    genTree: async ({ locals }) => {
+        if (!locals.isAdmin) {
+            return fail(403, { message: 'Accès refusé.' });
+        }
+
+        await constructTree();
+    },
     editMetadata: async ({ request, fetch, locals }) => {
         if (!locals.isAdmin) {
             return fail(403, { message: 'Accès refusé.' });

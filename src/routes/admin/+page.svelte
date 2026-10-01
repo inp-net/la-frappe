@@ -78,7 +78,7 @@
     </Stack>
 {/snippet}
 
-<Stack gap="xxl" style="padding: var(--size-md); max-width: min(100%, 800px); margin: 0 auto;">
+<Stack gap="xxl" style="padding: var(--size-md); width: 100%; max-width: min(100%, 800px); margin: 0 auto;">
     <h2>Admin board</h2>
 
     <Stack>
@@ -161,6 +161,23 @@
                     </form>
                 {/if}
             </Stack>
+        </Details>
+
+        <!-- générer l'arbre -->
+
+        <Details summary="Générer l'arbre" framed={true} border={true}>
+            <form method="POST" action="?/genTree">
+                <Flex>
+                    <Button 
+                        type="submit"
+                        icon={Check} 
+                        class="success" 
+                        name="Success" 
+                    >
+                        Générer l'arbre
+                    </Button>
+                </Flex>
+            </form>
         </Details>
     </Stack>
 
