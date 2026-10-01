@@ -18,19 +18,15 @@
     </title>
 </svelte:head>
 
-<div class="maxwidth">
-    <Flex direction="column" gap="xl" margin="lg" style="margin-bottom: 10rem;">
-        <div class="browse-wrapper">
-            <div id="grid-main">
-                <FileStructure
-                    fileItems={files}
-                    current={currentPath}
-                    admin={isAdmin}
-                />
-            </div>
-        </div>
-    </Flex>
-</div>
+<Flex direction="column" gap="xl" padding="lg" style="margin-bottom: 10rem;">
+    <div class="browse-wrapper">
+        <FileStructure
+            fileItems={files}
+            current={currentPath}
+            admin={isAdmin}
+        />
+    </div>
+</Flex>
 
 <Toaster />
 
@@ -41,46 +37,13 @@
 
     .browse-wrapper {
         width: 100%;
-        max-width: min(100%, 2000px);
+        max-width: min(100%, 800px);
         margin: 0 auto;
-
-        display: grid;
-        grid-template-columns: 320px 1fr 320px;
-        gap: 1.5rem;
-    }
-
-    #grid-main {
-        grid-row: 1;
-        grid-column: 2;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        min-width: 0;
-    }
-
-    #grid-right {
-        grid-row: 1;
-        grid-column: 3;
     }
 
     @media (max-width: 1524px) {
         .browse-wrapper {
             grid-template-columns: 1fr;
-        }
-
-        .maxwidth {
-            max-width: min(1000px, 100%);
-            margin: 0 auto;
-        }
-
-        #grid-right {
-            grid-row: 1;
-            grid-column: 1;
-        }
-
-        #grid-main {
-            grid-row: 2;
-            grid-column: 1;
         }
     }
 </style>
