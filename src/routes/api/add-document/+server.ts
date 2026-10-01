@@ -115,8 +115,8 @@ function saveFile(buffer: Uint8Array, metadata: UploadDocument) {
             const fullDateStr = `${day}/${month}/${year}`;
 
             if (metadata.author) setAttributeSync(fullPath, 'user.author', metadata.author);
-            const date = new Date();
             setAttributeSync(fullPath, 'user.date', fullDateStr);
+            setAttributeSync(fullPath, 'user.correction', metadata.correction.toString());
             setAttributeSync(fullPath, 'user.type', metadata.type);
         } catch (err) {
             console.warn("Extended attributes not supported on this filesystem.");
@@ -148,11 +148,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     const data = await request.formData();
 
+    console.log(data);
+
     const form: UploadDocument = {
         document: data.get('document') as File,
         path: data.get('path') as string,
         date: parseInt(data.get('date') as string) ?? new Date().getFullYear,
-        correction: data.get('correction') === 'true',
+        correction: data.get('correction') === 'on',
         type: data.get('type') as DocumentType,
         author: session.user.name
     };
