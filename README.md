@@ -1,6 +1,4 @@
-# La Frappe
-
-## Vision du projet
+# Vision du projet
 
 Cette version de **La Frappe** a été créer pour la dissocier de Churros. Elle
 utilise la nouvelle librairie graphique de net7 : [Azucar-UI](https://git.inpt.fr/inp-net/azucar-ui).
@@ -12,13 +10,13 @@ donc de connaître SQL, Prisma, ...
 
 ![Add Document](https://cloud.inpt.fr/apps/files_sharing/publicpreview/HWsDnABZKNp8tp3?file=/&fileId=713787&x=1920&y=1080&a=true&etag=bd72159b98626f70f60495c11790b040)
 
-## Contribuer
+# Contribuer
 
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Choix techniques et structure du code
+# Choix techniques et structure du code
 
-### Base de données
+## Base de données
 
 Le projet n'utilise pas de bases de données telles que SQL. Il utilise les
 liens symboliques entre fichiers de Linux. Ces liens symboliques sont générés
@@ -30,7 +28,7 @@ Cet élément sera développé dans les parties suivantes.
 
 La base de donnée est structuré de cette manière :
 
-#### Répertoire flat
+### Répertoire flat
 
 L'emplacement de ce répertoire est défini dans
 [`StoragePaths`](src/lib/types/types.d.ts) par la variable
@@ -71,7 +69,7 @@ filières, les branches de l'arbre pointeront vers le même UE.
 }
 ```
 
-#### Répertoire arbre
+### Répertoire arbre
 
 L'emplacement de ce répertoire est défini dans
 [`StoragePaths`](src/lib/types/types.d.ts) par la variable
@@ -99,7 +97,7 @@ dossier et l'UE dans le flat.
 
 Plusieurs dossiers peuvent pointer vers l'UE.
 
-#### Métadonnées des fichiers
+### Métadonnées des fichiers
 
 Les fichiers possèdent des métadonnées. Elles sont stockées dans les
 [extended attributes](https://man7.org/linux/man-pages/man7/xattr.7.html).
@@ -114,9 +112,9 @@ Sont stockés :
 Les extended attributes ne sont pas implémentés dans le module `fs` de JS. Le
 module [fs-xattr](https://github.com/LinusU/fs-xattr) est utilisé.
 
-### Pages
+## Pages
 
-#### browse
+### browse
 
 L'emplacement de cette page est défini dans
 [`StoragePaths`](src/lib/types/types.d.ts) par la variable
@@ -126,18 +124,18 @@ La page browse utilise le [paramétrage de svelte](https://svelte.dev/tutorial/k
 
 Le chemin entré dans l'URL permet de récupérer les fichiers dans l'arbre.
 
-#### admin
+### admin
 
 Cette page est réservé aux admins. Les admins sont les utilisateurs qui sont
 root dans le LDAP (dans le groupe `root-inp`).
 
 Elle permet de modifier la DB, de gérer les bannissements, etc.
 
-### Services
+## Services
 
 Les services sont les fichiers server-side qui contiennent des fonctions utiles.
 
-#### authService
+### authService
 
 [authService](src/lib/server/authService.ts)
 
@@ -148,7 +146,7 @@ La liste des bannies est présente dans `DEFAULT_BANLIST_FILE` du
 
 Un banni peut accéder aux fichiers, mais ne peut pas en soumettre.
 
-#### logService
+### logService
 
 [logService](src/lib/server/logService.ts)
 
@@ -157,7 +155,7 @@ Service qui gère les logs.
 Le répertoire des logs est définie par `DEFAULT_LOG_LOCATION` du
 [`StoragePaths`](src/lib/types/types.d.ts).
 
-#### dbService
+### dbService
 
 [dbService](src/lib/server/dbService.ts)
 
@@ -167,7 +165,7 @@ Service qui gère la base de donnée.
 - Création de l'arbre.
 - Création d'une UE.
 
-#### fileService
+### fileService
 
 [fileService](src/lib/server/fileService.ts)
 
@@ -181,13 +179,13 @@ Pour accéder à ces fonctions, le chemin doit être sécurisé par la fonction
 `securePath`. Sinon, des warnings sont levés.
 
 
-### API
+## API
 
 Ce fichier contient tous les utilitaires pour le projet.
 
 Les types sont définis ici [types.d.ts](src/lib/types/types.d.ts).
 
-#### get-files-at
+### get-files-at
 
 Nécéssite d'être authentifié.
 
@@ -200,7 +198,7 @@ Renvoie une liste de `FileData`.
 
 GET: [get-files-at](src/routes/get-files-at/+server.ts)
 
-#### add-document
+### add-document
 
 Nécéssite d'être authentifié.
 
