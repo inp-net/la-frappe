@@ -1,3 +1,5 @@
+[[_TOC_]]
+
 # Vision du projet
 
 Cette version de **La Frappe** a été créer pour la dissocier de Churros. Elle
