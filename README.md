@@ -8,9 +8,9 @@ utilise la nouvelle librairie graphique de net7 : [Azucar-UI](https://git.inpt.f
 La base de données repose sur les liens symboliques entre fichiers. Pas besoin
 donc de connaître SQL, Prisma, ...
 
-![Homepage](https://cloud.inpt.fr/s/i6o49aDoqZwxDLs)
+![Homepage](https://cloud.inpt.fr/apps/files_sharing/publicpreview/i6o49aDoqZwxDLs?file=/&fileId=713788&x=1920&y=1080&a=true&etag=f17471efb1efc369136f53db41c8ecf9)
 
-![Add Document](https://cloud.inpt.fr/s/HWsDnABZKNp8tp3)
+![Add Document](https://cloud.inpt.fr/apps/files_sharing/publicpreview/HWsDnABZKNp8tp3?file=/&fileId=713787&x=1920&y=1080&a=true&etag=bd72159b98626f70f60495c11790b040)
 
 ## Contribuer
 
