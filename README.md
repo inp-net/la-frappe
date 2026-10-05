@@ -32,6 +32,8 @@ Cet élément sera développé dans les parties suivantes.
 
 La base de donnée est structuré de cette manière :
 
+![DB](https://cloud.inpt.fr/apps/files_sharing/publicpreview/gXsxzEki3FErWAf?file=/&fileId=713844&x=1920&y=1080&a=true&etag=436c6a34b288db8d051459282162e26d)
+
 ### Répertoire flat
 
 L'emplacement de ce répertoire est défini dans
