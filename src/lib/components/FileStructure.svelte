@@ -1,8 +1,8 @@
 <script lang="ts">
-    import ListNavigation from "$lib/components/ListNavigation.svelte";
+    import ListNavigation from "#lib/components/ListNavigation.svelte";
     import File from "./File.svelte";
-    import ActionAddDocument from '$lib/components/ActionAddDocument.svelte';
-    import { type FileData } from '$lib/types/types';
+    import ActionAddDocument from '#lib/components/ActionAddDocument.svelte';
+    import { type FileData } from '#lib/types/types.ts';
     import { Flex, Stack } from "azucar-ui";
 
     interface Props {

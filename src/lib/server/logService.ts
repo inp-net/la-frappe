@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, appendFileSync } from 'fs';
 import { resolve } from 'path';
-import { LogCategory, StoragePaths } from '$lib/types/types'
+import { LogCategory, StoragePaths } from '#lib/types/types.ts'
 
 /** Ajouter une ligne au fichier de log.
  * @param category: la catégorie de la log.

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { toast } from 'svelte-sonner';
     import type { HTMLAttributes } from 'svelte/elements';
-    import { StoragePaths, type FileData } from '$lib/types/types';
+    import { StoragePaths, type FileData } from '#lib/types/types.ts';
     import { Flex, Frame, Button } from "azucar-ui";
     import { Folder, File, X } from '@lucide/svelte';
 

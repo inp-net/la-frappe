@@ -1,10 +1,10 @@
 import type { Actions } from './$types';
-import { getFilesAt, securePath, type ValidatedPath } from '$lib/server/fileService';
-import { constructTree } from '$lib/server/dbService';
-import { StoragePaths } from '$lib/types/types';
+import { getFilesAt, securePath, type ValidatedPath } from '#lib/server/fileService.ts';
+import { constructTree } from '#lib/server/dbService.ts';
+import { StoragePaths } from '#lib/types/types.ts';
 import { fail, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getBanList, ban, unban } from '$lib/server/authService';
+import { getBanList, ban, unban } from '#lib/server/authService.ts';
 
 export const load: PageServerLoad = async ({ locals }) => {
     if (!locals.isAdmin) {

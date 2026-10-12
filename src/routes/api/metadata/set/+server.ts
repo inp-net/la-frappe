@@ -1,10 +1,10 @@
 // API pour modifier les métadonnées d'une UE
 
 import type { RequestHandler } from './$types';
-import { StoragePaths } from '$lib/types/types';
+import { StoragePaths } from '#lib/types/types.ts';
 import { json } from '@sveltejs/kit';
-import { securePath } from '$lib/server/fileService';
-import { renameSubject } from '$lib/server/dbService';
+import { securePath } from '#lib/server/fileService.ts';
+import { renameSubject } from '#lib/server/dbService.ts';
 import { join } from 'node:path';
 import { writeFile } from 'node:fs/promises';
 

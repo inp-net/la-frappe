@@ -2,7 +2,7 @@
 
     import { Flex } from 'azucar-ui';
     import { fly } from 'svelte/transition'
-    import LogoFrappe from '$lib/components/icons/LogoFrappe.svelte';
+    import LogoFrappe from '#lib/components/icons/LogoFrappe.svelte';
 
     const funWords = [
         "atomique 🤯",

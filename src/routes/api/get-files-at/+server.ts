@@ -1,9 +1,9 @@
 // API pour récupérer les fichiers et dossiers à une position
 
 import { json } from '@sveltejs/kit';
-import { getFilesAt } from '$lib/server/fileService';
+import { getFilesAt } from '#lib/server/fileService.ts';
 import type { RequestHandler } from './$types';
-import { securePath } from '$lib/server/fileService';
+import { securePath } from '#lib/server/fileService.ts';
 
 /** Api pour récupérer les fichiers dans la déstination.
  * @param path : Path où la recherche s'effectue.

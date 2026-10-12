@@ -2,10 +2,10 @@
 
     import { MoveLeft } from '@lucide/svelte';
     import { Button, Flex, Frame } from 'azucar-ui';
-    import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+    import Breadcrumb from '#lib/components/Breadcrumb.svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
-    import { StoragePaths } from '$lib/types/types';
+    import { StoragePaths } from '#lib/types/types.ts';
 
     let cleanFolderList = $derived(page.params.path?.split('/').filter(Boolean) ?? []);
 

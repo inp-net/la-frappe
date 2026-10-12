@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { join } from 'path';
 import { redirect, fail, error } from '@sveltejs/kit';
-import { type FileData, StoragePaths, type UploadDocument, DocumentType } from '$lib/types/types';
-import { getFilesAt, securePath, deleteFile, type ValidatedPath } from '$lib/server/fileService';
+import { type FileData, StoragePaths, type UploadDocument, DocumentType } from '#lib/types/types.ts';
+import { getFilesAt, securePath, deleteFile, type ValidatedPath } from '#lib/server/fileService.ts';
 import type { Actions } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {

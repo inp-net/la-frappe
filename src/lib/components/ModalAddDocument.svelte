@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { DocumentType } from '$lib/types/types';
+    import { DocumentType } from '#lib/types/types.ts';
     import { Check, Info } from '@lucide/svelte';
     import { Stack, Flex, Button, Select, Dialog, TextInput, Switch } from 'azucar-ui';
 

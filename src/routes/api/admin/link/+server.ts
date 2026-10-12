@@ -1,4 +1,4 @@
-// import { normalize } from '$lib/tools/filtre';
+// import { normalize } from '#lib/tools/filtre.ts';
 // import { error, json, type RequestHandler } from '@sveltejs/kit';
 // import { writeFileSync, existsSync, readFileSync } from 'fs';
 // import { join, resolve } from 'path';

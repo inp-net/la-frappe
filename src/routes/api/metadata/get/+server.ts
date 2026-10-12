@@ -1,9 +1,9 @@
 // API pour récupérer le metadata.json d'une UE
 
 import type { RequestHandler } from './$types';
-import { StoragePaths } from '$lib/types/types';
+import { StoragePaths } from '#lib/types/types.ts';
 import { json } from '@sveltejs/kit';
-import { securePath } from '$lib/server/fileService';
+import { securePath } from '#lib/server/fileService.ts';
 import { join } from 'path';
 import { existsSync, readFileSync } from 'fs';
 
