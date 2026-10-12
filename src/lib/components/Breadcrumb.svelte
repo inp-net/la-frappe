@@ -1,6 +1,6 @@
 <script lang="ts">
-
-    import { ChevronRight, ChevronLeft, Plus } from '@lucide/svelte';
+    import { tick } from 'svelte';
+    import { ChevronRight } from '@lucide/svelte';
     import { Button, Flex, Box, Scroll } from 'azucar-ui';
 
     interface Props {
@@ -10,6 +10,26 @@
 
     let { file_list, onFolderClick }: Props = $props();
 
+    // breadcrumb scroll effect
+    let breadcrumbRoot: HTMLElement | null = $state(null);
+
+    $effect(() => {
+        file_list;
+        tick().then(() => {
+            requestAnimationFrame(() => {
+                if (breadcrumbRoot) {
+                    const scrollElement = breadcrumbRoot.querySelector('.scroll-content') as HTMLElement;
+                    if (scrollElement) {
+                        scrollElement.scrollTo({
+                            left: scrollElement.scrollWidth,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+    });
+
 </script>
 
 <!--
@@ -18,7 +38,7 @@
     ENSEEIHT > 2A > ASR > ...
 -->
 
-<div class="breadcrum">
+<div class="breadcrum" bind:this={breadcrumbRoot}>
     <Flex align="center" gap="xxs">
         <Scroll gap="zero">
             <div class="fixed-root">

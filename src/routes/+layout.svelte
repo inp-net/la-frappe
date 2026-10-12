@@ -1,9 +1,10 @@
 <script lang="ts">
     import "azucar-ui/tokens.css"
     import "azucar-ui/base.css"
-    import type { LayoutProps } from './$types';
+    import favicon from '#lib/assets/favicon.svg';
+    import type { LayoutProps } from './$types.js';
     import { signOut } from "@auth/sveltekit/client";
-    import Logo from '$lib/components/Logo.svelte';
+    import Logo from '#lib/components/Logo.svelte';
 
     import {
         Sun,
@@ -43,6 +44,21 @@
     }
 </script>
 
+<svelte:head>
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+
+    <!-- load dans la tête le cookie du color-schema -->
+    <script>
+        (function() {
+            const theme = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('theme='))
+                ?.split('=')[1] || 'light';
+            document.documentElement.style.setProperty('color-scheme', theme);
+        })();
+    </script>
+</svelte:head>
+
 <div class="container">
     <div class ="sticky">
         <Flex style="position: absolute; right: 10px; z-index: 200;" gap="xs">
@@ -50,7 +66,7 @@
                 <Button icon={Shield} variant="outline" href="/admin" />
             {/if}
             <Button icon={iconTheme} variant="outline" onclick={switchTheme} />
-            <Button icon={PowerOff} onclick={() => signOut("authentik", { callbackUrl: "/" })} />
+            <Button icon={PowerOff} onclick={() => signOut({ callbackUrl: "/" })} />
         </Flex>
     </div>
     <Stack gap="lg">

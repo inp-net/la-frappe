@@ -1,5 +1,5 @@
-// import { DocumentType } from '$lib/types/types.d';
-// import { normalizePath } from '$lib/server/fileService';
+// import { DocumentType } from '#lib/types/types.d';
+// import { normalizePath } from '#lib/server/fileService.js';
 // import { error, json, type RequestHandler } from '@sveltejs/kit';
 // import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 // import { join, resolve } from 'node:path';

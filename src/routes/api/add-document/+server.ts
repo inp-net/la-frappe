@@ -1,10 +1,9 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { LogCategory, DocumentType, StoragePaths, type DocumentInfo, type UploadDocument } from '$lib/types/types.d';
-import { NewLog } from '$lib/server/logService';
-import { isBan } from '$lib/server/authService';
-import { securePath } from '$lib/server/fileService';
+import { LogCategory, DocumentType, StoragePaths, type UploadDocument } from '#lib/types/types.js';
+import { NewLog } from '#lib/server/logService.js';
+import { isBan } from '#lib/server/authService.js';
 import { setAttributeSync } from 'fs-xattr';
 
 /** Taille maximale du fichier 10mo */

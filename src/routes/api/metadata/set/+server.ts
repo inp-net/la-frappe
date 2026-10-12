@@ -1,13 +1,12 @@
 // API pour modifier les métadonnées d'une UE
 
-import type { RequestHandler } from './$types';
-import { StoragePaths } from '$lib/types/types.d';
+import type { RequestHandler } from './$types.js';
+import { StoragePaths } from '#lib/types/types.js';
 import { json } from '@sveltejs/kit';
-import { securePath } from '$lib/server/fileService';
-import { renameSubject } from '$lib/server/dbService';
+import { securePath } from '#lib/server/fileService.js';
+import { renameSubject } from '#lib/server/dbService.js';
 import { join } from 'node:path';
-import { access, rename, writeFile } from 'node:fs/promises';
-import { constants } from 'node:fs';
+import { writeFile } from 'node:fs/promises';
 
 // TODO crée des petites fonctions réutilisables
 

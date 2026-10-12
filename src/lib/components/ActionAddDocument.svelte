@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Flex, Frame, Button } from "azucar-ui";
     import { Plus } from '@lucide/svelte';
-    import ModalAddDocument from '$lib/components/ModalAddDocument.svelte';
+    import ModalAddDocument from '#lib/components/ModalAddDocument.svelte';
 
     let isHovered = $state(false);
 </script>

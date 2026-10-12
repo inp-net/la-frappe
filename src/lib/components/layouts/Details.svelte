@@ -41,7 +41,8 @@
             </Flex>
         </summary>
         <div class="content">
-            <hr noshade/>
+            <!-- no shade pour Firefox, en tout cas sur mon firefox -->
+            <hr/>
             {@render children?.()}
         </div>
     </details>

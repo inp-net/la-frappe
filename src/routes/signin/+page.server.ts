@@ -1,3 +1,3 @@
-import { signIn } from '$lib/server/auth';
-import type { Actions } from './$types';
+import { signIn } from '#lib/server/auth.js';
+import type { Actions } from './$types.js';
 export const actions: Actions = { default: signIn };

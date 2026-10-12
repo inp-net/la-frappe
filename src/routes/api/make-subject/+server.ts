@@ -1,6 +1,6 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { isBan } from '$lib/server/authService';
-import { createSubject, constructTree } from '$lib/server/dbService';
+import { isBan } from '#lib/server/authService.js';
+import { createSubject, constructTree } from '#lib/server/dbService.js';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
     const session = await locals.auth();

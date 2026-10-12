@@ -1,8 +1,8 @@
 <script lang="ts">
-    import ListNavigation from "$lib/components/ListNavigation.svelte";
+    import ListNavigation from "#lib/components/ListNavigation.svelte";
     import File from "./File.svelte";
-    import ActionAddDocument from '$lib/components/ActionAddDocument.svelte';
-    import { type FileData } from '$lib/types/types.d';
+    import ActionAddDocument from '#lib/components/ActionAddDocument.svelte';
+    import { type FileData } from '#lib/types/types.js';
     import { Flex, Stack } from "azucar-ui";
 
     interface Props {
@@ -67,11 +67,5 @@
         width: 100%;
         max-width: 100%;
         overflow: hidden;
-    }
-
-    .filter-block {
-        display: block;
-        width: 100%;
-        max-width: 100%;
     }
 </style>

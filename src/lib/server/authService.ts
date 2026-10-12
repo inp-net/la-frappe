@@ -1,4 +1,4 @@
-import { StoragePaths } from '$lib/types/types.d';
+import { StoragePaths } from '#lib/types/types.js';
 import type { User } from '@auth/sveltekit';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
 import { dirname } from 'path';

@@ -1,9 +1,9 @@
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types.js';
 import { join } from 'path';
 import { redirect, fail, error } from '@sveltejs/kit';
-import { type FileData, StoragePaths, type UploadDocument, DocumentType } from '$lib/types/types.d';
-import { getFilesAt, securePath, deleteFile, type ValidatedPath } from '$lib/server/fileService';
-import type { Actions } from './$types';
+import { type FileData, StoragePaths, type UploadDocument, DocumentType } from '#lib/types/types.js';
+import { getFilesAt, securePath, deleteFile, type ValidatedPath } from '#lib/server/fileService.js';
+import type { Actions } from './$types.js';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
     const session = await locals.auth();
@@ -29,7 +29,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     };
 };
 
-export const actions = {
+export const actions: Actions = {
     addDocument: async({ request, fetch, params }) => {
         const form = await request.formData();
         const formDocument: File = form.get('document') as File;
