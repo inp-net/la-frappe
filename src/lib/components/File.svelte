@@ -85,10 +85,22 @@
                 {/if}
                 
                 <div class="native-scroll-wrapper">
-                    <abbr class="file-name" title={fileItem.type && fileItem.date && fileItem.author ? `${fileItem.type} - ${fileItem.date} -${fileItem.author}` : ``}>
-                        {formattedName}
-                    </abbr>
+                    <Flex gap="lg" style="flex-grow: 1;" justify="space-between" wrap={false}>
+                        <abbr class="file-name" title={fileItem.type && fileItem.date && fileItem.author ? `${fileItem.type} - ${fileItem.date} -${fileItem.author}` : ``}>
+                            {formattedName}
+                        </abbr>
+                        <Flex align="center" wrap={false} gap="sm">
+                            {#if fileItem.author && fileItem.date}
+                                <small class="text-muted">{fileItem?.author}</small>
+                                <small class="text-muted">{fileItem?.date}</small>
+                            {:else}
+                                <small class="text-muted">Churros V2</small>
+                            {/if}
+                        </Flex>
+                    </Flex>
                 </div>
+                <Flex gap="lg">
+                </Flex>
             </Flex>
         </Frame>
     </Button>
@@ -119,6 +131,12 @@
         margin-left: var(--size-xs, 8px);
     }
 
+    .text-muted {
+        font-weight: 500;
+        color: var(--color-fg-low);
+        white-space: nowrap;
+    }
+
     .native-scroll-wrapper::-webkit-scrollbar {
         display: none;
     }
@@ -127,6 +145,7 @@
         display: inline-block;
         text-decoration: none;
         text-transform: capitalize;
+        white-space: nowrap;
         font-size: 1em;
     }
 </style>
