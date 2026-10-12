@@ -89,14 +89,16 @@
                         <abbr class="file-name" title={fileItem.type && fileItem.date && fileItem.author ? `${fileItem.type} - ${fileItem.date} -${fileItem.author}` : ``}>
                             {formattedName}
                         </abbr>
-                        <Flex align="center" wrap={false} gap="sm">
-                            {#if fileItem.author && fileItem.date}
-                                <small class="text-muted">{fileItem?.author}</small>
-                                <small class="text-muted">{fileItem?.date}</small>
-                            {:else}
-                                <small class="text-muted">Churros V2</small>
-                            {/if}
-                        </Flex>
+                        {#if !fileItem.isDirectory}
+                            <Flex align="center" wrap={false} gap="sm">
+                                {#if fileItem.author && fileItem.date}
+                                    <small class="text-muted">{fileItem?.author}</small>
+                                    <small class="text-muted">{fileItem?.date}</small>
+                                {:else}
+                                    <small class="text-muted">Churros V2</small>
+                                {/if}
+                            </Flex>
+                        {/if}
                     </Flex>
                 </div>
                 <Flex gap="lg">
