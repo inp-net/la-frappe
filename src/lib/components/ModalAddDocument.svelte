@@ -3,7 +3,7 @@
     import { Check, Info } from '@lucide/svelte';
     import { Stack, Flex, Button, Select, Dialog, TextInput, Switch } from 'azucar-ui';
 
-    const documentTypes: string[] = $derived([...Object.values(DocumentType).toString()]);
+    const documentTypes: string[] = $derived([...Object.values(DocumentType)]);
 
     interface Props {
         id?: string;
