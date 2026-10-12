@@ -1,6 +1,7 @@
 <script lang="ts">
     import "azucar-ui/tokens.css"
     import "azucar-ui/base.css"
+    import favicon from '$lib/assets/favicon.svg';
     import type { LayoutProps } from './$types';
     import { signOut } from "@auth/sveltekit/client";
     import Logo from '$lib/components/Logo.svelte';
@@ -42,6 +43,21 @@
         data.theme = isDarkTheme ? 'dark' : 'light';
     }
 </script>
+
+<svelte:head>
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+
+    <!-- load dans la tête le cookie du color-schema -->
+    <script>
+        (function() {
+            const theme = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('theme='))
+                ?.split('=')[1] || 'light';
+            document.documentElement.style.setProperty('color-scheme', theme);
+        })();
+    </script>
+</svelte:head>
 
 <div class="container">
     <div class ="sticky">
