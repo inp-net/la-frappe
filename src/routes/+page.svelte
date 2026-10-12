@@ -3,7 +3,7 @@
     import { signIn } from "@auth/sveltekit/client";
     import { Button, Stack, Flex } from 'azucar-ui';
     import { CircleArrowRight } from '@lucide/svelte';
-    import type { PageData } from './$types';
+    import type { PageData } from './$types.js';
 
     interface Props {
         data: PageData;

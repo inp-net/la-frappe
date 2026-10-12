@@ -1,8 +1,8 @@
 <script lang="ts">
     import { Toaster } from 'svelte-sonner';
     import { Flex } from 'azucar-ui';
-    import type { PageData } from './$types';
-    import type { FileData } from '#lib/types/types.ts';
+    import type { PageData } from './$types.js';
+    import type { FileData } from '#lib/types/types.js';
     import FileStructure from '#lib/components/FileStructure.svelte'
 
     let { data }: { data: PageData } = $props();

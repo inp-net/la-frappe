@@ -1,5 +1,5 @@
-import { StoragePaths } from '#lib/types/types.ts';
-import { normalizePath, securePath } from '#lib/server/fileService.ts';
+import { StoragePaths } from '#lib/types/types.js';
+import { normalizePath, securePath } from '#lib/server/fileService.js';
 import { existsSync, mkdirSync, rmSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { access, mkdir, readdir, readFile, rm, symlink, rename } from 'node:fs/promises';
 import { constants } from 'node:fs';

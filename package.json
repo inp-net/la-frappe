@@ -16,11 +16,14 @@
         "generate": "npx tsx generate-structure.ts"
     },
     "devDependencies": {
+        "@simplewebauthn/server": "^14.0.3",
+        "@simplewebauthn/types": "^12.0.0",
         "@sveltejs/adapter-auto": "^7.0.1",
         "@sveltejs/adapter-node": "5.5.4",
         "@sveltejs/kit": "^2.70.3",
         "@sveltejs/vite-plugin-svelte": "^6.2.4",
         "@types/node": "^25.9.9",
+        "@types/nodemailer": "^8.0.2",
         "prettier": "^3.9.10",
         "prettier-plugin-svelte": "^3.5.2",
         "svelte": "^5.57.2",

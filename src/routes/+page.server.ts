@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
     const session = await locals.auth();

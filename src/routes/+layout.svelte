@@ -2,7 +2,7 @@
     import "azucar-ui/tokens.css"
     import "azucar-ui/base.css"
     import favicon from '#lib/assets/favicon.svg';
-    import type { LayoutProps } from './$types';
+    import type { LayoutProps } from './$types.js';
     import { signOut } from "@auth/sveltekit/client";
     import Logo from '#lib/components/Logo.svelte';
 

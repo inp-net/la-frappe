@@ -1,10 +1,10 @@
-import type { Actions } from './$types';
-import { getFilesAt, securePath, type ValidatedPath } from '#lib/server/fileService.ts';
-import { constructTree } from '#lib/server/dbService.ts';
-import { StoragePaths } from '#lib/types/types.ts';
+import type { Actions } from './$types.js';
+import { getFilesAt, securePath, type ValidatedPath } from '#lib/server/fileService.js';
+import { constructTree } from '#lib/server/dbService.js';
+import { StoragePaths } from '#lib/types/types.js';
 import { fail, error } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-import { getBanList, ban, unban } from '#lib/server/authService.ts';
+import type { PageServerLoad } from './$types.js';
+import { getBanList, ban, unban } from '#lib/server/authService.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
     if (!locals.isAdmin) {
@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     };
 };
 
-export const actions = {
+export const actions: Actions = {
     addSubjects: async ({ request, fetch, locals }) => {
         if (!locals.isAdmin) {
             return fail(403, { message: 'Accès refusé.' });

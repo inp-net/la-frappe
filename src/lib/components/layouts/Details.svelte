@@ -42,7 +42,7 @@
         </summary>
         <div class="content">
             <!-- no shade pour Firefox, en tout cas sur mon firefox -->
-            <hr noshade/>
+            <hr/>
             {@render children?.()}
         </div>
     </details>

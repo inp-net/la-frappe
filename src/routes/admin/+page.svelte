@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Check, Search, Plus, X, Gavel} from '@lucide/svelte';
-    import type { PageData } from './$types';
-    import type { FileData, SubjectMetadata } from '#lib/types/types.ts';
+    import type { PageData } from './$types.js';
+    import type { FileData, SubjectMetadata } from '#lib/types/types.js';
     import { Stack, Flex, TextInput, Button, Switch, Details, Frame } from 'azucar-ui';
 
     let { data }: { data: PageData } = $props();

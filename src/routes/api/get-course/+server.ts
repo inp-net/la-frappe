@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { StoragePaths, type SubjectData } from '#lib/types/types.ts';
-import { getFilesAt, securePath, type ValidatedPath } from '#lib/server/fileService.ts';
+import type { RequestHandler } from './$types.js';
+import { StoragePaths, type SubjectData } from '#lib/types/types.js';
+import { getFilesAt, securePath, type ValidatedPath } from '#lib/server/fileService.js';
 import fs from 'fs';
 import path from 'path';
 
