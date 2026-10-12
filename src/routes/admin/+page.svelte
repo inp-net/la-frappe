@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Check, Search, Plus, X, Gavel} from '@lucide/svelte';
     import type { PageData } from './$types';
-    import type { FileData, SubjectMetadata } from '$lib/types/types.d';
+    import type { FileData, SubjectMetadata } from '$lib/types/types';
     import { Stack, Flex, TextInput, Button, Switch, Details, Frame } from 'azucar-ui';
 
     let { data }: { data: PageData } = $props();
@@ -39,7 +39,7 @@
             metadata = await response.json();
             ueNameChange = ueSearched;
 
-            metadata?.paths?.forEach((path, i) => paths[i] = path)
+            metadata?.paths?.forEach((path: string, i: number) => paths[i] = path)
         } catch (err) {
             metadata = null;
         }

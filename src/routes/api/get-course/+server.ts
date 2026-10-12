@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { StoragePaths, type FileData, type SubjectData } from '$lib/types/types.d';
+import { StoragePaths, type SubjectData } from '$lib/types/types';
 import { getFilesAt, securePath, type ValidatedPath } from '$lib/server/fileService';
 import fs from 'fs';
 import path from 'path';
@@ -35,7 +35,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         return json({ error: 'Invalid or unsafe path' }, { status: 400 });
     }
 
-    const returnData: SubjectData = {};
+    const returnData: SubjectData = {
+        files: [],
+        paths: []
+    };
 
     try {
         // Read files avec le chemin validé

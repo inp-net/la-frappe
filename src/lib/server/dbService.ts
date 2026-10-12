@@ -1,4 +1,4 @@
-import { StoragePaths } from '$lib/types/types.d';
+import { StoragePaths } from '$lib/types/types';
 import { normalizePath, securePath } from '$lib/server/fileService';
 import { existsSync, mkdirSync, rmSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { access, mkdir, readdir, readFile, rm, symlink, rename } from 'node:fs/promises';

@@ -1,7 +1,7 @@
 import type { Actions } from './$types';
 import { getFilesAt, securePath, type ValidatedPath } from '$lib/server/fileService';
 import { constructTree } from '$lib/server/dbService';
-import { StoragePaths } from '$lib/types/types.d';
+import { StoragePaths } from '$lib/types/types';
 import { fail, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getBanList, ban, unban } from '$lib/server/authService';

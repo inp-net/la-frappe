@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { StoragePaths } from '$lib/types/types.d';
+import { StoragePaths } from '$lib/types/types';
 import { securePath } from '$lib/server/fileService';
 import fs from 'fs';
 import path from 'path';

@@ -1,7 +1,7 @@
 import { readdirSync, statSync, existsSync, rmSync } from 'fs';
 import { join } from 'path';
 import { error } from '@sveltejs/kit';
-import { type FileData, DocumentType } from '$lib/types/types.d';
+import { type FileData, DocumentType } from '$lib/types/types';
 import { getAttributeSync } from 'fs-xattr';
 
 //

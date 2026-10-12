@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { DocumentType } from '$lib/types/types.d';
+    import { DocumentType } from '$lib/types/types';
     import { Check, Info } from '@lucide/svelte';
     import { Stack, Flex, Button, Select, Dialog, TextInput, Switch } from 'azucar-ui';
 
-    const documentTypes: string[] = $derived([...Object.values(DocumentType)]);
+    const documentTypes: string[] = $derived([...Object.values(DocumentType).toString()]);
 
     interface Props {
         id?: string;

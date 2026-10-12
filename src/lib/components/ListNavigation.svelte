@@ -5,7 +5,7 @@
     import Breadcrumb from '$lib/components/Breadcrumb.svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
-    import { StoragePaths } from '$lib/types/types.d';
+    import { StoragePaths } from '$lib/types/types';
 
     let cleanFolderList = $derived(page.params.path?.split('/').filter(Boolean) ?? []);
 

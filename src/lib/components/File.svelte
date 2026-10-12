@@ -1,9 +1,9 @@
 <script lang="ts">
     import { toast } from 'svelte-sonner';
     import type { HTMLAttributes } from 'svelte/elements';
-    import { StoragePaths, type FileData } from '$lib/types/types.d';
-    import { Flex, Frame, Button, Scroll } from "azucar-ui";
-    import { Folder, File, X, SkullIcon } from '@lucide/svelte';
+    import { StoragePaths, type FileData } from '$lib/types/types';
+    import { Flex, Frame, Button } from "azucar-ui";
+    import { Folder, File, X } from '@lucide/svelte';
 
     let isHovered = $state(false);
 
@@ -41,7 +41,8 @@
             action: {
                 label: 'Supprimer',
                 onClick: () => {
-                    formElement.requestSubmit();
+                    if (formElement)
+                        formElement.requestSubmit();
                 }
             },
             cancel: {
@@ -53,7 +54,7 @@
     }
 
     const formattedName = $derived((fileItem?.name || '').replace(/-/g, ' '));
-    let formElement: HTMLFormElement;
+    let formElement: HTMLFormElement | undefined = $state();
 </script>
 
 <!--

@@ -66,7 +66,7 @@
                 <Button icon={Shield} variant="outline" href="/admin" />
             {/if}
             <Button icon={iconTheme} variant="outline" onclick={switchTheme} />
-            <Button icon={PowerOff} onclick={() => signOut("authentik", { callbackUrl: "/" })} />
+            <Button icon={PowerOff} onclick={() => signOut({ callbackUrl: "/" })} />
         </Flex>
     </div>
     <Stack gap="lg">
