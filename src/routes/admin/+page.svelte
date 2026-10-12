@@ -1,10 +1,22 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
     import { Check, Search, Plus, X, Gavel} from '@lucide/svelte';
     import type { PageData } from './$types.js';
     import type { FileData, SubjectMetadata } from '#lib/types/types.js';
     import { Stack, Flex, TextInput, Button, Switch, Details, Frame } from 'azucar-ui';
 
     let { data }: { data: PageData } = $props();
+
+    // loading animation
+    let loading = $state(false);
+    const pending = () => {
+        loading = true;
+        return async ({ update }: { update: () => Promise<void> }) => {
+            await update();
+            ueSelected = undefined;
+            loading = false;
+        };
+    };
 
     let file = $state<FileList | undefined>(undefined);
 
@@ -92,7 +104,7 @@
                 liste contenant au moins un attribut <strong>slug:
                 string</strong> et <strong>paths: string</strong>.
             </p>
-            <form method="POST" action="?/addSubjects" enctype="multipart/form-data">
+            <form method="POST" action="?/addSubjects" enctype="multipart/form-data" use:enhance={pending}>
                 <Stack>
                     <input
                         type="file"
@@ -110,6 +122,7 @@
                             icon={Check} 
                             class="success" 
                             name="Success" 
+                            loading={loading}
                         >
                             Ajouter
                         </Button>
@@ -134,7 +147,7 @@
                 </TextInput>
                 
                 {#if ueSelected && metadata}
-                    <form method="POST" action="?/editMetadata">
+                    <form method="POST" action="?/editMetadata" use:enhance={pending}>
                         <input type="hidden" name="originalName" value={ueSelected.name} />
 
                         <Stack gap="md">
@@ -153,6 +166,7 @@
                                     type="submit"
                                     icon={Check} 
                                     class="success" 
+                                    loading={loading}
                                 >
                                     Modifier
                                 </Button>
@@ -166,13 +180,14 @@
         <!-- générer l'arbre -->
 
         <Details summary="Générer l'arbre" framed={true} border={true}>
-            <form method="POST" action="?/genTree">
+            <form method="POST" action="?/genTree" use:enhance={pending}>
                 <Flex>
                     <Button 
                         type="submit"
                         icon={Check} 
                         class="success" 
                         name="Success" 
+                        loading={loading}
                     >
                         Générer l'arbre
                     </Button>
