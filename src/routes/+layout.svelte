@@ -1,6 +1,7 @@
 <script lang="ts">
     import "azucar-ui/tokens.css"
     import "azucar-ui/base.css"
+    import "#lib/base.css";
     import favicon from '#lib/assets/favicon.svg';
     import type { LayoutProps } from './$types.js';
     import { signOut } from "@auth/sveltekit/client";
@@ -118,5 +119,4 @@
         width: 100%;
         z-index: 10;
     }
-
 </style>

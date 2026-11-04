@@ -60,7 +60,12 @@
                         <File
                             fileItem={file}
                             showCross={admin}
-                        />
+                        >
+                            {#if file.author && file.date}
+                                <small class="text-muted">{file?.author}</small>
+                                <small class="text-muted">{file?.date}</small>
+                            {/if}
+                        </File>
                     {/each}
                 </Stack>
             {/key}

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { toast } from 'svelte-sonner';
+    import type { Snippet } from 'svelte';
     import type { HTMLAttributes } from 'svelte/elements';
     import { StoragePaths, type FileData } from '#lib/types/types.js';
     import { Flex, Frame, Button } from "azucar-ui";
@@ -10,9 +11,10 @@
     type Props = HTMLAttributes<HTMLElement> & {
         fileItem: FileData;
         showCross?: boolean;
+        metadata?: Snippet;
     };
 
-    let { fileItem, showCross = false } : Props = $props();
+    let { fileItem, showCross = false, metadata } : Props = $props();
 
     import { page } from '$app/state';
 
@@ -89,16 +91,9 @@
                         <abbr class="file-name" title={fileItem.type && fileItem.date && fileItem.author ? `${fileItem.type} - ${fileItem.date} -${fileItem.author}` : ``}>
                             {formattedName}
                         </abbr>
-                        {#if !fileItem.isDirectory}
-                            <Flex align="center" wrap={false} gap="sm">
-                                {#if fileItem.author && fileItem.date}
-                                    <small class="text-muted">{fileItem?.author}</small>
-                                    <small class="text-muted">{fileItem?.date}</small>
-                                {:else}
-                                    <small class="text-muted">Churros V2</small>
-                                {/if}
-                            </Flex>
-                        {/if}
+                        <Flex align="center" wrap={false} gap="sm">
+                            {@render metadata?.()}
+                        </Flex>
                     </Flex>
                 </div>
                 <Flex gap="lg">
@@ -131,12 +126,6 @@
         -ms-overflow-style: none;
         -webkit-overflow-scrolling: touch;
         margin-left: var(--size-xs, 8px);
-    }
-
-    .text-muted {
-        font-weight: 500;
-        color: var(--color-fg-low);
-        white-space: nowrap;
     }
 
     .native-scroll-wrapper::-webkit-scrollbar {

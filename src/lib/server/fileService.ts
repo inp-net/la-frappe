@@ -1,7 +1,7 @@
-import { readdirSync, statSync, existsSync, rmSync } from 'fs';
+import { readdirSync, statSync, existsSync, rmSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { error } from '@sveltejs/kit';
-import { type FileData, DocumentType } from '#lib/types/types.js';
+import { type FileData, DocumentType, StoragePaths } from '#lib/types/types.js';
 import { getAttributeSync } from 'fs-xattr';
 
 //
@@ -55,6 +55,29 @@ export function getFilesAt(safePath: ValidatedPath): FileData[] {
     });
 
     return files;
+}
+
+export function getSubjects(): FileData[] {
+    const safeStoragePath = securePath(StoragePaths.DEFAULT_SUBJECT_LOCATION);
+    if (!safeStoragePath) return [];
+
+    const subjects: FileData[] = getFilesAt(safeStoragePath);
+
+    subjects.forEach((file) => {
+        const metadataPath = join(safeStoragePath, file.name, 'metadata.json');
+
+        if (existsSync(metadataPath)) {
+            try {
+                const rawData = readFileSync(metadataPath, 'utf-8');
+                const metadata = JSON.parse(rawData) as { paths?: string[] };
+                file.path = metadata.paths;
+            } catch (err) {
+                console.error(`Error reading ${metadataPath}:`, err);
+            }
+        }
+    });
+
+    return subjects;
 }
 
 /** Méthode pour normaliser un chemin.
