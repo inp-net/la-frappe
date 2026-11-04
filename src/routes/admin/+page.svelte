@@ -244,6 +244,23 @@
             </Stack>
         </Details>
 
+        <!-- bloquer les imports des utilisateurs -->
+
+        <Frame>
+            <form method="POST" action="?/toggleBlockImports" use:enhance={pending}>
+                <Stack>
+                    <Switch 
+                        name="isBlocked" 
+                        disabled={loading}
+                        checked={data.locked}
+                        onchange={(e) => e.currentTarget.form?.requestSubmit()}
+                    >
+                        Bloquer l'ajout de documents
+                    </Switch>
+                </Stack>
+            </form>
+        </Frame>
+
     </Stack>
 
     <div style="height: 10rem;"></div>

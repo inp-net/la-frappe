@@ -10,6 +10,6 @@ export const load: PageServerLoad = async ({ locals }) => {
     }
 
     return {
-        isFakeAuth: env.DEV_FAKE_AUTH === "true"
+        isFakeAuth: env.DEV_FAKE_AUTH === "true",
     };
 };

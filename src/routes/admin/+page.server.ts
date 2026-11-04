@@ -4,7 +4,7 @@ import { constructTree } from '#lib/server/dbService.js';
 import { StoragePaths } from '#lib/types/types.js';
 import { fail, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types.js';
-import { getBanList, ban, unban } from '#lib/server/authService.js';
+import { getBanList, ban, unban, getConfig, setConfig } from '#lib/server/authService.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
     if (!locals.isAdmin) {
@@ -24,7 +24,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 
     return {
         ue: ue,
-        bans: bans
+        bans: bans,
+        // état initial si les imports sont désactivés
+        locked: getConfig("isImportLocked") === 'true'
     };
 };
 
@@ -155,5 +157,15 @@ export const actions: Actions = {
         const name: string = formData.get('name') as string;
         if (name)
             unban(name);
+    },
+    toggleBlockImports: async ({ request, locals }) => {
+        if (!locals.isAdmin) {
+            return fail(403, { message: 'Accès refusé.' });
+        }
+
+        const formData = await request.formData();
+        const isBlocked = formData.get('isBlocked') == 'on';
+
+        setConfig("isImportLocked", isBlocked.toString());
     }
 } satisfies Actions;

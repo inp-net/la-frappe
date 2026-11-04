@@ -3,6 +3,7 @@ import { join } from 'path';
 import { redirect, fail, error } from '@sveltejs/kit';
 import { type FileData, StoragePaths, type UploadDocument, DocumentType } from '#lib/types/types.js';
 import { getFilesAt, securePath, deleteFile, type ValidatedPath } from '#lib/server/fileService.js';
+import { getConfig } from '#lib/server/authService.js';
 import type { Actions } from './$types.js';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -25,7 +26,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         files,
         currentPath: safeRelativePath || "",
         user: session.user,
-        admin: locals.isAdmin
+        admin: locals.isAdmin,
+        isLocked: getConfig("isImportLocked") === 'true'
     };
 };
 
@@ -36,6 +38,12 @@ export const actions: Actions = {
         if (formDocument.size == 0) {
             return fail(400, {
                 message: 'Le fichier est manquant ou invalide.'
+            });
+        }
+
+        if (getConfig("isImportLocked") === 'true') {
+            return fail(400, {
+                message: "L'import de document est interrompu"
             });
         }
 

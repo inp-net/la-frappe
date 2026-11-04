@@ -13,11 +13,12 @@ export enum DocumentType {
 
 /** Les données de sauvegarde dans le serveur. */
 export enum StoragePaths {
-    DEFAULT_PAGE_LOCATION = 'browse/', // emplacement de la navigation svelte
-    DEFAULT_DB_LOCATION = 'data/frappe_tree', // emplacement de l'arbre
-    DEFAULT_SUBJECT_LOCATION = 'data/uploads', // emplacement des UEs
-    DEFAULT_LOG_LOCATION = 'data/logs', // emplacement des logs
-    DEFAULT_BANLIST_FILE = 'data/banlist.json' // emplacement des banlist
+    DEFAULT_PAGE_LOCATION     =  'browse/',            //  emplacement de la navigation svelte
+    DEFAULT_DB_LOCATION       =  'data/frappe_tree',   //  emplacement de l'arbre
+    DEFAULT_SUBJECT_LOCATION  =  'data/uploads',       //  emplacement des UEs
+    DEFAULT_LOG_LOCATION      =  'data/logs',          //  emplacement des logs
+    DEFAULT_BANLIST_FILE      =  'data/banlist.json',  //  emplacement des banlist
+    DEFAULT_CONFIG_FILE       =  'data/config.json'    //  emplacement du fichier config
 };
 
 export enum LogCategory {

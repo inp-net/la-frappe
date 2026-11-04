@@ -24,6 +24,7 @@
             fileItems={files}
             current={currentPath}
             admin={isAdmin}
+            locked={data.isLocked}
         />
     </div>
 </Flex>

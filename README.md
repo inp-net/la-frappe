@@ -146,11 +146,15 @@ Les services sont les fichiers server-side qui contiennent des fonctions utiles.
 [authService](src/lib/server/authService.ts)
 
 Service qui gère les autorisations, le bannissement des utilisateurs.
+Les configs y sont aussi présent, c'est normal puisque elle sont modifiés par
+des utilisateurs admins.
 
 La liste des bannies est présente dans `DEFAULT_BANLIST_FILE` du
 [`StoragePaths`](src/lib/types/types.d.ts).
 
 Un banni peut accéder aux fichiers, mais ne peut pas en soumettre.
+
+Pour en savoir plus sur les paramètres de config, voir la section Config.
 
 ### logService
 
@@ -183,6 +187,13 @@ Service qui gère les fichiers.
 
 Pour accéder à ces fonctions, le chemin doit être sécurisé par la fonction
 `securePath`. Sinon, des warnings sont levés.
+
+## Config
+
+Les configs sont stockés dans `DEFAULT_CONFIG_LOCATION` et les méthodes sont
+dans [authService](src/lib/server/authService.ts).
+
+`isImportLocked` : Bloque la possibilité d'ajouter des documents aux utilisateurs.
 
 
 ## API

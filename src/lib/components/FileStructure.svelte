@@ -3,15 +3,16 @@
     import File from "./File.svelte";
     import ActionAddDocument from '#lib/components/ActionAddDocument.svelte';
     import { type FileData } from '#lib/types/types.js';
-    import { Flex, Stack } from "azucar-ui";
+    import { Flex, Stack, Frame } from "azucar-ui";
 
     interface Props {
         fileItems?: FileData[];
         current?: string[]; 
         admin: boolean;
+        locked: boolean; // si on ne peut pas upload de documents
     };
 
-    let { fileItems = [], current = $bindable([]), admin = false }: Props = $props();
+    let { fileItems = [], current = $bindable([]), admin = false, locked = false }: Props = $props();
 
     let filteredFiles: FileData[] = $derived(
         fileItems.filter(file => file.name !== 'metadata.json')
@@ -44,8 +45,15 @@
         <!-- affiche l'arborescence courante dans FileStructure -->
         <Stack gap="md">
             {#key current.join('/')}
-                {#if containsFolder}
+                {#if !locked && containsFolder}
                     <ActionAddDocument />
+                {:else if locked}
+                    <Frame
+                        transparent={true}
+                        style="flex-grow: 1; padding: var(--size-sm) var(--size-lg); border: dashed var(--color-border-subtle) 2px; background-color: transparent;"
+                    >
+                        <h4>L'ajout de documents est momentanément interrompu, essayer ultérieurement.</h4>
+                    </Frame>
                 {/if}
                 <Stack gap="sm" style="width: 100%; max-width: 100%;">
                     {#each filteredFiles as file}
