@@ -48,7 +48,9 @@
 
 <Flex gap="md" wrap={false} align="start" padding="md" style="max-width: min(1000px, 100%); margin: 0 auto; width: 100%;">
     <span id='icon' style="margin-top: 0.9rem;">
-        <LogoFrappe fill='var(--color-fg-high)' size='4.1rem' />
+        <a href="/">
+            <LogoFrappe fill='var(--color-fg-high)' size='4.1rem' />
+        </a>
     </span>
 
     <Flex direction="column" gap="xxs">
