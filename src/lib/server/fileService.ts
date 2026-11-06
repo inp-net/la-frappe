@@ -18,15 +18,20 @@ export type ValidatedPath = string & { readonly __brand: unique symbol };
  * @throws 404 error si le chemin n'existe pas.
  * @return liste items [name, isDirectory] des fichiers.
  */
-export function getFilesAt(safePath: ValidatedPath): FileData[] {
+export function getFilesAt(safePath: ValidatedPath, root: string = StoragePaths.DEFAULT_PAGE_LOCATION): FileData[] {
     if (!existsSync(safePath)) {
         throw error(404, "Dossier introuvable");
     }
 
-    const pathSegments = safePath.split('/').filter(Boolean);
+    const absolutePaths = safePath.split('/');
+    const targetPaths = root.split('/');
+    const relativePaths = absolutePaths.slice((absolutePaths.findIndex(
+        (dir : string) => dir === targetPaths[targetPaths.length - 1]
+    ) ?? 0) + 1);
+    const relativePath = relativePaths.join('/');
 
     const files: FileData[] = readdirSync(safePath).map(name => {
-        const filename = join(safePath, name);
+        const filename = join(relativePath, name);
         
         let type = '';
         let author = '';
@@ -47,7 +52,7 @@ export function getFilesAt(safePath: ValidatedPath): FileData[] {
         return {
             name: name,
             isDirectory: statSync(filename).isDirectory(),
-            path: pathSegments,
+            path: [filename],
             type: type as DocumentType,
             author: author,
             date: date
@@ -61,21 +66,9 @@ export function getSubjects(): FileData[] {
     const safeStoragePath = securePath(StoragePaths.DEFAULT_SUBJECT_LOCATION);
     if (!safeStoragePath) return [];
 
-    const subjects: FileData[] = getFilesAt(safeStoragePath);
-
-    subjects.forEach((file) => {
-        const metadataPath = join(safeStoragePath, file.name, 'metadata.json');
-
-        if (existsSync(metadataPath)) {
-            try {
-                const rawData = readFileSync(metadataPath, 'utf-8');
-                const metadata = JSON.parse(rawData) as { paths?: string[] };
-                file.path = metadata.paths;
-            } catch (err) {
-                console.error(`Error reading ${metadataPath}:`, err);
-            }
-        }
-    });
+    const root = securePath('/');
+    if (!root) return [];
+    const subjects: FileData[] = getFilesAt(root, safeStoragePath);
 
     return subjects;
 }

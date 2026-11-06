@@ -60,6 +60,7 @@
                         <File
                             fileItem={file}
                             showCross={admin}
+                            url={file.path ? file.path[0] : ''}
                         >
                             {#if file.author && file.date}
                                 <small class="text-muted">{file?.author}</small>

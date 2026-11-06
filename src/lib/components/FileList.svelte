@@ -7,9 +7,13 @@
 
     interface Props {
         files: FileData[];
+        // une liste de lambdas qui permettent de récupérer des données
+        // et les afficher à droite du fichier (ex nom, date, ...)
         metadatas?: ((f: FileData) => string)[];
         options?: string[];
         option?: string;
+        // l'url qui sera devant chaque fichier comme target
+        targetUrl?: string;
         alt?: string;
     }
 
@@ -18,6 +22,7 @@
         metadatas = [],
         options = [],
         option = $bindable(),
+        targetUrl = '',
         alt = ""
     }: Props = $props();
 
@@ -47,7 +52,7 @@
 
     <Stack gap="sm">
         {#each pageFiles as file}
-            <File fileItem={file} showCross={false}>
+            <File url={targetUrl + (file.path ? file.path[0] : '')} fileItem={file} showCross={false}>
                 {#snippet metadata()}
                     {#each metadatas as meta}
                         <small class="text-muted">{meta(file)}</small>

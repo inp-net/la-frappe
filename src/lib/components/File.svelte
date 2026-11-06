@@ -10,11 +10,12 @@
 
     type Props = HTMLAttributes<HTMLElement> & {
         fileItem: FileData;
+        url: string;
         showCross?: boolean;
         metadata?: Snippet;
     };
 
-    let { fileItem, showCross = false, metadata } : Props = $props();
+    let { fileItem, url, showCross = false, metadata } : Props = $props();
 
     import { page } from '$app/state';
 
@@ -66,7 +67,7 @@
 
 <Flex wrap={false} justify="end" align="center" gap="xs" style="width: 100%; max-width: 100%; min-width: 0;">
     <Button
-        href={fileItem.isDirectory ? href : filePath}
+        href={url}
         target={fileItem.isDirectory ? '' : '_blank'}
         variant="ghost"
         onmouseenter={() => isHovered = true} 

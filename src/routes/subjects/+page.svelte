@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { PageData } from './$types.js';
     import { Flex } from 'azucar-ui';
-    import type { FileData } from '#lib/types/types.ts';
+    import { type FileData, StoragePaths } from '#lib/types/types.js';
     import FileList from '#lib/components/FileList.svelte';
 
     let { data }: { data: PageData } = $props();
@@ -26,6 +26,7 @@
                             ? [...new Set(f.path.map(p => p.split('/')[1]?.trim()).filter(Boolean))].join(' / ')
                             : 'aucun'
                 ]}
+                targetUrl={StoragePaths.DEFAULT_PAGEUE_LOCATION}
             />
         </Flex>
     </div>
