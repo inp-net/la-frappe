@@ -63,7 +63,7 @@
     composant abstrait pour afficher une liste de fichiers / dossiers.
 -->
 
-<Stack gap="lg">
+<Stack gap="lg" style="width: 100%;">
     <Flex align="center" justify="space-between">
         <Flex align="center" gap="xxs">
             <TextInput icon={Search} bind:value={searchValue} placeholder="Rechercher"/>

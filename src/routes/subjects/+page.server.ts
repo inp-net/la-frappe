@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types.js';
 import { type FileData, StoragePaths } from '#lib/types/types.js';
-import { getSubjects, securePath } from '#lib/server/fileService.js';
+import { getFilesAt, securePath } from '#lib/server/fileService.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
     const session = await locals.auth();
@@ -9,13 +9,12 @@ export const load: PageServerLoad = async ({ locals }) => {
         throw redirect(303, '/');
     }
 
-    const path = securePath(StoragePaths.DEFAULT_SUBJECT_LOCATION);
-
-    console.log(path);
+    const safeRelativePath = securePath(StoragePaths.DEFAULT_SUBJECT_LOCATION);
 
     let subjects: FileData[] = [];
-    if (path)
-        subjects = getSubjects();
+    if (safeRelativePath) {
+        subjects = getFilesAt(safeRelativePath);
+    }
 
     return {
         subjects: subjects

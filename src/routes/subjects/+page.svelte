@@ -15,18 +15,17 @@
 
 <Flex direction="column" gap="xl" padding="lg" style="margin-bottom: 10rem;">
     <div class="browse-wrapper">
-        <Flex direction="column" gap="lg" justify="center" align="center">
+        <Flex direction="column" gap="lg" justify="center" align="center" style="width: 100%;">
             <FileList
                 files={data.subjects ?? []}
+                getUrl={(file) => {
+                    return ""
+                    // const filePath = file.path?.[0] ?? '';
+                    // return file.isDirectory ? `/sub/${filePath}` : `/api/files/${filePath}`;
+                }}
                 metadatas={[
-                    // généré par IA car c'est vraiment autiste prime
-                    // permet de récupérer la filiaire SN / MF2E / 3EA avec un PATH
-                    (f: FileData) => 
-                        f.path && f.path.length > 0
-                            ? [...new Set(f.path.map(p => p.split('/')[1]?.trim()).filter(Boolean))].join(' / ')
-                            : 'aucun'
+                    (f: FileData) => f.path?.[0]?.[0] ?? ''
                 ]}
-                targetUrl={StoragePaths.DEFAULT_PAGEUE_LOCATION}
             />
         </Flex>
     </div>
@@ -41,5 +40,11 @@
         width: 100%;
         max-width: min(100%, 800px);
         margin: 0 auto;
+    }
+
+    @media (max-width: 1524px) {
+        .browse-wrapper {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
