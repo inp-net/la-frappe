@@ -28,31 +28,32 @@ export function getFilesAt(safePath: ValidatedPath, root: string = StoragePaths.
     const relativePaths = absolutePaths.slice((absolutePaths.findIndex(
         (dir : string) => dir === targetPaths[targetPaths.length - 1]
     ) ?? 0) + 1);
-    const relativePath = relativePaths.join('/');
+    const baseRelativePath = relativePaths.join('/');
 
     const files: FileData[] = readdirSync(safePath).map(name => {
-        const filename = join(relativePath, name);
+        const absoluteFilePath = join(safePath, name);
+        const relativeFilePath = join(baseRelativePath, name);
         
         let type = '';
         let author = '';
         let date = '';
 
         try {
-            type = getAttributeSync(filename, 'user.type')?.toString() || '';
+            type = getAttributeSync(absoluteFilePath, 'user.type')?.toString() || '';
         } catch {}
 
         try {
-            author = getAttributeSync(filename, 'user.author')?.toString() || '';
+            author = getAttributeSync(absoluteFilePath, 'user.author')?.toString() || '';
         } catch {}
 
         try {
-            date = getAttributeSync(filename, 'user.date')?.toString() || '';
+            date = getAttributeSync(absoluteFilePath, 'user.date')?.toString() || '';
         } catch {}
 
         return {
             name: name,
-            isDirectory: statSync(filename).isDirectory(),
-            path: [filename],
+            isDirectory: statSync(absoluteFilePath).isDirectory(),
+            path: [relativeFilePath],
             type: type as DocumentType,
             author: author,
             date: date
