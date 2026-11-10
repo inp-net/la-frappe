@@ -1,9 +1,8 @@
 <script lang="ts">
     import ListNavigation from "#lib/components/ListNavigation.svelte";
-    import File from "./File.svelte";
     import ActionAddDocument from '#lib/components/ActionAddDocument.svelte';
     import FileList from '#lib/components/FileList.svelte';
-    import { type FileData, StoragePaths } from '#lib/types/types.js';
+    import { type FileData, DocumentType } from '#lib/types/types.js';
     import { Flex, Stack, Frame } from "azucar-ui";
 
     interface Props {
@@ -22,6 +21,8 @@
     const containsFolder: boolean = $derived(
         !fileItems.every((f) => f.isDirectory)
     );
+
+    let selectedOption = $state("Tous");
 </script>
 
 <!--
@@ -77,6 +78,18 @@
                 (file) => file?.author ?? '',
                 (file) => file?.date?? '',
             ]}
+            bind:option={selectedOption}
+            options={["Tous", ...Object.values(DocumentType)]}
+            filter={(file, search, opt) => {
+                const query = search.toLowerCase().trim();
+                const matchesSearch = !query || 
+                    file.name.toLowerCase().includes(query) || 
+                    (file.author || "").toLowerCase().includes(query) ||
+                    (file.type || "").toLowerCase().includes(query);
+                
+                const matchesOption = file.isDirectory || !opt || opt === "Tous" || file.type === opt;
+                return matchesSearch && matchesOption;
+            }}
         >
             {#if !locked && containsFolder}
                 <ActionAddDocument />

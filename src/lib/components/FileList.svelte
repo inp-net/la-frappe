@@ -8,48 +8,48 @@
 
     interface Props {
         files: FileData[];
-        // une liste de lambdas qui permettent de récupérer des données
-        // et les afficher à droite du fichier (ex nom, date, ...)
         metadatas?: ((f: FileData) => string)[];
         options?: string[];
         option?: string;
         getUrl: (file: FileData) => string;
         alt?: string;
         children?: Snippet;
+        // Custom filter function defined by the parent (total flexibility)
+        filter?: (file: FileData, searchValue: string, option?: string) => boolean;
     }
 
     let {
         files,
         metadatas = [],
         options = [],
-        option = $bindable(),
+        option = $bindable("Tous"),
         getUrl,
         alt = "",
-        children
+        children,
+        filter
     }: Props = $props();
 
-    // recherche
     let searchValue: string = $state("");
 
+    // Filters
     let filteredFiles = $derived(
         files.filter(file => {
+            if (filter) {
+                return filter(file, searchValue, option);
+            }
             const query = searchValue.toLowerCase().trim();
             if (!query) return true;
-            
-            const name = file.name.toLowerCase();
-            const author = (file.author || "").toLowerCase();
-            const type = (file.type || "").toLowerCase();
-
-            return name.includes(query) || author.includes(query) || type.includes(query);
+            return file.name.toLowerCase().includes(query) || (file.author || "").toLowerCase().includes(query);
         })
     );
 
+    // Pagination
     $effect(() => {
         searchValue;
+        option;
         page = 0;
     });
 
-    // pagination
     let page: number = $state(0);
     let showPerPage: number = $state(18);
     let maxPage: number = $derived(Math.max(0, Math.ceil(filteredFiles.length / showPerPage) - 1));
@@ -65,10 +65,10 @@
 
 <Stack gap="lg">
     <Flex align="center" justify="space-between">
-        <Flex align="center">
+        <Flex align="center" gap="xxs">
             <TextInput icon={Search} bind:value={searchValue} placeholder="Rechercher"/>
             {#if options.length > 0}
-                <Select {options} value={option} />
+                <Select {options} bind:value={option} />
             {/if}
         </Flex>
         <FileListNavigation bind:page {maxPage} />
