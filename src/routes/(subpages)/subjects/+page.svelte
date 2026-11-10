@@ -13,7 +13,7 @@
     </title>
 </svelte:head>
 
-<Flex direction="column" gap="xl" padding="lg" style="margin-bottom: 10rem;">
+<Flex direction="column" gap="xl" padding="lg" style="margin-bottom: 10rem; padding-top: 0;">
     <div class="browse-wrapper">
         <Flex direction="column" gap="lg" justify="center" align="center" style="width: 100%;">
             <FileList
