@@ -25,16 +25,6 @@
         `/${page.params.path || ''}/${fileItem.name}`.replace(/\/+/g, '/')
     );
 
-    /** Position réel du fichier dans le serveur. */
-    let filePath = $derived(
-        `/api/files/${realPath}`.replace(/\/+/g, '/')
-    );
-
-    /** Position de la page (svelte) pour naviger dans la DB. */
-    let href = $derived(
-        `/${StoragePaths.DEFAULT_PAGE_LOCATION}/${realPath}`.replace(/\/+/g, '/')
-    );
-
     function handleDeleteClick(e: MouseEvent) {
         e.preventDefault();
         e.stopPropagation();

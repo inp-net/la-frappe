@@ -20,7 +20,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     }
 
     const fullPath = join(process.cwd(), StoragePaths.DEFAULT_DB_LOCATION, safeRelativePath || "") as ValidatedPath;
-    const files: FileData[] = getFilesAt(fullPath);
+    const files: FileData[] = getFilesAt(fullPath, StoragePaths.DEFAULT_DB_LOCATION);
 
     return {
         files,

@@ -2,7 +2,8 @@
     import ListNavigation from "#lib/components/ListNavigation.svelte";
     import File from "./File.svelte";
     import ActionAddDocument from '#lib/components/ActionAddDocument.svelte';
-    import { type FileData } from '#lib/types/types.js';
+    import FileList from '#lib/components/FileList.svelte';
+    import { type FileData, StoragePaths } from '#lib/types/types.js';
     import { Flex, Stack, Frame } from "azucar-ui";
 
     interface Props {
@@ -43,35 +44,51 @@
         </Stack>
 
         <!-- affiche l'arborescence courante dans FileStructure -->
-        <Stack gap="md">
-            {#key current.join('/')}
-                {#if !locked && containsFolder}
-                    <ActionAddDocument />
-                {:else if locked}
-                    <Frame
-                        transparent={true}
-                        style="flex-grow: 1; padding: var(--size-sm) var(--size-lg); border: dashed var(--color-border-subtle) 2px; background-color: transparent;"
-                    >
-                        <h4>L'ajout de documents est momentanément interrompu, essayer ultérieurement.</h4>
-                    </Frame>
-                {/if}
-                <Stack gap="sm" style="width: 100%; max-width: 100%;">
-                    {#each filteredFiles as file}
-                        <File
-                            fileItem={file}
-                            showCross={admin}
-                            url={file.path ? file.path[0] : ''}
-                        >
-                            {#if file.author && file.date}
-                                <small class="text-muted">{file?.author}</small>
-                                <small class="text-muted">{file?.date}</small>
-                            {/if}
-                        </File>
-                    {/each}
-                </Stack>
-            {/key}
-            <span style="height: 100px;"></span>
-        </Stack>
+        <!-- <Stack gap="md"> -->
+        <!--     {#key current.join('/')} -->
+        <!--         {#if containsFolder} -->
+        <!--             <ActionAddDocument /> -->
+        <!--         {/if} -->
+        <!--         <Stack gap="sm" style="width: 100%; max-width: 100%;"> -->
+        <!--             {#each filteredFiles as file} -->
+        <!--                 <File -->
+        <!--                     fileItem={file} -->
+        <!--                     showCross={admin} -->
+        <!--                     url={file.path ? file.path[0] : ''} -->
+        <!--                 > -->
+        <!--                     {#if file.author && file.date} -->
+        <!--                         <small class="text-muted">{file?.author}</small> -->
+        <!--                         <small class="text-muted">{file?.date}</small> -->
+        <!--                     {/if} -->
+        <!--                 </File> -->
+        <!--             {/each} -->
+        <!--         </Stack> -->
+        <!--     {/key} -->
+        <!--     <span style="height: 100px;"></span> -->
+        <!-- </Stack> -->
+
+        <FileList
+            files={filteredFiles}
+            getUrl={(file) => {
+                const filePath = file.path?.[0] ?? '';
+                return file.isDirectory ? `/browse/${filePath}` : `/api/files/${filePath}`;
+            }}
+            metadatas = {[
+                (file) => file?.author ?? '',
+                (file) => file?.date?? '',
+            ]}
+        >
+            {#if !locked && containsFolder}
+                <ActionAddDocument />
+            {:else if locked}
+                <Frame
+                    transparent={true}
+                    style="flex-grow: 1; padding: var(--size-sm) var(--size-lg); border: dashed var(--color-border-subtle) 2px; background-color: transparent;"
+                >
+                    <h4>L'ajout de documents est momentanément interrompu, essayer ultérieurement.</h4>
+                </Frame>
+            {/if}
+        </FileList>
 
     </Flex>
 </div>
