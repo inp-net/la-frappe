@@ -1,7 +1,7 @@
 {
     "name": "la-frappe",
     "private": true,
-    "version": "v1.3.0",
+    "version": "1.4.0",
     "type": "module",
     "packageManager": "pnpm@12.6.0",
     "scripts": {
