@@ -39,34 +39,7 @@
             <Flex gap="md" direction="column" style="maxWidth: '100%', minWidth: 0">
                 <ListNavigation />
             </Flex>
-            <!-- <Flex> -->
-            <!--     <SearchBar /> -->
-            <!-- </Flex> -->
         </Stack>
-
-        <!-- affiche l'arborescence courante dans FileStructure -->
-        <!-- <Stack gap="md"> -->
-        <!--     {#key current.join('/')} -->
-        <!--         {#if containsFolder} -->
-        <!--             <ActionAddDocument /> -->
-        <!--         {/if} -->
-        <!--         <Stack gap="sm" style="width: 100%; max-width: 100%;"> -->
-        <!--             {#each filteredFiles as file} -->
-        <!--                 <File -->
-        <!--                     fileItem={file} -->
-        <!--                     showCross={admin} -->
-        <!--                     url={file.path ? file.path[0] : ''} -->
-        <!--                 > -->
-        <!--                     {#if file.author && file.date} -->
-        <!--                         <small class="text-muted">{file?.author}</small> -->
-        <!--                         <small class="text-muted">{file?.date}</small> -->
-        <!--                     {/if} -->
-        <!--                 </File> -->
-        <!--             {/each} -->
-        <!--         </Stack> -->
-        <!--     {/key} -->
-        <!--     <span style="height: 100px;"></span> -->
-        <!-- </Stack> -->
 
         <FileList
             files={filteredFiles}

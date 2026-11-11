@@ -1,7 +1,7 @@
 import { readdirSync, statSync, existsSync, rmSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { error } from '@sveltejs/kit';
-import { type FileData, DocumentType, StoragePaths } from '#lib/types/types.js';
+import { type FileData, DocumentType, StoragePaths, type SubjectMetadata } from '#lib/types/types.js';
 import { getAttributeSync } from 'fs-xattr';
 
 //
@@ -63,15 +63,30 @@ export function getFilesAt(safePath: ValidatedPath, root: string = StoragePaths.
     return files;
 }
 
-export function getSubjects(): FileData[] {
-    const safeStoragePath = securePath(StoragePaths.DEFAULT_SUBJECT_LOCATION);
-    if (!safeStoragePath) return [];
+/** récèpère les métadonnées metadata.json
+ * @param subjectName nom de l'UE.
+ * @returns valeurs du fichier.
+ */
+export function getSubjectMetadata(subjectName: string): SubjectMetadata | null {
+    const subjectPath = join(StoragePaths.DEFAULT_SUBJECT_LOCATION, subjectName);
+    const metadataPath = join(subjectPath, 'metadata.json');
 
-    const root = securePath('/');
-    if (!root) return [];
-    const subjects: FileData[] = getFilesAt(root, safeStoragePath);
+    if (!existsSync(metadataPath)) {
+        return null;
+    }
 
-    return subjects;
+    try {
+        const fileContent = readFileSync(metadataPath, 'utf-8');
+        const parsed = JSON.parse(fileContent);
+
+        return {
+            paths: Array.isArray(parsed.paths) ? parsed.paths : [],
+            ...parsed
+        };
+    } catch (err) {
+        console.error(`Failed to read metadata for subject "${subjectName}":`, err);
+        return null;
+    }
 }
 
 /** Méthode pour normaliser un chemin.

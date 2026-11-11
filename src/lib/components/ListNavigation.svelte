@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    import { MoveLeft, Book } from '@lucide/svelte';
+    import { MoveLeft, BookOpen } from '@lucide/svelte';
     import { Button, Flex, Frame } from 'azucar-ui';
     import Breadcrumb from '#lib/components/Breadcrumb.svelte';
     import { page } from '$app/state';
@@ -46,7 +46,7 @@
                 <Breadcrumb file_list={cleanFolderList} onFolderClick={handleNavigation} />
             </div>
 
-            <Button variant="ghost" icon={Book} href="/subjects" />
+            <Button variant="ghost" icon={BookOpen} href="/subjects" />
         </Flex>
     </Frame>
 </Flex>

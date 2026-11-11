@@ -19,13 +19,22 @@
             <FileList
                 files={data.subjects ?? []}
                 getUrl={(file) => {
-                    return ""
-                    // const filePath = file.path?.[0] ?? '';
-                    // return file.isDirectory ? `/sub/${filePath}` : `/api/files/${filePath}`;
+                    return StoragePaths.DEFAULT_PAGE_LOCATION + (file.path?.[0] ?? '');
                 }}
                 metadatas={[
-                    (f: FileData) => f.path?.[0]?.[0] ?? ''
+                    (f: FileData) => f.path?.[0].split('/')[0] ?? ''
                 ]}
+                filter={(file, search, opt) => {
+                    const query = search.toLowerCase().trim();
+                    if (!query) return true;
+
+                    const name = file.name.toLowerCase();
+                    const path = (file.path?.[0] || "").toLowerCase();
+                    const author = (file.author || "").toLowerCase();
+                    const type = (file.type || "").toLowerCase();
+
+                    return name.includes(query) || path.includes(query) || author.includes(query) || type.includes(query);
+                }}
             />
         </Flex>
     </div>
