@@ -64,15 +64,17 @@
                 return matchesSearch && matchesOption;
             }}
         >
-            {#if !locked && containsFolder}
-                <ActionAddDocument />
-            {:else if locked}
-                <Frame
-                    transparent={true}
-                    style="flex-grow: 1; padding: var(--size-sm) var(--size-lg); border: dashed var(--color-border-subtle) 2px; background-color: transparent;"
-                >
-                    <h4>L'ajout de documents est momentanément interrompu, essayer ultérieurement.</h4>
-                </Frame>
+            {#if containsFolder}
+                {#if !locked}
+                    <ActionAddDocument />
+                {:else}
+                    <Frame
+                        transparent={true}
+                        style="flex-grow: 1; padding: var(--size-sm) var(--size-lg); border: dashed var(--color-border-subtle) 2px; background-color: transparent;"
+                    >
+                        <h4>L'ajout de documents est momentanément interrompu, essayer ultérieurement.</h4>
+                    </Frame>
+                {/if}
             {/if}
         </FileList>
 
