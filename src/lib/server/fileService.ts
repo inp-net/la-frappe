@@ -1,7 +1,7 @@
-import { readdirSync, statSync, existsSync, rmSync } from 'fs';
+import { readdirSync, statSync, existsSync, rmSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { error } from '@sveltejs/kit';
-import { type FileData, DocumentType } from '#lib/types/types.js';
+import { type FileData, DocumentType, StoragePaths, type SubjectMetadata } from '#lib/types/types.js';
 import { getAttributeSync } from 'fs-xattr';
 
 //
@@ -18,36 +18,42 @@ export type ValidatedPath = string & { readonly __brand: unique symbol };
  * @throws 404 error si le chemin n'existe pas.
  * @return liste items [name, isDirectory] des fichiers.
  */
-export function getFilesAt(safePath: ValidatedPath): FileData[] {
+export function getFilesAt(safePath: ValidatedPath, root: string = StoragePaths.DEFAULT_PAGE_LOCATION): FileData[] {
     if (!existsSync(safePath)) {
         throw error(404, "Dossier introuvable");
     }
 
-    const pathSegments = safePath.split('/').filter(Boolean);
+    const absolutePaths = safePath.split('/');
+    const targetPaths = root.split('/');
+    const relativePaths = absolutePaths.slice((absolutePaths.findIndex(
+        (dir : string) => dir === targetPaths[targetPaths.length - 1]
+    ) ?? 0) + 1);
+    const baseRelativePath = relativePaths.join('/');
 
     const files: FileData[] = readdirSync(safePath).map(name => {
-        const filename = join(safePath, name);
+        const absoluteFilePath = join(safePath, name);
+        const relativeFilePath = join(baseRelativePath, name);
         
         let type = '';
         let author = '';
         let date = '';
 
         try {
-            type = getAttributeSync(filename, 'user.type')?.toString() || '';
+            type = getAttributeSync(absoluteFilePath, 'user.type')?.toString() || '';
         } catch {}
 
         try {
-            author = getAttributeSync(filename, 'user.author')?.toString() || '';
+            author = getAttributeSync(absoluteFilePath, 'user.author')?.toString() || '';
         } catch {}
 
         try {
-            date = getAttributeSync(filename, 'user.date')?.toString() || '';
+            date = getAttributeSync(absoluteFilePath, 'user.date')?.toString() || '';
         } catch {}
 
         return {
             name: name,
-            isDirectory: statSync(filename).isDirectory(),
-            path: pathSegments,
+            isDirectory: statSync(absoluteFilePath).isDirectory(),
+            path: [relativeFilePath],
             type: type as DocumentType,
             author: author,
             date: date
@@ -55,6 +61,32 @@ export function getFilesAt(safePath: ValidatedPath): FileData[] {
     });
 
     return files;
+}
+
+/** récèpère les métadonnées metadata.json
+ * @param subjectName nom de l'UE.
+ * @returns valeurs du fichier.
+ */
+export function getSubjectMetadata(subjectName: string): SubjectMetadata | null {
+    const subjectPath = join(StoragePaths.DEFAULT_SUBJECT_LOCATION, subjectName);
+    const metadataPath = join(subjectPath, 'metadata.json');
+
+    if (!existsSync(metadataPath)) {
+        return null;
+    }
+
+    try {
+        const fileContent = readFileSync(metadataPath, 'utf-8');
+        const parsed = JSON.parse(fileContent);
+
+        return {
+            paths: Array.isArray(parsed.paths) ? parsed.paths : [],
+            ...parsed
+        };
+    } catch (err) {
+        console.error(`Failed to read metadata for subject "${subjectName}":`, err);
+        return null;
+    }
 }
 
 /** Méthode pour normaliser un chemin.

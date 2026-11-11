@@ -16,7 +16,6 @@
 
     function handleArrowClick(delta: number) {
         page = Math.min(Math.max(page + delta, 0), maxPage);
-        window.scrollTo({ top: 400, behavior: 'smooth' });
     }
 
     function handleInput(e: Event) {
