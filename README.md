@@ -118,6 +118,13 @@ Sont stockés :
 Les extended attributes ne sont pas implémentés dans le module `fs` de JS. Le
 module [fs-xattr](https://github.com/LinusU/fs-xattr) est utilisé.
 
+### Convention de nommage
+
+```regex
+DocType = Partiel | Partiel-session2 | Fiche | TD | TP | Autre | Notes | DM | BE | Diapositives
+FileName  = {DocType}[{Num}][-{Year}][+corrigé][-{Dup}].pdf
+```
+
 ## Pages
 
 ### browse
