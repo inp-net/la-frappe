@@ -210,7 +210,7 @@
                             id="name"
                             name="name"
                             options={banlist}
-                            placeholder="88db"
+                            placeholder="un mauvais utilisateur"
                             bind:value={banSearched}
                             onchange={handleSearch}
                             style="flex-grow: 1"

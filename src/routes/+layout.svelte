@@ -5,7 +5,6 @@
     import favicon from '#lib/assets/favicon.svg';
     import type { LayoutProps } from './$types.js';
     import { signOut } from "@auth/sveltekit/client";
-    import Logo from '#lib/components/Logo.svelte';
 
     import {
         Sun,
@@ -71,7 +70,6 @@
         </Flex>
     </div>
     <Stack gap="lg">
-        <Logo />
 
         {@render children()}
 

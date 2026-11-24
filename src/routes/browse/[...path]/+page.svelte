@@ -4,6 +4,7 @@
     import type { PageData } from './$types.js';
     import type { FileData } from '#lib/types/types.js';
     import FileStructure from '#lib/components/FileStructure.svelte'
+    import Logo from '#lib/components/Logo.svelte';
 
     let { data }: { data: PageData } = $props();
 
@@ -17,6 +18,8 @@
         La Frappe · Naviguer les documents
     </title>
 </svelte:head>
+
+<Logo />
 
 <Flex direction="column" gap="xl" padding="lg" style="margin-bottom: 10rem;">
     <div class="browse-wrapper">
