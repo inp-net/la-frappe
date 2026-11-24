@@ -71,11 +71,7 @@ async function checkFileIntegrity(file : File | null) {
  * @return String nom du fichier.
  */
 function generateName(metadata: UploadDocument) {
-    let baseName = `${metadata.type}${metadata.number ? metadata.number : ''}${ metadata.retake ? ' Session 2' : ''} - ${metadata.date}`;
-    
-    if (metadata.correction) {
-        baseName = baseName + '+solution';
-    }
+    let baseName = `${metadata.type}${metadata.number ? metadata.number : ''}${ metadata.retake ? ' Session 2' : ''} - ${metadata.date} ${metadata.correction ? ' - corrigé' : ''}`;
     
     const filePath = metadata.path;
     let finalName = baseName;

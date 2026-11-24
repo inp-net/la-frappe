@@ -122,7 +122,7 @@ module [fs-xattr](https://github.com/LinusU/fs-xattr) est utilisé.
 
 ```regex
 DocType = Partiel | Partiel-session2 | Fiche | TD | TP | Autre | Notes | DM | BE | Diapositives
-FileName  = {DocType}[{Num}][-{Year}][+corrigé][-{Dup}].pdf
+FileName  = {DocType}[{Num}][-{Year}][-corrigé][-{Dup}].pdf
 ```
 
 ## Pages
