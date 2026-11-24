@@ -1,9 +1,9 @@
 <script lang="ts">
-
     import { signIn } from "@auth/sveltekit/client";
     import { Button, Stack, Flex } from 'azucar-ui';
     import { CircleArrowRight } from '@lucide/svelte';
     import type { PageData } from './$types.js';
+    import Logo from '#lib/components/Logo.svelte';
 
     interface Props {
         data: PageData;
@@ -18,6 +18,8 @@
         La Frappe · Connexion
     </title>
 </svelte:head>
+
+<Logo />
 
 <!--
     Page de login.

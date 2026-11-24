@@ -64,13 +64,14 @@
 -->
 
 <Stack gap="lg" style="width: 100%;">
-    <Flex align="center" justify="space-between">
-        <Flex align="center" gap="xxs">
-            <TextInput icon={Search} bind:value={searchValue} placeholder="Rechercher"/>
+    <Flex align="center" justify="center" wrap gap="md" style="flex-wrap: wrap-reverse;">
+        <Flex align="center" gap="xxs" wrap={false} style="flex-grow: 1;">
+            <TextInput style="flex-grow: 1;" icon={Search} bind:value={searchValue} placeholder="Rechercher" />
             {#if options.length > 0}
                 <Select {options} bind:value={option} />
             {/if}
         </Flex>
+
         <FileListNavigation bind:page {maxPage} />
     </Flex>
 

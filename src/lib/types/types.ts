@@ -57,6 +57,8 @@ export type UploadDocument = {
     correction: boolean;
     type: DocumentType;
     author?: string;
+    number?: number;
+    retake?: boolean;
 }
 
 /** Inputs possibles pour traiter une erreur d'arborescence. */

@@ -71,10 +71,10 @@ async function checkFileIntegrity(file : File | null) {
  * @return String nom du fichier.
  */
 function generateName(metadata: UploadDocument) {
-    let baseName = `${metadata.type} - ${metadata.date}`;
+    let baseName = `${metadata.type}${metadata.number ? metadata.number : ''}${ metadata.retake ? ' Session 2' : ''} - ${metadata.date}`;
     
     if (metadata.correction) {
-        baseName = baseName + ' - solution';
+        baseName = baseName + '+solution';
     }
     
     const filePath = metadata.path;
@@ -155,7 +155,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         date: parseInt(data.get('date') as string) ?? new Date().getFullYear,
         correction: data.get('correction') === 'on',
         type: data.get('type') as DocumentType,
-        author: session.user.name
+        author: session.user.name,
+        number: parseInt(data.get('number') as string),
+        retake: data.get('retake') === 'on',
     };
 
     const file = form.document;

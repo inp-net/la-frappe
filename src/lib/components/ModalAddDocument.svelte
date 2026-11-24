@@ -1,7 +1,7 @@
 <script lang="ts">
     import { DocumentType } from '#lib/types/types.js';
     import { Check, Info } from '@lucide/svelte';
-    import { Stack, Flex, Button, Select, Dialog, TextInput, Switch } from 'azucar-ui';
+    import { Stack, Flex, Button, Select, Dialog, TextInput, Switch, ButtonGroup } from 'azucar-ui';
 
     const documentTypes: string[] = $derived([...Object.values(DocumentType)]);
 
@@ -17,6 +17,7 @@
 
     let thisYear: number = $state(new Date().getFullYear());
     const univYear = $derived(`${thisYear} - ${thisYear + 1}`);
+    let type : string = $state(DocumentType.PARTIEL);
 </script>
 
 <!--
@@ -51,9 +52,21 @@
                 <Select
                     name="type"
                     id="type"
+                    bind:value={type}
                     options={documentTypes}
                     required
                 >Type de document</Select>
+
+                <Flex direction="column" gap="xxs">
+                    <TextInput
+                        name="number"
+                        id="number"
+                        type="number"
+                        placeholder="(aucun numéro, ex : TD1, BE2...)"
+                        min="0"
+                        step="1"
+                    >Numéro du document</TextInput>
+                </Flex>
 
                 <Flex direction="column" gap="xxs">
                     <TextInput
@@ -68,10 +81,10 @@
                     >Année universitaire : {univYear}</TextInput>
                 </Flex>
 
-                <Flex direction="column" gap="xxs">
-                    <span>Contient corrigé ?</span>
-                    <Switch id="correction" name="correction" />
-                </Flex>
+                <Stack gap="xs" style="margin-top: var(--size-xs); margin-bottom: var(--size-xs);">
+                    <Switch id="retake" name="retake">Session 2</Switch>
+                    <Switch id="correction" name="correction">Corrigé</Switch>
+                </Stack>
 
                 <!-- informations complémentaires -->
 

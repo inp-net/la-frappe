@@ -35,7 +35,8 @@
         "chirurgicale 🩺",
         "balistique 🚀",
         "assourdissante 🔊",
-        "oui c'est de l'IA 🤖"
+        "casquée 🗣️🪖",
+        "militaire 🗣️📱🧠"
     ];
 
     function handleClick() {
