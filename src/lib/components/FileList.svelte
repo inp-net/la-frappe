@@ -72,7 +72,9 @@
             {/if}
         </Flex>
 
-        <FileListNavigation bind:page {maxPage} />
+        {#if maxPage > 1}
+            <FileListNavigation bind:page {maxPage} />
+        {/if}
     </Flex>
 
     <Stack gap="sm">
