@@ -5,26 +5,30 @@
     import favicon from '#lib/assets/favicon.svg';
     import type { LayoutProps } from './$types.js';
     import { signOut } from "@auth/sveltekit/client";
+    import { goto } from '$app/navigation';
 
     import {
-        Sun,
-        Moon,
         Heart,
-        PowerOff,
-        Shield
+        EllipsisVertical
     } from '@lucide/svelte';
 
     import {
         Button,
         Flex,
-        Stack
+        Stack,
+        Dropdown
     } from 'azucar-ui'
 
     let { data, children }: LayoutProps = $props();
 
     let isDarkTheme = $derived(data.theme === 'dark');
-    let iconTheme = $derived(data.theme === 'dark' ? Sun : Moon);
     const isAdmin = $derived(data.isAdmin);
+
+    const menuItems = $derived(
+        isAdmin
+            ? ['Admin board', 'Changer thème', 'Se déconnecter']
+            : ['Changer thème', 'Se déconnecter']
+    );
 
     function setThemeCookie(value: boolean) {
         document.cookie = `theme=${value ? 'dark' : 'light'}; max-age=31536000; path=/; SameSite=Lax`;
@@ -41,6 +45,20 @@
         setThemeCookie(isDarkTheme);
         applyTheme(isDarkTheme);
         data.theme = isDarkTheme ? 'dark' : 'light';
+    }
+
+    function dropdown(s: string) {
+        switch(s) {
+            case 'Se déconnecter':
+                signOut({ callbackUrl: '/' })
+                break;
+            case 'Changer thème':
+                switchTheme();
+                break;
+            case 'Admin board':
+                goto('/admin');
+                break;
+        }
     }
 </script>
 
@@ -60,13 +78,17 @@
 </svelte:head>
 
 <div class="container">
-    <div class ="sticky">
-        <Flex style="position: absolute; right: 10px; z-index: 200;" gap="xs">
-            {#if isAdmin}
-                <Button icon={Shield} variant="outline" href="/admin" />
-            {/if}
-            <Button icon={iconTheme} variant="outline" onclick={switchTheme} />
-            <Button icon={PowerOff} onclick={() => signOut({ callbackUrl: "/" })} />
+    <div class="browse-wrapper">
+        <Flex justify="end" style="margin-top: var(--size-md)">
+            <Dropdown
+                id="menu"
+                menu={menuItems}
+                align="center"
+                eventAction={(s: string) => dropdown(s)}
+            >
+                <Button popovertarget="menu" variant='ghost' icon={EllipsisVertical} />
+            </Dropdown>
+
         </Flex>
     </div>
     <Stack gap="lg">
@@ -116,5 +138,11 @@
         left: 0;
         width: 100%;
         z-index: 10;
+    }
+
+    .browse-wrapper {
+        width: 100%;
+        max-width: min(100%, 800px);
+        margin: 0 auto;
     }
 </style>
